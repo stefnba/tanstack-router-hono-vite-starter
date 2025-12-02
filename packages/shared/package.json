@@ -1,0 +1,13 @@
+{
+    "name": "@app/shared",
+    "version": "0.0.0",
+    "main": "src/index.ts",
+    "type": "module",
+    "dependencies": {
+        "zod": "^3.23.0"
+    },
+    "devDependencies": {
+        "bun-types": "latest",
+        "typescript": "^5.4.0"
+    }
+}
