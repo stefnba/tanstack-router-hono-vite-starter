@@ -17,4 +17,10 @@
             "path": "./packages/shared",
         },
     ],
+    "settings": {
+        "files.associations": {
+            "*.css": "tailwindcss",
+        },
+        "editor.formatOnSave": true,
+    },
 }
