@@ -2,7 +2,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { authClient } from '@/lib/auth/client';
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { sessionQueryOptions } from '@/lib/auth/query-options';
+import { createFileRoute, redirect, useRouter } from '@tanstack/react-router';
 import { zodValidator } from '@tanstack/zod-adapter';
 import { useState } from 'react';
 import { z } from 'zod';
@@ -24,32 +25,49 @@ export const Route = createFileRoute('/_auth/signin')({
 });
 
 function RouteComponent() {
-    const { auth } = Route.useRouteContext();
+    const { queryClient } = Route.useRouteContext();
     const navigate = Route.useNavigate();
+    const router = useRouter();
     const { redirect, email: emailSearch } = Route.useSearch();
 
-    const [email, setEmail] = useState(emailSearch ?? '');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState(emailSearch ?? 'test@test.com');
+    const [password, setPassword] = useState('password1234!');
+
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!email || !password) {
+            setError('Please enter an email and password');
+            return;
+        }
         setIsLoading(true);
         setError('');
 
-        console.log('login', email, password);
-
         try {
-            await authClient.signIn.email({
-                email: email,
-                password: password,
-            });
-            console.log('login successful');
-            // Navigate to the redirect URL using router navigation
+            await authClient.signIn.email(
+                {
+                    email: email,
+                    password: password,
+                },
+                {
+                    onSuccess(context) {
+                        console.log('login successful', context);
+                    },
+                    onError(error) {
+                        setError(error.error.message ?? 'An unknown error occurred');
+                    },
+                }
+            );
+
+            // fetch the session data
+            await queryClient.fetchQuery(sessionQueryOptions);
+            console.log('redirecting to', redirect ?? '/dashboard');
+            // router.invalidate();
             navigate({ to: redirect ?? '/dashboard' });
         } catch (err) {
-            setError('Invalid username');
+            setError(err instanceof Error ? err.message : 'An unknown error occurred');
         } finally {
             setIsLoading(false);
         }
@@ -75,6 +93,8 @@ function RouteComponent() {
                 />
                 <div className="text-sm text-gray-500">{password}</div>
             </form>
+
+            {error && <div className="text-red-500">{error}</div>}
 
             <Button onClick={handleSubmit} disabled={isLoading}>
                 {isLoading ? 'Signing in...' : 'Sign In'}

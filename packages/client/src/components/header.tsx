@@ -22,6 +22,9 @@ export const Header = () => {
                 <Link to="/signup" className="[&.active]:font-bold">
                     Signup
                 </Link>
+                <Link to="/auth/status" className="[&.active]:font-bold">
+                    Auth Status
+                </Link>
             </div>
         </header>
     );
