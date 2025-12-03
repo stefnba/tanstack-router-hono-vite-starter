@@ -1,4 +1,4 @@
-import type { AppType } from '@app/server/src/index';
+import type { AppType } from '@app/server';
 import { hc } from 'hono/client';
 
 const { NEXT_PUBLIC_APP_URL } = {
