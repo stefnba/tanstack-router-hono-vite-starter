@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { getEnvVariables } from '../env';
 import postgres from 'postgres';
+import * as schema from '../../db/tables';
 
 const { DATABASE_URL } = getEnvVariables();
 
@@ -12,4 +13,4 @@ const client = postgres(DATABASE_URL, {
     connect_timeout: 10, // Max seconds to wait for a connection
 });
 
-export const db = drizzle(client);
+export const db = drizzle(client, { schema, casing: 'snake_case' });

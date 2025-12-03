@@ -4,7 +4,11 @@
     "main": "src/index.ts",
     "type": "module",
     "scripts": {
-        "dev": "bun run --watch src/index.ts"
+        "dev": "bun run --watch src/index.ts",
+        "db:push": "drizzle-kit push",
+        "db:studio": "drizzle-kit studio",
+        "db:generate": "drizzle-kit generate",
+        "auth:generate": "bun x @better-auth/cli@latest generate --config ./src/lib/auth/config.ts"
     },
     "dependencies": {
         "@app/shared": "workspace:*",
