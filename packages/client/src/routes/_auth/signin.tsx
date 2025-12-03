@@ -1,12 +1,13 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { authClient } from '@/lib/auth/client';
-import { sessionQueryOptions } from '@/lib/auth/query-options';
-import { createFileRoute, redirect, useRouter } from '@tanstack/react-router';
+import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { zodValidator } from '@tanstack/zod-adapter';
 import { useState } from 'react';
 import { z } from 'zod';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { sessionQueryOptions } from '@/lib/auth/api';
+import { authClient } from '@/lib/auth/client';
 
 export const Route = createFileRoute('/_auth/signin')({
     component: RouteComponent,
@@ -16,12 +17,6 @@ export const Route = createFileRoute('/_auth/signin')({
             email: z.email().optional(),
         })
     ),
-    beforeLoad: ({ context, search }) => {
-        // Redirect if already authenticated
-        if (context.auth.isAuthenticated) {
-            throw redirect({ to: search?.redirect });
-        }
-    },
 });
 
 function RouteComponent() {

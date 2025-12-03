@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { sessionQueryOptions } from './query-options';
+
+import { sessionQueryOptions } from './api';
 
 export const useAuth = () => {
     const { data: auth, error } = useQuery(sessionQueryOptions);

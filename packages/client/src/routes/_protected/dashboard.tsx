@@ -1,6 +1,7 @@
+import { createFileRoute, useRouter } from '@tanstack/react-router';
+
 import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth/client';
-import { createFileRoute, useRouter } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_protected/dashboard')({
     component: RouteComponent,

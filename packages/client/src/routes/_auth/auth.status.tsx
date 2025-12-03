@@ -1,5 +1,6 @@
-import { useAuth } from '@/lib/auth/hooks';
 import { createFileRoute } from '@tanstack/react-router';
+
+import { useAuth } from '@/lib/auth/hooks';
 
 export const Route = createFileRoute('/_auth/auth/status')({
     component: RouteComponent,

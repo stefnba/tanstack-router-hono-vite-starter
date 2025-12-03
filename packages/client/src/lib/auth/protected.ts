@@ -1,6 +1,8 @@
-import { RouterContext } from '@/routes/__root';
-import { sessionQueryOptions } from './query-options';
 import { redirect } from '@tanstack/react-router';
+
+import { RouterContext } from '@/routes/__root';
+
+import { sessionQueryOptions } from './api';
 
 /**
  * Ensures that the user is authenticated and redirects to the signin page if not
@@ -12,7 +14,7 @@ export const ensureProtectedRoute = async (
     context: RouterContext,
     redirectTo: string = '/signin'
 ) => {
-    const session = await context.queryClient.ensureQueryData(sessionQueryOptions);
+    const session = getSessionData(context);
     if (!session) {
         throw redirect({
             to: redirectTo,
@@ -21,5 +23,12 @@ export const ensureProtectedRoute = async (
             },
         });
     }
+    return session;
+};
+
+/**
+ */
+export const getSessionData = async (context: RouterContext) => {
+    const session = await context.queryClient.ensureQueryData(sessionQueryOptions);
     return session;
 };

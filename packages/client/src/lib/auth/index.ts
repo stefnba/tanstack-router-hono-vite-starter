@@ -1,2 +1,3 @@
-export * from './state';
-export * from './hooks';
+export { useAuth } from './hooks';
+export { ensureProtectedRoute, getSessionData } from './protected';
+export { sessionQueryOptions } from './api';
