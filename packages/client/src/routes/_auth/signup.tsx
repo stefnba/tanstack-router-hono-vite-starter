@@ -13,6 +13,7 @@ function RouteComponent() {
     const [email, setEmail] = useState('test@test.com');
     const [name, setName] = useState('test');
     const [password, setPassword] = useState('password1234!');
+    const navigate = Route.useNavigate();
 
     const handleSignUp = async () => {
         await authClient.signUp.email({
@@ -20,12 +21,13 @@ function RouteComponent() {
             name: name,
             password: password,
         });
+        navigate({ to: '/signin', search: { email: email } });
     };
 
     return (
         <div className="p-4">
             <h1 className="text-2xl font-bold mb-4">Signup</h1>
-            <form className="max-w-md space-y-2">
+            <form className="max-w-md space-y-2 mb-4">
                 <Label htmlFor="email">Email</Label>
                 <Input
                     type="email"
@@ -47,6 +49,7 @@ function RouteComponent() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
+                <div className="text-sm text-gray-500">{password}</div>
             </form>
             <Button type="submit" onClick={handleSignUp}>
                 Sign Up

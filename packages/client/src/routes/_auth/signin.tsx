@@ -1,4 +1,7 @@
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { authClient } from '@/lib/auth/client';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { zodValidator } from '@tanstack/zod-adapter';
 import { useState } from 'react';
@@ -9,6 +12,7 @@ export const Route = createFileRoute('/_auth/signin')({
     validateSearch: zodValidator(
         z.object({
             redirect: z.string().optional(),
+            email: z.email().optional(),
         })
     ),
     beforeLoad: ({ context, search }) => {
@@ -22,9 +26,10 @@ export const Route = createFileRoute('/_auth/signin')({
 function RouteComponent() {
     const { auth } = Route.useRouteContext();
     const navigate = Route.useNavigate();
-    const { redirect } = Route.useSearch();
+    const { redirect, email: emailSearch } = Route.useSearch();
 
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState(emailSearch ?? '');
+    const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -33,10 +38,13 @@ function RouteComponent() {
         setIsLoading(true);
         setError('');
 
-        console.log('login');
+        console.log('login', email, password);
 
         try {
-            auth.login(username);
+            await authClient.signIn.email({
+                email: email,
+                password: password,
+            });
             console.log('login successful');
             // Navigate to the redirect URL using router navigation
             navigate({ to: redirect ?? '/dashboard' });
@@ -48,26 +56,29 @@ function RouteComponent() {
     };
 
     return (
-        <div>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="username" className="block text-sm font-medium mb-1">
-                        Username
-                    </label>
-                    <input
-                        id="username"
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
-                    />
-                </div>
-
-                <Button type="submit" disabled={isLoading}>
-                    {isLoading ? 'Signing in...' : 'Sign In'}
-                </Button>
+        <div className="p-4">
+            <h1 className="text-2xl font-bold mb-4">Signin</h1>
+            <form className="max-w-md space-y-2 mb-4">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                />
+                <Label htmlFor="password">Password</Label>
+                <Input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                />
+                <div className="text-sm text-gray-500">{password}</div>
             </form>
+
+            <Button onClick={handleSubmit} disabled={isLoading}>
+                {isLoading ? 'Signing in...' : 'Sign In'}
+            </Button>
         </div>
     );
 }
