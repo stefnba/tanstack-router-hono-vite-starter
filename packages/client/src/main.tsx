@@ -1,21 +1,29 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
-import { RouterProvider, createRouter } from '@tanstack/react-router';
-import './styles.css';
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { authState } from './lib/auth';
+import './styles.css';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            // Data is fresh for 1 minute (no refetching on component mount/remount)
+            staleTime: 1000 * 60 * 1,
+            // Do NOT refetch when the window gains focus (avoids distracting spinners)
+            refetchOnWindowFocus: false,
+            // Fail faster: Retry only once (default is 3), reducing wait time for 404s/500s
+            retry: 1,
+        },
+    },
+});
 
 // Create a new router instance
 const router = createRouter({
     routeTree,
     context: {
-        // auth will be passed down from App component
-        auth: undefined!,
         queryClient: queryClient,
     },
     defaultPreload: 'intent',
@@ -37,7 +45,6 @@ export const App = () => {
         <RouterProvider
             router={router}
             context={{
-                auth: authState,
                 queryClient: queryClient,
             }}
         />
