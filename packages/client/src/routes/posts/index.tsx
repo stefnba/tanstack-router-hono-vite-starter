@@ -28,7 +28,7 @@ export const Route = createFileRoute('/posts/')({
 
 function RouteComponent() {
     const postsQuery = useSuspenseQuery(postsQueryOptions);
-    const posts = postsQuery.data;
+    const posts = postsQuery.data ?? [];
     return (
         <div className="space-y-2 p-4">
             <h1 className="text-lg font-medium">Test Backend API Calls with Posts</h1>
