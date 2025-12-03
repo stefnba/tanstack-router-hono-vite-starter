@@ -1,5 +1,6 @@
-import type { AppType } from '@app/server';
 import { hc } from 'hono/client';
+
+import type { AppType } from '@app/server';
 
 const { NEXT_PUBLIC_APP_URL } = {
     NEXT_PUBLIC_APP_URL: 'http://localhost:5173',

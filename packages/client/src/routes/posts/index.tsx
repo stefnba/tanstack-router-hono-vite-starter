@@ -1,6 +1,7 @@
-import { apiClient } from '@/lib/api/client';
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { Link, createFileRoute } from '@tanstack/react-router';
+
+import { apiClient } from '@/lib/api/client';
 
 const postsQueryOptions = queryOptions({
     queryKey: ['posts'],

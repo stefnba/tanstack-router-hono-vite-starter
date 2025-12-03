@@ -1,9 +1,11 @@
-import { betterAuth, BetterAuthOptions } from 'better-auth';
+import { BetterAuthOptions, betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { db } from '../db'; // !!! relative import required because of better-auth bug !!!
+// !!! relative import required because of better-auth bug !!!
 import { customSession, openAPI } from 'better-auth/plugins';
-import { SESSION_COOKIE, SESSION_DATA } from './constants';
+
+import { db } from '../db';
 import { getEnvVariables } from '../env';
+import { SESSION_COOKIE, SESSION_DATA } from './constants';
 
 const { CLIENT_URL } = getEnvVariables();
 

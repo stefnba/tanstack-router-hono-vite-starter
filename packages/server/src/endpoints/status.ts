@@ -1,6 +1,7 @@
-import { Hono } from 'hono';
-import { db } from '../lib/db';
 import { sql } from 'drizzle-orm';
+import { Hono } from 'hono';
+
+import { db } from '../lib/db';
 
 export const endopints = new Hono().get('/', async (c) => {
     let databaseStatus = 'OK';

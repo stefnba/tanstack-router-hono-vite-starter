@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
-import { logger } from 'hono/logger';
 import { cors } from 'hono/cors';
+import { logger } from 'hono/logger';
+
 import { authEndopints, postEndpoints, statusEndpoints } from './endpoints';
 import { getEnvVariables } from './lib/env';
 
