@@ -7,12 +7,20 @@
         "dev": "bun run --watch src/index.ts"
     },
     "dependencies": {
-        "hono": "^4.2.0",
+        "@app/shared": "workspace:*",
         "@hono/zod-validator": "^0.2.1",
-        "@app/shared": "workspace:*"
+        "better-auth": "^1.4.5",
+        "dotenv": "^17.2.3",
+        "drizzle-orm": "^0.44.7",
+        "hono": "^4.2.0",
+        "pg": "^8.16.3",
+        "postgres": "^3.4.7"
     },
     "devDependencies": {
+        "@types/pg": "^8.15.6",
         "bun-types": "latest",
+        "drizzle-kit": "^0.31.7",
+        "tsx": "^4.21.0",
         "typescript": "^5.4.0"
     }
 }
