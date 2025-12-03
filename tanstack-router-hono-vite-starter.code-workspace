@@ -23,5 +23,9 @@
         },
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "files.exclude": {
+            "**/.tanstack": true,
+            "**/node_modules": true,
+        },
     },
 }
