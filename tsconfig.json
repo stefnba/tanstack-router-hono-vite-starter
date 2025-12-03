@@ -15,7 +15,7 @@
         "declarationMap": true,
         "baseUrl": ".",
         "paths": {
-            // Don't specify other paths, this will likely cause the app to crash at runtime
+            // Don't specify other paths, this willlikely cause your app to crash at runtime
             "@app/*": ["packages/*/src"]
         }
     },

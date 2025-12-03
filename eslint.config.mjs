@@ -1,14 +1,14 @@
-import js from '@eslint/js'
-import { defineConfig } from 'eslint/config'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
-import eslintConfigPrettier from 'eslint-config-prettier'
+import js from '@eslint/js';
+import { defineConfig } from 'eslint/config';
+import globals from 'globals';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import tseslint from 'typescript-eslint';
+import eslintConfigPrettier from 'eslint-config-prettier';
 
 export default defineConfig([
     // 1. Global Ignores
-    { ignores: ['dist', 'node_modules', '**/*.gen.ts'] },
+    { ignores: ['dist', 'node_modules', '**/*.gen.ts', 'out/', 'public/'] },
 
     // 2. Base JS Configuration
     js.configs.recommended,
@@ -18,9 +18,9 @@ export default defineConfig([
 
     // 4. React & Project Specific Rules
     {
-        files: ['**/*.{ts,tsx}'],
+        files: ['**/*.{js,jsx,ts,tsx}'],
         languageOptions: {
-            ecmaVersion: 2020,
+            ecmaVersion: 2021,
             globals: globals.browser,
         },
         plugins: {
@@ -39,4 +39,4 @@ export default defineConfig([
 
     // 5. Prettier Config (must be last to override others)
     eslintConfigPrettier,
-])
+]);
