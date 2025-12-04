@@ -2,8 +2,8 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 
-import { authEndopints, postEndpoints, statusEndpoints } from './endpoints';
-import { authMiddleware, getUser } from './lib/auth';
+import { authEndopints, postEndpoints, protectedEndpoints, statusEndpoints } from './endpoints';
+import { authMiddleware } from './lib/auth';
 import { TAuthContext } from './lib/auth/types';
 import { getEnvVariables } from './lib/env';
 
@@ -41,6 +41,11 @@ app.use(
     })
 );
 
+app.onError((err, c) => {
+    console.error(err);
+    return c.json({ error: 'Internal Server Error' }, 500);
+});
+
 // ================================
 // Routes
 // ================================
@@ -54,15 +59,7 @@ const routes = app
             message: 'Hello',
         });
     })
-    // Middleware that checks if the user is authenticated
-    .use('*', authMiddleware) // ! Important! This middleware must be placed before all routes that are protected
-    .get('/protected', (c) => {
-        const user = getUser(c);
-        return c.json({
-            protected: 'yes',
-            user,
-        });
-    });
+    .route('/protected', protectedEndpoints);
 
 // ================================
 // Export

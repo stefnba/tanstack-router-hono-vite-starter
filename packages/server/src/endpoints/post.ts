@@ -1,6 +1,6 @@
-import { Hono } from 'hono';
+import { createHonoRouter } from '../lib/router';
 
-export const endopints = new Hono().get('/', async (c) => {
+export const endopints = createHonoRouter({ isProtected: false }).get('/', async (c) => {
     return c.json([
         {
             id: 1,

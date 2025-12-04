@@ -9,6 +9,7 @@ export const getUser = (c: Context) => {
     const user = c.get('user');
 
     if (!user) {
+        // todo return 401
         throw new Error('User not found in context');
     }
 
@@ -24,6 +25,7 @@ export const getSession = (c: Context) => {
     const session = c.get('session');
 
     if (!session) {
+        // todo return 401
         throw new Error('Session not found in context');
     }
 

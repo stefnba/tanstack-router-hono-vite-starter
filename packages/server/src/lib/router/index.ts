@@ -1,0 +1,1 @@
+export { createHonoRouter } from './factory';
