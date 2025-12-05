@@ -24,7 +24,8 @@ docker build -t starter-app .
 
 ```bash
 docker run -p 3000:3000 \
-  --env DATABASE_URL="postgresql://user:pass@host:5432/mydb" \
+  --env DATABASE_URL="postgresql://postgres:password@host.docker.internal:5445/db" \
+  --env CLIENT_URL="http://localhost:3000" \
   starter-app
 ```
 
