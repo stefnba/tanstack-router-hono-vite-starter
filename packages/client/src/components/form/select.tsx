@@ -13,9 +13,9 @@ import {
     FieldError,
     FieldLabel,
 } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { buildFormFieldId, convertToFormValue } from './utils';
 
 interface FormSelectProps<
     TFormData,
@@ -101,50 +101,24 @@ export const FormSelect = <
             children={(field) => {
                 const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
                 const value = field.state.value ? String(field.state.value) : '';
-
-                const handleChange = (value: string) => {
-                    // We need to check if the value is a number to prevent string concatenation
-                    // when using the input type="number". The field.handleChange expects the
-                    // same type as the field value, so we cast it to DeepValue<TFormData, TName>.
-                    if (typeof field.state.value === 'number') {
-                        field.handleChange(Number(value) as DeepValue<TFormData, TName>);
-                        return;
-                    }
-                    field.handleChange(value as DeepValue<TFormData, TName>);
-                };
+                const fieldId = buildFormFieldId(form.formId, 'select', String(name));
 
                 return (
-                    // <Field data-invalid={isInvalid}>
-                    //     {label && (
-                    //         <FieldLabel htmlFor={`form-input-${String(name)}`}>{label}</FieldLabel>
-                    //     )}
-
-                    //     <Input
-                    //         id={`form-tanstack-input-${String(name)}`}
-                    //         name={name}
-                    //         value={value}
-                    //         onBlur={field.handleBlur}
-                    //         onChange={(e) => handleChange(e.target.value)}
-                    //         aria-invalid={isInvalid}
-                    //         placeholder={placeholder}
-                    //         autoComplete={autoComplete}
-                    //     />
-                    //     {description && <FieldDescription>{description}</FieldDescription>}
-                    //     {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                    // </Field>
                     <Field orientation="responsive" data-invalid={isInvalid}>
                         <FieldContent>
-                            {label && (
-                                <FieldLabel htmlFor={`form-select-${String(name)}`}>
-                                    {label}
-                                </FieldLabel>
-                            )}
+                            {label && <FieldLabel htmlFor={fieldId}>{label}</FieldLabel>}
                             {description && <FieldDescription>{description}</FieldDescription>}
                             {isInvalid && <FieldError errors={field.state.meta.errors} />}
                         </FieldContent>
-                        <Select name={field.name} value={value} onValueChange={handleChange}>
+                        <Select
+                            name={field.name}
+                            value={value}
+                            onValueChange={(value) =>
+                                field.handleChange(convertToFormValue<TFormData, TName>(value))
+                            }
+                        >
                             <SelectTrigger
-                                id={`form-select-${String(name)}`}
+                                id={fieldId}
                                 aria-invalid={isInvalid}
                                 className="min-w-[120px]"
                             >

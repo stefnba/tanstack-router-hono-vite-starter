@@ -1,15 +1,23 @@
 import {
     DeepKeys,
-    DeepValue,
     FormAsyncValidateOrFn,
     FormValidateOrFn,
     ReactFormExtendedApi,
 } from '@tanstack/react-form';
 
-import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import {
+    Field,
+    FieldContent,
+    FieldDescription,
+    FieldError,
+    FieldLabel,
+} from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 
-interface FormInputProps<
+import { Switch } from '../ui/switch';
+import { buildFormFieldId, convertToFormValue } from './utils';
+
+interface FormSwitchProps<
     TFormData,
     TOnMount extends undefined | FormValidateOrFn<TFormData>,
     TOnChange extends undefined | FormValidateOrFn<TFormData>,
@@ -46,7 +54,7 @@ interface FormInputProps<
     description?: string;
 }
 
-export const FormInput = <
+export const FormSwitch = <
     TFormData,
     TOnMount extends undefined | FormValidateOrFn<TFormData>,
     TOnChange extends undefined | FormValidateOrFn<TFormData>,
@@ -65,9 +73,7 @@ export const FormInput = <
     name,
     label,
     description,
-    placeholder,
-    autoComplete,
-}: FormInputProps<
+}: FormSwitchProps<
     TFormData,
     TOnMount,
     TOnChange,
@@ -87,37 +93,26 @@ export const FormInput = <
             name={name}
             children={(field) => {
                 const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
-                const value = field.state.value ? String(field.state.value) : '';
+                const value = field.state.value ? Boolean(field.state.value) : false;
 
-                const handleChange = (value: string) => {
-                    // We need to check if the value is a number to prevent string concatenation
-                    // when using the input type="number". The field.handleChange expects the
-                    // same type as the field value, so we cast it to DeepValue<TFormData, TName>.
-                    if (typeof field.state.value === 'number') {
-                        field.handleChange(Number(value) as DeepValue<TFormData, TName>);
-                        return;
-                    }
-                    field.handleChange(value as DeepValue<TFormData, TName>);
-                };
+                const fieldId = buildFormFieldId(form.formId, 'switch', String(name));
 
                 return (
-                    <Field data-invalid={isInvalid}>
-                        {label && (
-                            <FieldLabel htmlFor={`form-input-${String(name)}`}>{label}</FieldLabel>
-                        )}
-
-                        <Input
-                            id={`form-tanstack-input-${String(name)}`}
-                            name={name}
-                            value={value}
-                            onBlur={field.handleBlur}
-                            onChange={(e) => handleChange(e.target.value)}
+                    <Field orientation="horizontal" data-invalid={isInvalid}>
+                        <FieldContent>
+                            {label && <FieldLabel htmlFor={fieldId}>{label}</FieldLabel>}
+                            {description && <FieldDescription>{description}</FieldDescription>}
+                            {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                        </FieldContent>
+                        <Switch
+                            id={fieldId}
+                            name={field.name}
+                            checked={value}
+                            onCheckedChange={(value) =>
+                                field.handleChange(convertToFormValue<TFormData, TName>(value))
+                            }
                             aria-invalid={isInvalid}
-                            placeholder={placeholder}
-                            autoComplete={autoComplete}
                         />
-                        {description && <FieldDescription>{description}</FieldDescription>}
-                        {isInvalid && <FieldError errors={field.state.meta.errors} />}
                     </Field>
                 );
             }}
