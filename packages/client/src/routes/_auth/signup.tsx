@@ -1,8 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
+import z from 'zod';
 
+import { useAppForm } from '@/components/form';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { authClient } from '@/lib/auth/client';
 
@@ -11,50 +12,39 @@ export const Route = createFileRoute('/_auth/signup')({
 });
 
 function RouteComponent() {
-    const [email, setEmail] = useState('test@test.com');
-    const [name, setName] = useState('test');
-    const [password, setPassword] = useState('password1234!');
     const navigate = Route.useNavigate();
 
-    const handleSignUp = async () => {
-        await authClient.signUp.email({
-            email: email,
-            name: name,
-            password: password,
-        });
-        navigate({ to: '/signin', search: { email: email } });
-    };
+    const { form, Input, Form, SubmitButton } = useAppForm({
+        schema: z.object({
+            email: z.email(),
+            name: z.string().min(1),
+            password: z.string().min(6),
+        }),
+        defaultValues: {
+            email: 'test@test.com',
+            name: 'test',
+            password: 'password1234!',
+        },
+        onSubmit: async ({ value }) => {
+            await authClient.signUp.email({
+                email: value.email,
+                name: value.name,
+                password: value.password,
+            });
+            navigate({ to: '/signin', search: { email: value.email } });
+        },
+    });
 
     return (
         <div className="p-4">
             <h1 className="text-2xl font-bold mb-4">Signup</h1>
-            <form className="max-w-md space-y-2 mb-4">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-                <Label htmlFor="name">Name</Label>
-                <Input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                />
-                <Label htmlFor="password">Password</Label>
-                <Input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-                <div className="text-sm text-gray-500">{password}</div>
-            </form>
-            <Button type="submit" onClick={handleSignUp}>
-                Sign Up
-            </Button>
+            <Form className="max-w-md space-y-2 mb-4">
+                <Input name="email" type="email" required label="Email" />
+                <Input name="name" type="text" required label="Name" />
+                <Input name="password" type="password" required label="Password" />
+                <div className="text-sm text-gray-500">{form.state.values.password}</div>
+                <SubmitButton>Sign Up</SubmitButton>
+            </Form>
         </div>
     );
 }
