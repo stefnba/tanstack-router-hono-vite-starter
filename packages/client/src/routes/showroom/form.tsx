@@ -133,6 +133,17 @@ function RouteComponent() {
                     </Field>
                 </CardFooter>
             </Card>
+            <div className="max-w-md">
+                <h2 className="text-lg font-bold mb-2">Form Values</h2>
+                <form.Subscribe
+                    selector={(state) => state.values}
+                    children={(values) => (
+                        <div className="bg-gray-100 p-4 rounded-md text-sm">
+                            <pre>{JSON.stringify(values, null, 2)}</pre>
+                        </div>
+                    )}
+                />
+            </div>
         </div>
     );
 }
