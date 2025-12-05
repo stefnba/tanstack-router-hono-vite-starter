@@ -14,7 +14,7 @@ export const ensureProtectedRoute = async (
     context: RouterContext,
     redirectTo: string = '/signin'
 ) => {
-    const session = getSessionData(context);
+    const session = await getSessionData(context);
     if (!session) {
         throw redirect({
             to: redirectTo,
