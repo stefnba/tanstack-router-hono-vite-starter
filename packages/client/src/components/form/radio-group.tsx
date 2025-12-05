@@ -1,9 +1,4 @@
-import {
-    DeepKeys,
-    FormAsyncValidateOrFn,
-    FormValidateOrFn,
-    ReactFormExtendedApi,
-} from '@tanstack/react-form';
+import { DeepKeys } from '@tanstack/react-form';
 
 import {
     Field,
@@ -18,41 +13,14 @@ import {
 import { Input } from '@/components/ui/input';
 
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
-import { Switch } from '../ui/switch';
+import { TAppForm } from './types';
 import { buildFormFieldId, convertToFormValue } from './utils';
 
-interface FormRadioGroupProps<
-    TFormData,
-    TOnMount extends undefined | FormValidateOrFn<TFormData>,
-    TOnChange extends undefined | FormValidateOrFn<TFormData>,
-    TOnChangeAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnBlur extends undefined | FormValidateOrFn<TFormData>,
-    TOnBlurAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnSubmit extends undefined | FormValidateOrFn<TFormData>,
-    TOnSubmitAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnDynamic extends undefined | FormValidateOrFn<TFormData>,
-    TOnDynamicAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnServer extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TSubmitMeta,
-    TName extends DeepKeys<TFormData>,
-> extends Omit<
+interface FormRadioGroupProps<TFormData, TName extends DeepKeys<TFormData>> extends Omit<
     React.ComponentProps<typeof Input>,
     'name' | 'value' | 'onChange' | 'onBlur' | 'form'
 > {
-    form: ReactFormExtendedApi<
-        TFormData,
-        TOnMount,
-        TOnChange,
-        TOnChangeAsync,
-        TOnBlur,
-        TOnBlurAsync,
-        TOnSubmit,
-        TOnSubmitAsync,
-        TOnDynamic,
-        TOnDynamicAsync,
-        TOnServer,
-        TSubmitMeta
-    >;
+    form: TAppForm<TFormData>;
     name: TName;
     label?: string;
     description?: string;
@@ -63,41 +31,13 @@ interface FormRadioGroupProps<
     }[];
 }
 
-export const FormRadioGroup = <
-    TFormData,
-    TOnMount extends undefined | FormValidateOrFn<TFormData>,
-    TOnChange extends undefined | FormValidateOrFn<TFormData>,
-    TOnChangeAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnBlur extends undefined | FormValidateOrFn<TFormData>,
-    TOnBlurAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnSubmit extends undefined | FormValidateOrFn<TFormData>,
-    TOnSubmitAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnDynamic extends undefined | FormValidateOrFn<TFormData>,
-    TOnDynamicAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnServer extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TSubmitMeta,
-    TName extends DeepKeys<TFormData>,
->({
+export const FormRadioGroup = <TFormData, TName extends DeepKeys<TFormData>>({
     form,
     name,
     label,
     description,
     options,
-}: FormRadioGroupProps<
-    TFormData,
-    TOnMount,
-    TOnChange,
-    TOnChangeAsync,
-    TOnBlur,
-    TOnBlurAsync,
-    TOnSubmit,
-    TOnSubmitAsync,
-    TOnDynamic,
-    TOnDynamicAsync,
-    TOnServer,
-    TSubmitMeta,
-    TName
->) => {
+}: FormRadioGroupProps<TFormData, TName>) => {
     return (
         <form.Field
             name={name}
@@ -107,10 +47,8 @@ export const FormRadioGroup = <
 
                 return (
                     <FieldSet>
-                        <FieldLegend>Plan</FieldLegend>
-                        <FieldDescription>
-                            You can upgrade or downgrade your plan at any time.
-                        </FieldDescription>
+                        {label && <FieldLegend>{label}</FieldLegend>}
+                        {description && <FieldDescription>{description}</FieldDescription>}
                         <RadioGroup
                             name={field.name}
                             value={value}

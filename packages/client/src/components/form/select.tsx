@@ -1,9 +1,4 @@
-import {
-    DeepKeys,
-    FormAsyncValidateOrFn,
-    FormValidateOrFn,
-    ReactFormExtendedApi,
-} from '@tanstack/react-form';
+import { DeepKeys } from '@tanstack/react-form';
 
 import {
     Field,
@@ -14,40 +9,14 @@ import {
 } from '@/components/ui/field';
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { TAppForm } from './types';
 import { buildFormFieldId, convertToFormValue } from './utils';
 
-interface FormSelectProps<
-    TFormData,
-    TOnMount extends undefined | FormValidateOrFn<TFormData>,
-    TOnChange extends undefined | FormValidateOrFn<TFormData>,
-    TOnChangeAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnBlur extends undefined | FormValidateOrFn<TFormData>,
-    TOnBlurAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnSubmit extends undefined | FormValidateOrFn<TFormData>,
-    TOnSubmitAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnDynamic extends undefined | FormValidateOrFn<TFormData>,
-    TOnDynamicAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnServer extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TSubmitMeta,
-    TName extends DeepKeys<TFormData>,
-> extends Omit<
+interface FormSelectProps<TFormData, TName extends DeepKeys<TFormData>> extends Omit<
     React.ComponentProps<typeof Select>,
     'name' | 'value' | 'onChange' | 'onBlur' | 'form'
 > {
-    form: ReactFormExtendedApi<
-        TFormData,
-        TOnMount,
-        TOnChange,
-        TOnChangeAsync,
-        TOnBlur,
-        TOnBlurAsync,
-        TOnSubmit,
-        TOnSubmitAsync,
-        TOnDynamic,
-        TOnDynamicAsync,
-        TOnServer,
-        TSubmitMeta
-    >;
+    form: TAppForm<TFormData>;
     name: TName;
     options:
         | { value: string | number; label: string }[]
@@ -59,41 +28,13 @@ interface FormSelectProps<
     description?: string;
 }
 
-export const FormSelect = <
-    TFormData,
-    TOnMount extends undefined | FormValidateOrFn<TFormData>,
-    TOnChange extends undefined | FormValidateOrFn<TFormData>,
-    TOnChangeAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnBlur extends undefined | FormValidateOrFn<TFormData>,
-    TOnBlurAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnSubmit extends undefined | FormValidateOrFn<TFormData>,
-    TOnSubmitAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnDynamic extends undefined | FormValidateOrFn<TFormData>,
-    TOnDynamicAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnServer extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TSubmitMeta,
-    TName extends DeepKeys<TFormData>,
->({
+export const FormSelect = <TFormData, TName extends DeepKeys<TFormData>>({
     form,
     options,
     name,
     label,
     description,
-}: FormSelectProps<
-    TFormData,
-    TOnMount,
-    TOnChange,
-    TOnChangeAsync,
-    TOnBlur,
-    TOnBlurAsync,
-    TOnSubmit,
-    TOnSubmitAsync,
-    TOnDynamic,
-    TOnDynamicAsync,
-    TOnServer,
-    TSubmitMeta,
-    TName
->) => {
+}: FormSelectProps<TFormData, TName>) => {
     return (
         <form.Field
             name={name}

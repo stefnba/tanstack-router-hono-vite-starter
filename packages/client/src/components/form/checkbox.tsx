@@ -1,9 +1,4 @@
-import {
-    DeepKeys,
-    FormAsyncValidateOrFn,
-    FormValidateOrFn,
-    ReactFormExtendedApi,
-} from '@tanstack/react-form';
+import { DeepKeys } from '@tanstack/react-form';
 
 import {
     Field,
@@ -18,40 +13,14 @@ import {
 import { Input } from '@/components/ui/input';
 
 import { Checkbox } from '../ui/checkbox';
+import { TAppForm } from './types';
 import { buildFormFieldId, ensureArray } from './utils';
 
-interface FormCheckboxProps<
-    TFormData,
-    TOnMount extends undefined | FormValidateOrFn<TFormData>,
-    TOnChange extends undefined | FormValidateOrFn<TFormData>,
-    TOnChangeAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnBlur extends undefined | FormValidateOrFn<TFormData>,
-    TOnBlurAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnSubmit extends undefined | FormValidateOrFn<TFormData>,
-    TOnSubmitAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnDynamic extends undefined | FormValidateOrFn<TFormData>,
-    TOnDynamicAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnServer extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TSubmitMeta,
-    TName extends DeepKeys<TFormData>,
-> extends Omit<
+interface FormCheckboxProps<TFormData, TName extends DeepKeys<TFormData>> extends Omit<
     React.ComponentProps<typeof Input>,
     'name' | 'value' | 'onChange' | 'onBlur' | 'form'
 > {
-    form: ReactFormExtendedApi<
-        TFormData,
-        TOnMount,
-        TOnChange,
-        TOnChangeAsync,
-        TOnBlur,
-        TOnBlurAsync,
-        TOnSubmit,
-        TOnSubmitAsync,
-        TOnDynamic,
-        TOnDynamicAsync,
-        TOnServer,
-        TSubmitMeta
-    >;
+    form: TAppForm<TFormData>;
     name: TName;
     label?: string;
     description?: string;
@@ -62,41 +31,13 @@ interface FormCheckboxProps<
     }[];
 }
 
-export const FormCheckbox = <
-    TFormData,
-    TOnMount extends undefined | FormValidateOrFn<TFormData>,
-    TOnChange extends undefined | FormValidateOrFn<TFormData>,
-    TOnChangeAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnBlur extends undefined | FormValidateOrFn<TFormData>,
-    TOnBlurAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnSubmit extends undefined | FormValidateOrFn<TFormData>,
-    TOnSubmitAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnDynamic extends undefined | FormValidateOrFn<TFormData>,
-    TOnDynamicAsync extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TOnServer extends undefined | FormAsyncValidateOrFn<TFormData>,
-    TSubmitMeta,
-    TName extends DeepKeys<TFormData>,
->({
+export const FormCheckbox = <TFormData, TName extends DeepKeys<TFormData>>({
     form,
     options,
     name,
     label,
     description,
-}: FormCheckboxProps<
-    TFormData,
-    TOnMount,
-    TOnChange,
-    TOnChangeAsync,
-    TOnBlur,
-    TOnBlurAsync,
-    TOnSubmit,
-    TOnSubmitAsync,
-    TOnDynamic,
-    TOnDynamicAsync,
-    TOnServer,
-    TSubmitMeta,
-    TName
->) => {
+}: FormCheckboxProps<TFormData, TName>) => {
     return (
         <form.Field
             name={name}
