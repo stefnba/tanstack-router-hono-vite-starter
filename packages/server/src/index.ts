@@ -4,7 +4,6 @@ import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 
 import { authEndopints, postEndpoints, protectedEndpoints, statusEndpoints } from './endpoints';
-import { authMiddleware } from './lib/auth';
 import { TAuthContext } from './lib/auth/types';
 import { getEnvVariables } from './lib/env';
 
@@ -48,7 +47,7 @@ app.onError((err, c) => {
 });
 
 // ================================
-// Routes
+// API Routes
 // ================================
 const apiRoutes = app
     .basePath('/api')
@@ -62,6 +61,11 @@ const apiRoutes = app
         });
     })
     .route('/protected', protectedEndpoints);
+
+// Catch any request starting with /api that wasn't handled above
+app.on(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/api/*', (c) => {
+    return c.json({ success: false, message: 'Not found' }, 404);
+});
 
 // ================================
 // Production
