@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { serveStatic } from 'hono/bun';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 
@@ -23,7 +24,7 @@ declare module 'hono' {
 const app = new Hono<{
     // Request-scoped data passed between middleware and handlers.
     Variables: TAuthContext;
-}>().basePath('/api');
+}>();
 
 // ================================
 // Middleware
@@ -49,7 +50,8 @@ app.onError((err, c) => {
 // ================================
 // Routes
 // ================================
-const routes = app
+const apiRoutes = app
+    .basePath('/api')
     // Important! Matches the proxy prefix
     .route('/auth', authEndopints)
     .route('/status', statusEndpoints)
@@ -62,6 +64,29 @@ const routes = app
     .route('/protected', protectedEndpoints);
 
 // ================================
+// Production
+// ================================
+// Serve Static Assets (The React Build)
+// This serves files like /assets/index.js directly
+if (getEnvVariables().NODE_ENV === 'production') {
+    app.use(
+        '/*',
+        serveStatic({
+            root: './public', // We will copy the React build here in Docker
+        })
+    );
+    // SPA Fallback (The "Catch-All")
+    // If a route doesn't match an API or a static file, serve index.html
+    // so the React Router can handle it client-side.
+    app.use(
+        '*',
+        serveStatic({
+            path: './public/index.html',
+        })
+    );
+}
+
+// ================================
 // Export
 // ================================
 // Start the server
@@ -71,5 +96,5 @@ export default {
     fetch: app.fetch,
 };
 
-export type AppType = typeof routes;
-export { routes, app };
+export type AppType = typeof apiRoutes;
+export { apiRoutes, app };
