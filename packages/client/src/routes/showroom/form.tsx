@@ -47,23 +47,7 @@ function RouteComponent() {
                 alert('You submitted the following values:' + JSON.stringify(value, null, 2));
                 console.log('You submitted the following values:', value);
             },
-            listeners: {
-                onChange: () => {
-                    setFormInfo({
-                        isValid: form.state.isFormValid,
-                        values: form.state.values,
-                    });
-                },
-            },
-            // validators: {
-            //     onBlur: formSchema,
-            // },
         });
-
-    const [formInfo, setFormInfo] = useState({
-        isValid: false,
-        values: form.state.values,
-    });
 
     return (
         <div className="p-10 space-y-10">
@@ -77,7 +61,6 @@ function RouteComponent() {
                         <FieldGroup>
                             <Input name="username" label="Username" />
                             <Input name="age" label="Age" />
-                            <Input name="test" label="Test" />
                             <Select
                                 name="language"
                                 label="Language"
@@ -150,13 +133,6 @@ function RouteComponent() {
                     </Field>
                 </CardFooter>
             </Card>
-
-            <div className="max-w-md">
-                <h1 className="text-lg font-bold mb-4">Form Info</h1>
-                <pre className="bg-gray-100 p-4 rounded-md text-sm">
-                    {JSON.stringify(formInfo, null, 2)}
-                </pre>
-            </div>
         </div>
     );
 }
