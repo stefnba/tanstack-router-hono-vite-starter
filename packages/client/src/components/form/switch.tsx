@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 
-import { Switch } from '../ui/switch';
+import { Switch } from '@/components/ui/switch';
 import { TAppForm } from './types';
 import { buildFormFieldId, convertToFormValue } from './utils';
 

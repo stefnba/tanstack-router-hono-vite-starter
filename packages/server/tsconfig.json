@@ -3,7 +3,11 @@
     "compilerOptions": {
         "types": ["bun-types"],
         "rootDir": "src",
-        "outDir": "dist"
+        "outDir": "dist",
+        "baseUrl": ".",
+        "paths": {
+            "@server/*": ["./src/*"]
+        }
     },
     "include": ["src"]
 }

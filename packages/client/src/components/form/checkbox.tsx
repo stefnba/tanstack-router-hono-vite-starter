@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 
-import { Checkbox } from '../ui/checkbox';
+import { Checkbox } from '@/components/ui/checkbox';
 import { TAppForm } from './types';
 import { buildFormFieldId, ensureArray } from './utils';
 

@@ -11,4 +11,4 @@ export { authEndopints } from './endpoints';
 // ================================
 // Types
 // ================================
-export type { TAuthSession, TAuthUser } from './types';
+export type { TAuthSession, TAuthUser, TAuthContext } from './types';

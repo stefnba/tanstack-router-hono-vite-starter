@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { Button } from '../ui/button';
-import { Spinner } from '../ui/spinner';
+import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 
 export const SubmitButton = ({
     loadingText = 'Loading...',

@@ -8,7 +8,7 @@ import {
 import { useEffect, useId, useMemo, useState } from 'react';
 import z from 'zod';
 
-import { cn } from '../../lib/utils';
+import { cn } from '@/lib/utils';
 import { FormCheckbox } from './checkbox';
 import { FormInput } from './input';
 import { FormRadioGroup } from './radio-group';

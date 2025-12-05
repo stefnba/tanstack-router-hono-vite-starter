@@ -1,4 +1,4 @@
-import { type auth } from './config';
+import { type auth } from '@server/lib/auth/config';
 
 export type TAuthSession = typeof auth.$Infer.Session.session;
 export type TAuthUser = typeof auth.$Infer.Session.user;
