@@ -1,21 +1,26 @@
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
+
+import { apiEndpoints } from '@/api';
 
 export const Route = createFileRoute('/posts/$postId')({
     component: RouteComponent,
-    loader: async ({ params }) => {
-        const post = await fetch(
-            `https://jsonplaceholder.typicode.com/posts/${params.postId}`
-        ).then((res) => res.json());
-        return post;
+    loader: async ({ context: { queryClient }, params: { postId } }) => {
+        await queryClient.ensureQueryData(apiEndpoints.posts.getOne({ param: { postId } }));
+
+        return { postId };
     },
 });
 
 function RouteComponent() {
-    const { post } = Route.useLoaderData();
     const { postId } = Route.useParams();
+    const { data: post } = useSuspenseQuery(apiEndpoints.posts.getOne({ param: { postId } }));
+
     return (
-        <div>
-            Hello {postId}! {JSON.stringify(post)}
+        <div className="p-4">
+            <h1 className="text-2xl font-bold">{post.title}</h1>
+            <p className="mt-2 text-gray-600">{post.content}</p>
+            <div className="mt-4 text-sm text-gray-400">ID: {post.id}</div>
         </div>
     );
 }
