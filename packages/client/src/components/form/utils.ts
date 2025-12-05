@@ -1,26 +1,34 @@
-import { DeepKeys, DeepValue } from '@tanstack/react-form';
-
 /**
- * Converts a value to the correct type for the form.
- * We need to check if the value is a number to prevent string concatenation
- * when using the input type="number" or boolean for the switch component. The field.handleChange expects the
- * same type as the field value, so we cast it to DeepValue<TFormData, TName>.
+ * Converts a value to the correct type for the form field.
+ * Uses the current field value type to determine the target type.
+ * Handles string → number, string → boolean, etc.
+ *
+ * @param value - The incoming value (usually a string from an input)
+ * @param currentValue - The current field value (used to infer the expected type)
+ * @returns The value converted to match the currentValue's type
+ *
+ * @example
+ * convertToFormValue('123', 0) // 123 (number)
+ * convertToFormValue('hello', '') // 'hello' (string)
+ * convertToFormValue('true', false) // true (boolean)
  */
-export const convertToFormValue = <TFormData, TName extends DeepKeys<TFormData>>(
-    value: number | string | boolean
-): DeepValue<TFormData, TName> => {
-    let formValue = value;
+export const convertToFormValue = <T = unknown>(
+    value: number | string | boolean,
+    currentValue?: T
+): T => {
+    // If currentValue is provided, infer type from it
+    if (currentValue !== undefined && currentValue !== null) {
+        if (typeof currentValue === 'number') {
+            const num = Number(value);
+            return (isNaN(num) ? value : num) as T;
+        }
+        if (typeof currentValue === 'boolean') {
+            return (typeof value === 'boolean' ? value : Boolean(value)) as T;
+        }
+    }
 
-    if (typeof value === 'number') {
-        formValue = Number(value);
-    }
-    if (typeof value === 'boolean') {
-        formValue = Boolean(value);
-    }
-    if (typeof value === 'string') {
-        formValue = String(value);
-    }
-    return formValue as DeepValue<TFormData, TName>;
+    // Otherwise return as-is
+    return value as T;
 };
 
 /**

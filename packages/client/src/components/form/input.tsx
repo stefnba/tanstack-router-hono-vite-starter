@@ -1,6 +1,5 @@
 import {
     DeepKeys,
-    DeepValue,
     FormAsyncValidateOrFn,
     FormValidateOrFn,
     ReactFormExtendedApi,
@@ -102,7 +101,7 @@ export const FormInput = <
                             onBlur={field.handleBlur}
                             onChange={(e) =>
                                 field.handleChange(
-                                    convertToFormValue<TFormData, TName>(e.target.value)
+                                    convertToFormValue(e.target.value, field.state.value)
                                 )
                             }
                             aria-invalid={isInvalid}

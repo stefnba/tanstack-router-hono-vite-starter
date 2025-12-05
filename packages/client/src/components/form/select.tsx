@@ -1,6 +1,5 @@
 import {
     DeepKeys,
-    DeepValue,
     FormAsyncValidateOrFn,
     FormValidateOrFn,
     ReactFormExtendedApi,
@@ -114,7 +113,7 @@ export const FormSelect = <
                             name={field.name}
                             value={value}
                             onValueChange={(value) =>
-                                field.handleChange(convertToFormValue<TFormData, TName>(value))
+                                field.handleChange(convertToFormValue(value, field.state.value))
                             }
                         >
                             <SelectTrigger

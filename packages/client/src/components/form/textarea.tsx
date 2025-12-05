@@ -102,7 +102,7 @@ export const FormTextarea = <
                             onBlur={field.handleBlur}
                             onChange={(e) =>
                                 field.handleChange(
-                                    convertToFormValue<TFormData, TName>(e.target.value)
+                                    convertToFormValue(e.target.value, field.state.value)
                                 )
                             }
                             aria-invalid={isInvalid}

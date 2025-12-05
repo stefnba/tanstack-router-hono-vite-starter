@@ -109,7 +109,7 @@ export const FormSwitch = <
                             name={field.name}
                             checked={value}
                             onCheckedChange={(value) =>
-                                field.handleChange(convertToFormValue<TFormData, TName>(value))
+                                field.handleChange(convertToFormValue(value, field.state.value))
                             }
                             aria-invalid={isInvalid}
                         />

@@ -115,7 +115,7 @@ export const FormRadioGroup = <
                             name={field.name}
                             value={value}
                             onValueChange={(value) =>
-                                field.handleChange(convertToFormValue<TFormData, TName>(value))
+                                field.handleChange(convertToFormValue(value, field.state.value))
                             }
                         >
                             {options.map((option) => {
