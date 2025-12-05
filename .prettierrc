@@ -10,7 +10,16 @@
     "arrowParens": "always",
     "endOfLine": "lf",
     "plugins": ["@trivago/prettier-plugin-sort-imports"],
-    "importOrder": ["^@app/(.*)$", "^@/(.*)$", "^[./]"],
+    "importOrder": [
+        "<THIRD_PARTY_MODULES>",
+        "^@app/(.*)$",
+        "^@server/(.*)$",
+        "^@client/(.*)$",
+        "^@shared/(.*)$",
+        "^@/(.*)$",
+        "^[./]"
+    ],
     "importOrderSeparation": true,
-    "importOrderSortSpecifiers": true
+    "importOrderSortSpecifiers": true,
+    "importOrderParserPlugins": ["typescript", "jsx", "decorators-legacy"]
 }

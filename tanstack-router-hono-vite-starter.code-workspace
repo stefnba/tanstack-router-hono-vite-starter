@@ -18,14 +18,44 @@
         },
     ],
     "settings": {
+        // File associations
         "files.associations": {
             "*.css": "tailwindcss",
         },
-        "editor.formatOnSave": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+        // File exclusion
         "files.exclude": {
             "**/.tanstack": true,
             "**/node_modules": true,
         },
+
+        // Editor and formatting
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": "explicit",
+        },
+        "editor.tabSize": 4,
+        "prettier.requireConfig": true,
+        "eslint.packageManager": "bun",
+        "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+        "files.eol": "\n",
+        "files.insertFinalNewline": true,
+        "files.trimTrailingWhitespace": true,
+
+        // TypeScript
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "typescript.enablePromptUseWorkspaceTsdk": true,
+        "typescript.preferences.importModuleSpecifier": "non-relative",
+
+        // Tailwind CSS
+        "tailwindCSS.includeLanguages": {
+            "typescript": "javascript",
+            "typescriptreact": "javascript",
+        },
+        "tailwindCSS.experimental.classRegex": [
+            ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+            ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+        ],
     },
 }

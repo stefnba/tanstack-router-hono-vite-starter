@@ -1,3 +1,8 @@
+import { Hono } from 'hono';
+import { serveStatic } from 'hono/bun';
+import { cors } from 'hono/cors';
+import { logger } from 'hono/logger';
+
 import {
     authEndopints,
     postEndpoints,
@@ -6,10 +11,6 @@ import {
 } from '@server/endpoints';
 import { TAuthContext } from '@server/lib/auth';
 import { getEnvVariables } from '@server/lib/env';
-import { Hono } from 'hono';
-import { serveStatic } from 'hono/bun';
-import { cors } from 'hono/cors';
-import { logger } from 'hono/logger';
 
 const { CLIENT_URL } = getEnvVariables();
 
