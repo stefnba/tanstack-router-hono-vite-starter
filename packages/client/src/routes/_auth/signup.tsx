@@ -14,7 +14,7 @@ export const Route = createFileRoute('/_auth/signup')({
 function RouteComponent() {
     const navigate = Route.useNavigate();
 
-    const { form, Input, Form, SubmitButton } = useAppForm({
+    const { form, Input, Form, SubmitButton, ServerError } = useAppForm({
         schema: z.object({
             email: z.email(),
             name: z.string().min(1),
@@ -25,13 +25,27 @@ function RouteComponent() {
             name: 'test',
             password: 'password1234!',
         },
-        onSubmit: async ({ value }) => {
-            await authClient.signUp.email({
-                email: value.email,
-                name: value.name,
-                password: value.password,
-            });
-            navigate({ to: '/signin', search: { email: value.email } });
+        onSubmit: async ({ value, setServerError }) => {
+            // simulate a slow network request
+            await new Promise((resolve) => setTimeout(resolve, 600));
+
+            // sign up
+            await authClient.signUp.email(
+                {
+                    email: value.email,
+                    name: value.name,
+                    password: value.password,
+                },
+                {
+                    onSuccess: () => {
+                        navigate({ to: '/signin', search: { email: value.email } });
+                    },
+                    onError: (error) => {
+                        console.error('Sign up error:', error.error);
+                        setServerError(error.error.message, { clearForm: true });
+                    },
+                }
+            );
         },
     });
 
@@ -43,6 +57,7 @@ function RouteComponent() {
                 <Input name="name" type="text" required label="Name" />
                 <Input name="password" type="password" required label="Password" />
                 <div className="text-sm text-gray-500">{form.state.values.password}</div>
+                <ServerError />
                 <SubmitButton>Sign Up</SubmitButton>
             </Form>
         </div>
