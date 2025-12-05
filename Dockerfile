@@ -47,4 +47,4 @@ ENV PORT=3000
 # 6. Run the Server
 WORKDIR /app/packages/server
 EXPOSE 3000
-CMD ["bun", "src/index.ts"]
+CMD ["bun", "run", "start"]
