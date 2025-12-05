@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { zodValidator } from '@tanstack/zod-adapter';
 import { useState } from 'react';
 import { z } from 'zod';
@@ -22,7 +22,6 @@ export const Route = createFileRoute('/_auth/signin')({
 function RouteComponent() {
     const { queryClient } = Route.useRouteContext();
     const navigate = Route.useNavigate();
-    const router = useRouter();
     const { redirect, email: emailSearch } = Route.useSearch();
 
     const [email, setEmail] = useState(emailSearch ?? 'test@test.com');
@@ -47,20 +46,25 @@ function RouteComponent() {
                     password: password,
                 },
                 {
-                    onSuccess(context) {
-                        console.log('login successful', context);
+                    async onSuccess() {
+                        // fetch the session data
+                        const sessionData = await queryClient.fetchQuery({
+                            ...sessionQueryOptions,
+                            staleTime: 0, // force refetch
+                        });
+
+                        if (sessionData) {
+                            console.log('redirecting to', redirect ?? '/dashboard');
+                            navigate({ to: redirect ?? '/dashboard' });
+                        } else {
+                            setError('Failed to sign in');
+                        }
                     },
                     onError(error) {
                         setError(error.error.message ?? 'An unknown error occurred');
                     },
                 }
             );
-
-            // fetch the session data
-            await queryClient.fetchQuery(sessionQueryOptions);
-            console.log('redirecting to', redirect ?? '/dashboard');
-            // router.invalidate();
-            navigate({ to: redirect ?? '/dashboard' });
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An unknown error occurred');
         } finally {
