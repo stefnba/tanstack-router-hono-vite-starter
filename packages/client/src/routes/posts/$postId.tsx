@@ -10,6 +10,8 @@ export const Route = createFileRoute('/posts/$postId')({
 
         return { postId };
     },
+    pendingComponent: () => <div>Loading...</div>,
+    errorComponent: () => <div>Error</div>,
 });
 
 function RouteComponent() {
