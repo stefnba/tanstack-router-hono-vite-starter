@@ -4,7 +4,8 @@ import { StatusCode } from 'hono/utils/http-status';
 
 import { TQueryKeyString } from '@/lib/api/types';
 import { buildQueryKey } from '@/lib/api/utils';
-import { queryClientInstance } from '@/main';
+
+import { queryClientInstance } from './client';
 
 /**
  * Creates a pre-configured mutation options object for use with `useMutation`.

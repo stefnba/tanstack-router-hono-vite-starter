@@ -1,12 +1,16 @@
 import { apiClient } from '@/lib/api/client';
+import { createMutationOptions } from '@/lib/api/mutation';
 import { createQueryOptions } from '@/lib/api/query';
 
+const KEYS = {
+    POSTS: 'posts',
+    POST: 'post',
+} as const;
+
 export const posts = {
-    getMany: createQueryOptions(apiClient.posts.$get, 'posts', {
+    getMany: createQueryOptions(apiClient.posts.$get, KEYS.POSTS, {
         staleTime: 1000 * 60 * 1,
     }),
-    getOne: createQueryOptions(apiClient.posts[':postId'].$get, 'posts'),
-    // create: createQueryOptions(apiClient.posts.$post, 'posts'),
-    // update: createQueryOptions(apiClient.posts[':postId'].$put, 'posts'),
-    // delete: createQueryOptions(apiClient.posts[':postId'].$delete, 'posts'),
+    getOne: createQueryOptions(apiClient.posts[':postId'].$get, KEYS.POST),
+    create: createMutationOptions(apiClient.posts.$post, KEYS.POSTS),
 };

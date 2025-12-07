@@ -1,7 +1,15 @@
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 
+import { post } from '@server/db/tables';
+import { db } from '@server/lib/db';
+
 import { createHonoRouter } from '../lib/router';
+
+const postSchema = z.object({
+    title: z.string(),
+    content: z.string(),
+});
 
 const posts = [
     {
@@ -31,7 +39,7 @@ const posts = [
     },
 ];
 
-export const endopints = createHonoRouter({ isProtected: false })
+export const endopints = createHonoRouter({ isProtected: true })
     /**
      * Get a single post
      */
@@ -64,6 +72,34 @@ export const endopints = createHonoRouter({ isProtected: false })
         async (c) => {
             const { page = 1, limit = 10 } = c.req.valid('query') ?? {};
 
-            return c.json(posts.slice((page - 1) * limit, page * limit));
+            try {
+                const posts = await db.query.post.findMany({
+                    limit,
+                    offset: (page - 1) * limit,
+                });
+
+                return c.json(posts);
+            } catch (error) {
+                console.error(error);
+                return c.json({ error: 'Failed to get posts' }, 500);
+            }
         }
-    );
+    )
+    .post('/', zValidator('json', postSchema), async (c) => {
+        const { title, content } = c.req.valid('json');
+
+        const user = c.get('user');
+        if (!user) {
+            return c.json({ error: 'Unauthorized' }, 401);
+        }
+
+        try {
+            const newPost = await db
+                .insert(post)
+                .values({ id: crypto.randomUUID(), title, content, userId: user.id });
+            return c.json({ data: newPost }, 201);
+        } catch (error) {
+            console.error(error);
+            return c.json({ data: null, error: 'Failed to create post' }, 500);
+        }
+    });
