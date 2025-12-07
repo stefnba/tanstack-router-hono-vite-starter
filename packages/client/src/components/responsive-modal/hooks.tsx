@@ -1,9 +1,9 @@
 import { AnyRoute } from '@tanstack/react-router';
-import { useCallback, useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 
 import { MODAL_OPTIONS } from '@/components/responsive-modal/factory';
 import { ResponsiveModal } from '@/components/responsive-modal/responsive-modal';
-import { useSearchParamView } from '@/components/search-param-view';
+import { useSearchParamState } from '@/hooks/use-search-param-state';
 
 /**
  * A hook for managing responsive modal state synchronized with TanStack Router search parameters.
@@ -64,64 +64,16 @@ export const useResponsiveModal = <
     views?: TViews;
     defaultView?: TViews[number];
 }) => {
-    const searchParams = route.useSearch();
-    const navigate = route.useNavigate();
-
     const finalViews = (views ?? [MODAL_OPTIONS.enum.show]) as TViews;
 
-    const { View } = useSearchParamView({
+    // Use shared state logic
+    const { isOpen, open, changeView, close, toggle, View, currentView } = useSearchParamState({
         route,
         key,
         views: finalViews,
-        defaultView: defaultView,
+        defaultView,
+        optionsEnum: MODAL_OPTIONS,
     });
-
-    const currentView = searchParams?.[key];
-    const isOpen = currentView !== MODAL_OPTIONS.enum.hide;
-
-    // ================================
-    // Handlers
-    // ================================
-
-    const onOpenChange = useCallback(
-        (open: boolean) => {
-            navigate({
-                search: {
-                    ...searchParams,
-                    [key]: open ? MODAL_OPTIONS.enum.show : MODAL_OPTIONS.enum.hide,
-                },
-            });
-        },
-        [key, navigate, searchParams]
-    );
-
-    const onOpenChangeRef = useRef(onOpenChange);
-    onOpenChangeRef.current = onOpenChange;
-
-    const onOpen = useCallback(
-        (view: TViews[number] = defaultView || views?.[0] || MODAL_OPTIONS.enum.show) => {
-            navigate({
-                search: {
-                    ...searchParams,
-                    [key]: view,
-                },
-            });
-        },
-        [key, searchParams, navigate, defaultView, views]
-    );
-
-    /**
-     * Stable close handler that avoids recreating the modal component during view changes.
-     *
-     * Why this is needed:
-     * 1. `onOpenChange` depends on `searchParams` (to preserve other params), so it changes on every navigation/view change.
-     * 2. If we passed `onOpenChange` directly to `ResponsiveModal`, the modal would re-mount when switching views, causing a flicker.
-     * 3. By using a ref to hold the latest `onOpenChange` and a stable `onClose` callback, we break the dependency chain.
-     *    The `ResponsiveModal` only sees a stable `onClose` function and doesn't re-render/flicker when search params change.
-     */
-    const onClose = useCallback(() => {
-        onOpenChangeRef.current(false);
-    }, []);
 
     // ================================
     // Component
@@ -130,7 +82,7 @@ export const useResponsiveModal = <
     const ResponsiveModalComponent = useMemo(() => {
         const Component = (
             props: Omit<React.ComponentProps<typeof ResponsiveModal>, 'open' | 'onOpenChange'>
-        ) => <ResponsiveModal open={isOpen} onOpenChange={onClose} {...props} />;
+        ) => <ResponsiveModal open={isOpen} onOpenChange={close} {...props} />;
 
         return Object.assign(Component, {
             Header: ResponsiveModal.Header,
@@ -139,14 +91,14 @@ export const useResponsiveModal = <
             Content: ResponsiveModal.Content,
             Footer: ResponsiveModal.Footer,
         });
-    }, [isOpen, onClose]);
+    }, [isOpen, close]);
 
     return {
         isOpen,
-        open: onOpen,
-        changeView: onOpen,
-        close: onClose,
-        toggle: () => onOpenChangeRef.current(!isOpen),
+        open,
+        changeView,
+        close,
+        toggle,
         Modal: ResponsiveModalComponent,
         View,
         views,

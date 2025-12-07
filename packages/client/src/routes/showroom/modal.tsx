@@ -4,20 +4,20 @@ import { createModal } from '@/components/responsive-modal/factory';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 
-const modalSchema = createModal('hey-modal', ['view1', 'view2'], 'view1');
+const testModal = createModal('test-modal', ['create', 'update'], 'create');
 
 export const Route = createFileRoute('/showroom/modal')({
     component: RouteComponent,
-    validateSearch: modalSchema.schema,
+    validateSearch: testModal.schema,
     search: {
         // strip default values
-        middlewares: [stripSearchParams(modalSchema.defaultValues)],
+        middlewares: [stripSearchParams(testModal.defaultValues)],
     },
 });
 
 function RouteComponent() {
     const { Modal, open, close, changeView, View, currentView, views, defaultView } =
-        modalSchema.useResponsiveModal(Route);
+        testModal.useResponsiveModal(Route);
 
     return (
         <div>
@@ -34,12 +34,12 @@ function RouteComponent() {
                     <p>Default view: {defaultView}</p>
                     <Separator className="my-4" />
                     <div className="flex gap-2">
-                        <Button onClick={() => changeView('view1')}>Open view 1</Button>
-                        <Button onClick={() => changeView('view2')}>Open view 2</Button>
+                        <Button onClick={() => changeView('create')}>Open view 1</Button>
+                        <Button onClick={() => changeView('update')}>Open view 2</Button>
                     </div>
                     <Separator className="my-4" />
-                    <View viewToRender="view1">Modal content 1</View>
-                    <View viewToRender="view2">Modal content 2</View>
+                    <View viewToRender="create">Modal content 1</View>
+                    <View viewToRender="update">Modal content 2</View>
                 </Modal.Content>
                 <Modal.Footer>
                     <Button onClick={close}>Close</Button>
