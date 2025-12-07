@@ -1,0 +1,66 @@
+import 'dotenv/config';
+import { sql } from 'drizzle-orm';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+
+import * as dbTable from '../../src/db/tables';
+import { getEnvVariables } from '../../src/lib/env';
+
+// Import all feature schemas
+
+// Handle both default and named exports
+
+const { DATABASE_URL, NODE_ENV } = getEnvVariables();
+
+if (NODE_ENV !== 'development') {
+    throw new Error('This script can only be run in development mode');
+    process.exit(1);
+}
+
+const client = postgres(DATABASE_URL);
+
+const db = drizzle(client, { schema: dbTable, logger: false });
+
+async function reset() {
+    console.log('🗑️ Emptying the entire database');
+
+    // Get all table names from the combined schema
+    const tableNames = Object.values(dbTable)
+        .filter(
+            (table: any) => table && typeof table === 'object' && table[Symbol.for('drizzle:Name')]
+        )
+        .map((table: any) => table[Symbol.for('drizzle:Name')]);
+
+    if (tableNames.length === 0) {
+        console.log('⚠️ No tables found in schema');
+        return;
+    }
+
+    console.log(`🧨 Found ${tableNames.length} tables to drop:`, tableNames);
+
+    // Drop tables in reverse dependency order to avoid foreign key conflicts
+    const dropQueries = tableNames.map((tableName) =>
+        sql.raw(`DROP TABLE IF EXISTS "${tableName}" CASCADE;`)
+    );
+
+    console.log('🛜 Executing drop queries...');
+
+    await db.transaction(async (tx) => {
+        for (const query of dropQueries) {
+            try {
+                await tx.execute(query);
+                console.log(`✅ Dropped table successfully`);
+            } catch (error) {
+                console.warn(`⚠️ Failed to drop table:`, error);
+            }
+        }
+    });
+
+    console.log('✅ Database reset completed');
+    await client.end();
+}
+
+reset().catch((e) => {
+    console.error('❌ Database reset failed:', e);
+    process.exit(1);
+});
