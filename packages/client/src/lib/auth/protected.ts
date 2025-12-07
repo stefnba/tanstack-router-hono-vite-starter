@@ -27,6 +27,19 @@ export const ensureProtectedRoute = async (
 };
 
 /**
+ * Checks if the user is authenticated and returns true if they are, false if they are not
+ * @param context - The router context
+ * @returns True if the user is authenticated, false if they are not
+ */
+export const checkProtectedRoute = async (context: RouterContext) => {
+    const session = await getSessionData(context);
+    if (!session) {
+        return false;
+    }
+    return true;
+};
+
+/**
  */
 export const getSessionData = async (context: RouterContext) => {
     const session = await context.queryClient.ensureQueryData(sessionQueryOptions);
