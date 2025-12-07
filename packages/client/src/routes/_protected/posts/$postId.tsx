@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { apiEndpoints } from '@/api';
 
-export const Route = createFileRoute('/posts/$postId')({
+export const Route = createFileRoute('/_protected/posts/$postId')({
     component: RouteComponent,
     loader: async ({ context: { queryClient }, params: { postId } }) => {
         await queryClient.ensureQueryData(apiEndpoints.posts.getOne({ param: { postId } }));

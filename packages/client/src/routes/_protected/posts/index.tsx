@@ -7,7 +7,7 @@ import { apiEndpoints } from '@/api';
 import { useAppForm } from '@/components/form';
 import { Button } from '@/components/ui/button';
 
-export const Route = createFileRoute('/posts/')({
+export const Route = createFileRoute('/_protected/posts/')({
     validateSearch: zodValidator(
         z
             .object({
