@@ -2,12 +2,11 @@
     "extends": "../../tsconfig.json",
     "compilerOptions": {
         "types": ["bun-types"],
-        "rootDir": "src",
-        "outDir": "dist",
         "baseUrl": ".",
         "paths": {
-            "@server/*": ["./src/*"]
+            "@server/*": ["./src/*"],
+            "@shared/*": ["../shared/src/*"]
         }
     },
-    "include": ["src"]
+    "include": ["src", "../shared/src"]
 }
