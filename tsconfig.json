@@ -16,7 +16,8 @@
         "baseUrl": ".",
         "paths": {
             // Don't specify other paths, this willlikely cause your app to crash at runtime
-            "@app/*": ["packages/*/src"]
+            "@app/*": ["packages/*/src"],
+            "@shared/*": ["packages/shared/src/*"]
         }
     },
     "exclude": ["node_modules", "dist"]
