@@ -6,6 +6,42 @@ import { StatusCode } from 'hono/utils/http-status';
 import { TQueryKeyString } from '@/lib/api/types';
 import { buildQueryKey } from '@/lib/api/utils';
 
+/**
+ * Creates a factory function that generates strongly-typed `queryOptions` for TanStack Query,
+ * inferred directly from the Hono endpoint.
+ *
+ * This helper bridges Hono client endpoints with TanStack Query by:
+ * 1. Inferring types for parameters, response, and errors
+ * 2. Automatically generating consistent query keys
+ * 3. Handling 401 redirects and error parsing
+ * 4. Returning a factory that accepts endpoint params
+ *
+ * @template TEndpoint - The Hono endpoint function type
+ * @template TStatus - The expected success status code (default: 200)
+ *
+ * @param endpoint - The API endpoint function (e.g. `client.posts.$get`)
+ * @param defaultQueryKey - Base query key to use for this endpoint
+ * @param defaultOptions - Optional default options for the query
+ *
+ * @returns A function that takes endpoint params and returns `queryOptions`
+ *
+ * @example
+ * // Define the query options factory
+ * const getPosts = createQueryOptions(
+ *   client.posts.$get,
+ *   'posts',
+ *   { staleTime: 5000 }
+ * );
+ *
+ * // Use in component
+ * const { data } = useQuery(getPosts({
+ *   query: { page: '1' }
+ * }));
+ *
+ * // Use in loader
+ * loader: ({ context: { queryClient } }) =>
+ *   queryClient.ensureQueryData(getPosts({ ... }))
+ */
 export const createQueryOptions = <
     TEndpoint extends (args: InferRequestType<TEndpoint>) => Promise<Response>,
     TStatus extends StatusCode = 200,
