@@ -1,27 +1,38 @@
 import { createFileRoute, stripSearchParams } from '@tanstack/react-router';
+import z from 'zod';
 
 import { createModal } from '@/components/responsive-modal/factory';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 
-const testModal = createModal('test-modal', ['create', 'update'], 'create');
+const testModalWithViews = createModal('test-modal', ['create', 'update'], 'create');
+const testModalWithoutViews = createModal('test-modal-without-views', ['show']);
 
 export const Route = createFileRoute('/showroom/modal')({
     component: RouteComponent,
-    validateSearch: testModal.schema,
+    validateSearch: z.object({
+        ...testModalWithViews.schema.shape,
+        ...testModalWithoutViews.schema.shape,
+    }),
     search: {
         // strip default values
-        middlewares: [stripSearchParams(testModal.defaultValues)],
+        middlewares: [
+            stripSearchParams(testModalWithViews.defaultValues),
+            stripSearchParams(testModalWithoutViews.defaultValues),
+        ],
     },
 });
 
 function RouteComponent() {
     const { Modal, open, close, changeView, View, currentView, views, defaultView } =
-        testModal.useResponsiveModal(Route);
+        testModalWithViews.useResponsiveModal(Route);
+
+    const testModalNoViews = testModalWithoutViews.useResponsiveModal(Route);
 
     return (
         <div>
             <Button onClick={() => open()}>Open</Button>
+            <Button onClick={() => testModalNoViews.open()}>Open without views</Button>
 
             <Modal size="md">
                 <Modal.Header>
@@ -45,6 +56,20 @@ function RouteComponent() {
                     <Button onClick={close}>Close</Button>
                 </Modal.Footer>
             </Modal>
+
+            <testModalNoViews.Modal>
+                <testModalNoViews.Modal.Header>
+                    <testModalNoViews.Modal.Title>Modal without views</testModalNoViews.Modal.Title>
+                    <testModalNoViews.Modal.Description>
+                        Modal description without views
+                    </testModalNoViews.Modal.Description>
+                </testModalNoViews.Modal.Header>
+                <testModalNoViews.Modal.Content className="p-4">
+                    <testModalNoViews.View viewToRender="show">
+                        Modal content without views
+                    </testModalNoViews.View>
+                </testModalNoViews.Modal.Content>
+            </testModalNoViews.Modal>
         </div>
     );
 }

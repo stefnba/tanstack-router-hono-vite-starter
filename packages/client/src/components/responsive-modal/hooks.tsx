@@ -53,25 +53,27 @@ import { useSearchParamState } from '@/hooks/use-search-param-state';
 export const useResponsiveModal = <
     TRoute extends AnyRoute,
     const TViews extends readonly string[] = [typeof MODAL_OPTIONS.enum.show],
+    const TDefaultView extends TViews[number] = TViews[number],
 >({
     route,
     key,
     views,
-    defaultView = MODAL_OPTIONS.enum.show,
+    defaultView,
 }: {
     route: TRoute;
     key: keyof TRoute['types']['fullSearchSchemaInput'] & string;
     views?: TViews;
-    defaultView?: TViews[number];
+    defaultView?: TDefaultView;
 }) => {
     const finalViews = (views ?? [MODAL_OPTIONS.enum.show]) as TViews;
+    const finalDefaultView = (defaultView || MODAL_OPTIONS.enum.show) as TDefaultView;
 
     // Use shared state logic
     const { isOpen, open, changeView, close, toggle, View, currentView } = useSearchParamState({
         route,
         key,
         views: finalViews,
-        defaultView,
+        defaultView: finalDefaultView,
         optionsEnum: MODAL_OPTIONS,
     });
 
@@ -101,8 +103,8 @@ export const useResponsiveModal = <
         toggle,
         Modal: ResponsiveModalComponent,
         View,
-        views,
-        defaultView,
+        views: finalViews,
+        defaultView: finalDefaultView,
         currentView,
     };
 };

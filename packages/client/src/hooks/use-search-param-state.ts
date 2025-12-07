@@ -11,6 +11,7 @@ export const OPTION_HIDE = z.enum(['hide']);
 export const useSearchParamState = <
     TRoute extends AnyRoute,
     const TViews extends readonly string[],
+    const TDefaultView extends TViews[number] = TViews[number],
 >({
     route,
     key,
@@ -21,7 +22,7 @@ export const useSearchParamState = <
     route: TRoute;
     key: keyof TRoute['types']['fullSearchSchemaInput'] & string;
     views: TViews;
-    defaultView: TViews[number];
+    defaultView: TDefaultView;
     optionsEnum: z.ZodEnum<Readonly<Record<string, string>>>; // Expected enum with 'show' and 'hide' values
 }) => {
     const searchParams = route.useSearch();
@@ -95,5 +96,6 @@ export const useSearchParamState = <
         toggle,
         View,
         currentView,
+        defaultView,
     };
 };
