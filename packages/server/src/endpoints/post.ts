@@ -1,9 +1,10 @@
-import { zValidator } from '@hono/zod-validator';
 import { eq } from 'drizzle-orm';
+import { HTTPException } from 'hono/http-exception';
 import { z } from 'zod';
 
 import { post } from '@server/db/tables';
 import { db } from '@server/lib/db';
+import { createRouteHandler } from '@server/lib/router/route';
 
 import { createHonoRouter } from '../lib/router';
 
@@ -14,67 +15,90 @@ const postSchema = z.object({
 
 export const endopints = createHonoRouter({ isProtected: true })
     /**
-     * Get a single post
-     */
-    .get('/:postId', zValidator('param', z.object({ postId: z.string() })), async (c) => {
-        const { postId } = c.req.param();
-
-        const postData = await db.query.post.findFirst({
-            where: eq(post.id, postId),
-        });
-
-        if (!postData) {
-            return c.json({ error: 'Post not found' }, 404);
-        }
-
-        return c.json(postData);
-    })
-    /**
      * Get many posts
      */
     .get(
         '/',
-        zValidator(
-            'query',
-            z
-                .object({
-                    page: z.coerce.number().optional(),
-                    limit: z.coerce.number().optional(),
-                })
-                .partial()
-                .optional()
-        ),
-        async (c) => {
-            const { page = 1, limit = 10 } = c.req.valid('query') ?? {};
-
-            try {
+        createRouteHandler()
+            .validate({
+                param: z
+                    .object({
+                        postId: z.string().optional(),
+                    })
+                    .optional(),
+                // json: postSchema.optional(),
+                query: z
+                    .object({
+                        page: z.coerce.number().optional(),
+                        limit: z.coerce.number().optional(),
+                    })
+                    .partial()
+                    .optional(),
+            })
+            .withUser()
+            .handleQuery(async ({ validated }) => {
+                const { limit, page } = validated.query ?? {
+                    limit: 10,
+                    page: 0,
+                };
                 const posts = await db.query.post.findMany({
-                    limit,
-                    offset: (page - 1) * limit,
+                    where: eq(post.userId, validated.user.id),
+                    limit: limit,
+                    offset: page,
                 });
 
-                return c.json(posts);
-            } catch (error) {
-                console.error(error);
-                return c.json({ error: 'Failed to get posts' }, 500);
-            }
-        }
+                return posts;
+            })
     )
-    .post('/', zValidator('json', postSchema), async (c) => {
-        const { title, content } = c.req.valid('json');
+    /**
+     * Create a post
+     */
+    .post(
+        '/',
+        createRouteHandler()
+            .withUser()
+            .validate({
+                json: postSchema,
+            })
+            .handleMutation(async ({ validated }) => {
+                const { title, content } = validated.json;
 
-        const user = c.get('user');
-        if (!user) {
-            return c.json({ error: 'Unauthorized' }, 401);
-        }
+                const [newPost] = await db
+                    .insert(post)
+                    .values({
+                        id: crypto.randomUUID(),
+                        title,
+                        content,
+                        userId: validated.user.id,
+                    })
+                    .returning();
 
-        try {
-            const newPost = await db
-                .insert(post)
-                .values({ id: crypto.randomUUID(), title, content, userId: user.id });
-            return c.json({ data: newPost }, 201);
-        } catch (error) {
-            console.error(error);
-            return c.json({ data: null, error: 'Failed to create post' }, 500);
-        }
-    });
+                return newPost;
+            })
+    )
+    /**
+     * Get a single post
+     * Using the raw context to return the post data
+     */
+    .get(
+        '/:postId',
+        createRouteHandler()
+            .validate({
+                param: z.object({
+                    postId: z.string(),
+                }),
+            })
+            .handleQuery(async ({ validated }) => {
+                const { postId } = validated.param;
+
+                const postData = await db.query.post.findFirst({
+                    where: eq(post.id, postId),
+                });
+
+                if (!postData) {
+                    throw new HTTPException(404, { message: 'Post not found' });
+                }
+
+                return postData;
+            })
+    );
