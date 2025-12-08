@@ -1,10 +1,9 @@
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { HTTPException } from 'hono/http-exception';
 import { z } from 'zod';
 
 import { post } from '@server/db/tables';
 import { db } from '@server/lib/db';
-import { createRouteHandler } from '@server/lib/router/route';
 
 import { createHonoRouter } from '../lib/router';
 
@@ -13,34 +12,26 @@ const postSchema = z.object({
     content: z.string(),
 });
 
-export const endopints = createHonoRouter({ isProtected: true })
+const paginationSchema = z
+    .object({
+        page: z.union([z.string(), z.number()]).pipe(z.coerce.number()).default(1),
+        limit: z.union([z.string(), z.number()]).pipe(z.coerce.number()).default(10),
+    })
+    .optional();
+
+const router = createHonoRouter({ isProtected: true });
+export const endopints = router
     /**
      * Get many posts
      */
     .get(
         '/',
-        createRouteHandler()
-            .validate({
-                param: z
-                    .object({
-                        postId: z.string().optional(),
-                    })
-                    .optional(),
-                // json: postSchema.optional(),
-                query: z
-                    .object({
-                        page: z.coerce.number().optional(),
-                        limit: z.coerce.number().optional(),
-                    })
-                    .partial()
-                    .optional(),
+        router
+            .createUserEndpoint({
+                query: paginationSchema,
             })
-            .withUser()
             .handleQuery(async ({ validated }) => {
-                const { limit, page } = validated.query ?? {
-                    limit: 10,
-                    page: 0,
-                };
+                const { limit = 10, page = 0 } = validated.query ?? {};
                 const posts = await db.query.post.findMany({
                     where: eq(post.userId, validated.user.id),
                     limit: limit,
@@ -55,7 +46,8 @@ export const endopints = createHonoRouter({ isProtected: true })
      */
     .post(
         '/',
-        createRouteHandler()
+        router
+            .createEndpoint()
             .withUser()
             .validate({
                 json: postSchema,
@@ -82,17 +74,19 @@ export const endopints = createHonoRouter({ isProtected: true })
      */
     .get(
         '/:postId',
-        createRouteHandler()
-            .validate({
+        router
+
+            .createEndpoint({
                 param: z.object({
                     postId: z.string(),
                 }),
             })
+            .withUser()
             .handleQuery(async ({ validated }) => {
                 const { postId } = validated.param;
 
                 const postData = await db.query.post.findFirst({
-                    where: eq(post.id, postId),
+                    where: and(eq(post.id, postId), eq(post.userId, validated.user.id)),
                 });
 
                 if (!postData) {

@@ -1,4 +1,4 @@
-import { Context, Env, Input, ValidationTargets } from 'hono';
+import { Context, Env, Input } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { SuccessStatusCode } from 'hono/utils/http-status';
 import { JSONValue } from 'hono/utils/types';
@@ -8,7 +8,7 @@ import { TAuthUser, getUser } from '@server/lib/auth';
 import { TValidationObject } from '@server/lib/router/route/types';
 
 import { typedEntries } from '@shared/lib/utils';
-type TValidationObject = { [K in keyof ValidationTargets]?: TZodSchema };
+import { Prettify } from '@shared/types/utils';
 
 export class RouteHandler<E extends Env, P extends string, I extends Input> {
     private requireAuth: boolean = false;
@@ -38,11 +38,15 @@ export class RouteHandler<E extends Env, P extends string, I extends Input> {
      * ```
      */
     withUser() {
-        type WithUserInput = {
-            out: { user: Prettify<TAuthUser> };
+        type NewUserOut = { user: Prettify<TAuthUser> };
+
+        // Explicitly merge 'out' to include user
+        type MergedInput = {
+            in: I['in'];
+            out: Prettify<I['out'] & NewUserOut>;
         };
 
-        return new RouteHandler<E, P, I & WithUserInput>({
+        return new RouteHandler<E, P, MergedInput>({
             schemas: { ...this.schemas },
             requireAuth: true,
         });
@@ -60,17 +64,36 @@ export class RouteHandler<E extends Env, P extends string, I extends Input> {
      * })
      * ```
      */
-    validate<T extends TValidationObject>(schema: T) {
-        type SchemaToInput<T> = {
-            in: { [K in keyof T]: z.infer<T[K]> };
+    validate<T extends TValidationObject = Record<never, never>>(schema?: T) {
+        // 1. Define the new schema input/output structure
+        type NewSchema = {
+            in: { [K in keyof T]: z.input<T[K]> };
             out: { [K in keyof T]: z.output<T[K]> };
         };
 
-        return new RouteHandler<E, P, I & SchemaToInput<T>>({
+        // 2. Explicitly merge the 'in' and 'out' properties from previous 'I' and new 'NewSchema'
+        type MergedInput = {
+            in: Prettify<I['in'] & NewSchema['in']>;
+            out: Prettify<I['out'] & NewSchema['out']>;
+        };
+
+        // 3. Pass this cleaner, manually merged type to the new handler
+        return new RouteHandler<E, P, MergedInput>({
             schemas: { ...this.schemas, ...schema },
             requireAuth: this.requireAuth,
         });
     }
+    // validate<T extends TValidationObject = Record<never, never>>(schema?: T) {
+    //     type SchemaToInput<T> = {
+    //         in: Prettify<{ [K in keyof T]: z.input<T[K]> }>;
+    //         out: Prettify<{ [K in keyof T]: z.output<T[K]> }>;
+    //     };
+
+    //     return new RouteHandler<E, P, Prettify<I & Prettify<SchemaToInput<T>>>>({
+    //         schemas: { ...this.schemas, ...schema },
+    //         requireAuth: this.requireAuth,
+    //     });
+    // }
 
     private async prepareRequest(c: Context<E, P, I>): Promise<I['out']> {
         let validatedInputFinal: I['out'] = {};
