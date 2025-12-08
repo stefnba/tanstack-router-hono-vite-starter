@@ -6,7 +6,7 @@
         "packages/*"
     ],
     "scripts": {
-        "dev": "bun --filter '*' dev",
+        "dev": "bun --filter '*' --elide-lines=0 dev",
         "dev:client": "bun --filter @app/client dev",
         "dev:server": "bun --filter @app/server dev",
         "lint": "eslint .",
