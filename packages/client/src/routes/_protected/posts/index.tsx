@@ -21,8 +21,8 @@ export const Route = createFileRoute('/_protected/posts/')({
     loaderDeps: ({ search }) => ({ page: search?.page, limit: search?.limit }),
     loader: async ({ context: { queryClient }, deps: { page, limit } }) => {
         const options = {
-            page: page?.toString(),
-            limit: limit?.toString(),
+            page: page,
+            limit: limit,
         };
         // Ensure data is fetched/cached
         await queryClient.ensureQueryData(
