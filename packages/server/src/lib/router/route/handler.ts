@@ -5,12 +5,9 @@ import { JSONValue } from 'hono/utils/types';
 import z from 'zod';
 
 import { TAuthUser, getUser } from '@server/lib/auth';
+import { TValidationObject } from '@server/lib/router/route/types';
 
 import { typedEntries } from '@shared/lib/utils';
-import { Prettify } from '@shared/types/utils';
-
-type TZodSchema = z.ZodSchema;
-
 type TValidationObject = { [K in keyof ValidationTargets]?: TZodSchema };
 
 export class RouteHandler<E extends Env, P extends string, I extends Input> {
