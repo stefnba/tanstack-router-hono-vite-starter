@@ -62,8 +62,6 @@ export const createQueryOptions = <
         // Use custom key extractor or default extraction logic
         const queryKey = buildQueryKey({ defaultKey: defaultQueryKey, params });
 
-        console.log('queryKey', queryKey);
-
         return queryOptions<TResponse, TResponseError>({
             ...defaultOptions,
             queryKey: queryKey,
