@@ -27,6 +27,19 @@ export class RouteHandler<E extends Env, P extends string, I extends Input> {
         this.requireAuth = input.requireAuth;
     }
 
+    /**
+     * Require authentication for the route.
+     * This will add a `user` property to the validated input.
+     *
+     * Example:
+     * ```ts
+     * .withUser()
+     * .handleQuery(async ({ validated }) => {
+     *    const { user } = validated;
+     *    console.log(user.id);
+     * })
+     * ```
+     */
     withUser() {
         type WithUserInput = {
             out: { user: Prettify<TAuthUser> };
@@ -38,6 +51,18 @@ export class RouteHandler<E extends Env, P extends string, I extends Input> {
         });
     }
 
+    /**
+     * Validate the input using Zod schemas.
+     * This will add the validated data to the validated input.
+     *
+     * Example:
+     * ```ts
+     * .validate({
+     *    json: z.object({ title: z.string() }),
+     *    query: z.object({ page: z.coerce.number() })
+     * })
+     * ```
+     */
     validate<T extends TValidationObject>(schema: T) {
         type SchemaToInput<T> = {
             in: { [K in keyof T]: z.infer<T[K]> };
@@ -72,11 +97,13 @@ export class RouteHandler<E extends Env, P extends string, I extends Input> {
     }
 
     /**
-     * Handle a query request (GET)
+     * Handle a query request (GET).
+     * The handler should return the data directly.
+     * The response will be automatically wrapped in a JSON response with status 200.
      *
      * Example:
      * ```ts
-     * .handleQuery(async ({ c, validated }) => {
+     * .handleQuery(async ({ validated }) => {
      *    const { postId } = validated.param;
      *    const post = await db.query.post.findFirst({
      *        where: eq(post.id, postId),
@@ -88,6 +115,7 @@ export class RouteHandler<E extends Env, P extends string, I extends Input> {
     handleQuery<R extends JSONValue>(
         handler: ({ c, validated }: { c: Context<E, P, I>; validated: I['out'] }) => R | Promise<R>
     ) {
+        // Explicitly declare return type for correct client inference
         return async (c: Context<E, P, I>) => {
             const validatedInputFinal = await this.prepareRequest(c);
 
@@ -105,13 +133,15 @@ export class RouteHandler<E extends Env, P extends string, I extends Input> {
     }
 
     /**
-     * Handle a mutation request (POST, PUT, DELETE, PATCH)
+     * Handle a mutation request (POST, PUT, DELETE, PATCH).
+     * The handler should return the data directly.
+     * The response will be wrapped in a standard success envelope: `{ success: true, data: result }`.
      *
      * Example:
      * ```ts
-     * .handleMutation(async ({ c, validated }) => {
-     *    const { title, content } = validated.json;
-     *    const newPost = await db.insert(post).values({ title, content }).returning();
+     * .handleMutation(async ({ validated }) => {
+     *    const { title } = validated.json;
+     *    const newPost = await db.insert(post).values({ title }).returning();
      *    return newPost;
      * })
      * ```

@@ -3,7 +3,7 @@ import { Env, Input } from 'hono';
 import { RouteHandler } from '@server/lib/router/route/handler';
 
 /**
- * Create a new route handler that simplifies the creation of Honoendpoints.
+ * Create a new route handler that simplifies the creation of Hono endpoints.
  *
  * Example:
  * ```ts
