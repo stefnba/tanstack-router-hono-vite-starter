@@ -1,0 +1,62 @@
+import { Context } from 'hono';
+
+import { AppError } from '@server/lib/error/base';
+
+/**
+ * Global error handler for Hono applications
+ *
+ * Converts any error into a standardized BaseError using convertToAppError and returns
+ * a consistent JSON response. All errors are logged with appropriate stack traces and
+ * error chains based on their severity.
+ *
+ * Note: Validation errors (ZodError) are pre-handled by handleZodError and arrive here
+ * already converted to BaseError with validation-specific details.
+ *
+ * Error handling includes:
+ * - BaseError: Used as is (including pre-converted validation errors)
+ * - HTTPException: Converted to BaseError with original status
+ * - APIError: Converted to BaseError with better-auth context
+ * - Standard Error: Converted to BaseError with 500 status
+ * - Unknown values: Converted to BaseError with generic error message
+ *
+ * @param error - Any error thrown during request processing
+ * @param c - The Hono context
+ * @returns JSON response with error details and appropriate status code
+ */
+export const handleGlobalError = async (error: unknown, c: Context) => {
+    // get the user id from the context
+    const userId = c.get('user')?.id;
+
+    // convert any error to an AppError
+    const appError = AppError.fromUnknown(error);
+
+    /**
+     * Logging Strategy:
+     *
+     * ALL ENVIRONMENTS:
+     * - Constructor does NOT auto-log (removed for consistency)
+     * - Global handler logs ALL HTTP errors with full request context
+     * - Development: Formatted console output + JSON export
+     * - Production: Structured NDJSON logger with request context
+     *
+     * NON-HTTP ERRORS:
+     * - Explicitly logged where they occur (e.g., DB connection in checkDbConnection)
+     *
+     * IMPORTANT: Must await logging to prevent Hono context finalization errors
+     */
+    await appError.log(
+        {
+            method: c.req.method,
+            url: c.req.url,
+            userId,
+            status: appError.httpStatus,
+        },
+        {
+            includeChain: true,
+            includeStack: appError.httpStatus >= 500,
+        }
+    );
+
+    // directly return the response
+    return c.json(appError.toResponse(), appError.httpStatus);
+};

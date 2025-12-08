@@ -1,3 +1,5 @@
+import { nanoid } from 'nanoid';
+
 /**
  * Sleep for a given number of milliseconds
  * @param ms - The number of milliseconds to sleep
@@ -47,4 +49,21 @@ export function typedFromEntries<K extends PropertyKey, V>(
  */
 export function typedKeys<T extends object>(obj: T): Array<keyof T> {
     return Object.keys(obj) as Array<keyof T>;
+}
+
+/**
+ * Generates a short, unique ID
+ *
+ * Uses nanoid for collision-resistant IDs suitable for production use.
+ *
+ * @returns A unique ID (10 characters)
+ *
+ * @example
+ * ```typescript
+ * const errorId = generateUniqueId();
+ * // Result: "V1StGXR8_Z"
+ * ```
+ */
+export function generateUniqueId(length: number = 10): string {
+    return nanoid(length);
 }

@@ -11,6 +11,7 @@ import {
 } from '@server/endpoints';
 import { TAuthContext } from '@server/lib/auth';
 import { getEnvVariables } from '@server/lib/env';
+import { handleGlobalError } from '@server/lib/error/handlers';
 
 const { CLIENT_URL } = getEnvVariables();
 
@@ -46,10 +47,7 @@ app.use(
     })
 );
 
-app.onError((err, c) => {
-    console.error(err);
-    return c.json({ error: 'Internal Server Error' }, 500);
-});
+app.onError(handleGlobalError);
 
 // ================================
 // API Routes
