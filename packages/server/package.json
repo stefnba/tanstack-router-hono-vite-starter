@@ -4,7 +4,7 @@
     "main": "src/index.ts",
     "type": "module",
     "scripts": {
-        "dev": "bun run --watch src/index.ts",
+        "dev": "NODE_ENV=development bun run --watch src/index.ts",
         "db:push": "drizzle-kit push",
         "db:studio": "drizzle-kit studio",
         "db:generate": "drizzle-kit generate",
