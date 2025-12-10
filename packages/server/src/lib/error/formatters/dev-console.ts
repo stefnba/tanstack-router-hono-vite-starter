@@ -89,7 +89,7 @@ export function formatDevConsole(error: BaseError, requestData?: TErrorRequestDa
     const icon = getErrorIcon(error);
     const errorTitle = `${error.category || 'Error'}`;
 
-    lines.push(`${BOX_TOP} ${icon} ${errorTitle} ${createBoxLine('─')}`);
+    lines.push(`${BOX_TOP} ${icon}  ${errorTitle} ${createBoxLine('─')}`);
     lines.push(createBoxRow());
 
     lines.push(createBoxRow(`🔑 ${error.key} ${error.layer ? `[${error.layer}]` : ''}`));
@@ -99,15 +99,15 @@ export function formatDevConsole(error: BaseError, requestData?: TErrorRequestDa
     if (location.file !== 'unknown') {
         const locationStr = location.functionName
             ? location.line
-                ? `${location.functionName} (${location.file}:${location.line})`
+                ? `${location.functionName} (${location.file}:${location.line}${location.column ? `:${location.column}` : ''})`
                 : `${location.functionName} (${location.file})`
             : location.line
-              ? `${location.file}:${location.line}`
+              ? `${location.file}:${location.line}${location.column ? `:${location.column}` : ''}`
               : location.file;
         lines.push(createBoxRow(`📍 ${locationStr}`));
     }
 
-    lines.push(createBoxRow(`🆔 ${error.id}`));
+    // lines.push(createBoxRow(`🆔 ${error.id}`));
     lines.push(createBoxRow());
 
     const cleanMessage = error.message.split('\n')[0].trim();
@@ -141,10 +141,10 @@ export function formatDevConsole(error: BaseError, requestData?: TErrorRequestDa
             const location = extractLineAndColumn(item.location);
             const locationStr = location.functionName
                 ? location.line
-                    ? `${location.functionName} (${location.file}:${location.line})`
+                    ? `${location.functionName} (${location.file}:${location.line}${location.column ? `:${location.column}` : ''})`
                     : `${location.functionName} (${location.file})`
                 : location.line
-                  ? `${location.file}:${location.line}`
+                  ? `${location.file}:${location.line}${location.column ? `:${location.column}` : ''}`
                   : location.file;
 
             const treeMarker = isLast ? '└─' : '├─';
