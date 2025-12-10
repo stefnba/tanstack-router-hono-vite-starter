@@ -17,10 +17,14 @@
     "dependencies": {
         "@app/shared": "workspace:*",
         "@hono/zod-validator": "^0.7.5",
+        "@paralleldrive/cuid2": "^3.0.4",
         "better-auth": "^1.4.5",
         "dotenv": "^17.2.3",
         "drizzle-orm": "^0.44.7",
+        "drizzle-zod": "^0.8.3",
         "hono": "^4.10.7",
+        "i": "^0.3.7",
+        "npm": "^11.7.0",
         "pg": "^8.16.3",
         "postgres": "^3.4.7",
         "zod": "^4.1.13"
@@ -30,6 +34,7 @@
         "bun-types": "latest",
         "drizzle-kit": "^0.31.7",
         "tsx": "^4.21.0",
-        "typescript": "^5.4.0"
+        "typescript": "^5.4.0",
+        "vitest": "^4.0.15"
     }
 }
