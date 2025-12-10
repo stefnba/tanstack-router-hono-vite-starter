@@ -1,10 +1,12 @@
 import { UndefinedInitialDataOptions, queryOptions } from '@tanstack/react-query';
-import { redirect } from '@tanstack/react-router';
+import { isRedirect, redirect } from '@tanstack/react-router';
 import { InferRequestType, InferResponseType } from 'hono/client';
 import { StatusCode } from 'hono/utils/http-status';
 
 import { TQueryKeyString } from '@/lib/api/types';
 import { buildQueryKey } from '@/lib/api/utils';
+import { handleApiError, normalizeApiError } from '@/lib/error/handler';
+import { TErrorHandler } from '@/lib/error/types';
 
 /**
  * Creates a factory function that generates strongly-typed `queryOptions` for TanStack Query,
@@ -33,14 +35,25 @@ import { buildQueryKey } from '@/lib/api/utils';
  *   { staleTime: 5000 }
  * );
  *
- * // Use in component
- * const { data } = useQuery(getPosts({
- *   query: { page: '1' }
- * }));
+ * // Use in loader (Render-as-you-fetch)
+ * // Prefetch without awaiting to allow the route to render immediately
+ * loader: ({ context: { queryClient } }) => {
+ *   void queryClient.prefetchQuery(getPosts({ ... }));
+ *   return { ... };
+ * },
  *
- * // Use in loader
- * loader: ({ context: { queryClient } }) =>
- *   queryClient.ensureQueryData(getPosts({ ... }))
+ * // Use in component (Suspense)
+ * // Wrap component in <AsyncBoundary> to handle loading/error states
+ * <AsyncBoundary>
+ *   <MyComponent />
+ * </AsyncBoundary>
+ *
+ * function MyComponent() {
+ *   const { data } = useSuspenseQuery(getPosts({
+ *     query: { page: '1' }
+ *   }));
+ *   return <div>{data.title}</div>;
+ * }
  */
 export const createQueryOptions = <
     TEndpoint extends (args: InferRequestType<TEndpoint>) => Promise<Response>,
@@ -58,9 +71,12 @@ export const createQueryOptions = <
         'queryKey' | 'queryFn'
     >
 ) => {
-    return (params: InferRequestType<TEndpoint>) => {
+    return (params: InferRequestType<TEndpoint>, options?: { errorHandlers?: TErrorHandler }) => {
         // Use custom key extractor or default extraction logic
         const queryKey = buildQueryKey({ defaultKey: defaultQueryKey, params });
+
+        // Extract errorHandlers from options
+        const { errorHandlers } = options || {};
 
         return queryOptions<TResponse, TResponseError>({
             ...defaultOptions,
@@ -76,13 +92,25 @@ export const createQueryOptions = <
 
                         const errorData = await response.json();
 
-                        return Promise.reject(errorData);
+                        // Normalize the error
+                        const normalizedError = normalizeApiError(errorData);
+
+                        // Handle the error
+                        handleApiError(normalizedError, errorHandlers);
+
+                        // Reject the promise with the normalized error
+                        return Promise.reject(normalizedError);
                     }
 
                     return response.json();
                 } catch (error) {
-                    console.error('Query error:', error);
+                    // Re-throw redirects so TanStack Router can handle them
+                    if (isRedirect(error)) {
+                        throw error;
+                    }
 
+                    // For other errors, just reject the promise.
+                    // useSuspenseQuery will throw this to the nearest ErrorBoundary/AsyncBoundary.
                     return Promise.reject(error);
                 }
             },
