@@ -1,5 +1,6 @@
 import z, { ZodError } from 'zod';
 
+import { getEnvVariables } from '@server/lib/env';
 import { logger } from '@server/lib/logger';
 
 import { TAPIErrorResponse } from '@shared/lib/error/response';
@@ -171,7 +172,7 @@ export class BaseError extends Error {
         };
 
         // In development, include debug info for easier troubleshooting
-        if (process.env.NODE_ENV === 'development') {
+        if (getEnvVariables().NODE_ENV === 'development') {
             baseResponse.error.details = {
                 ...publicError?.details,
                 originalCode: this.key,

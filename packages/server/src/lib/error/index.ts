@@ -1,0 +1,1 @@
+export { appError } from './factories';
