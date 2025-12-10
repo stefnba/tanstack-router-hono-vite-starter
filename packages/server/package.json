@@ -11,7 +11,8 @@
         "db:migrate": "drizzle-kit migrate",
         "auth:generate": "bun x @better-auth/cli@latest generate --config ./src/lib/auth/config.ts",
         "db:reset": "bun run ./drizzle/scripts/reset.ts",
-        "start": "bun run db:migrate && bun src/index.ts"
+        "start": "bun run db:migrate && bun src/index.ts",
+        "typecheck": "tsc --noEmit"
     },
     "dependencies": {
         "@app/shared": "workspace:*",
