@@ -5,8 +5,9 @@
         "baseUrl": ".",
         "paths": {
             "@server/*": ["./src/*"],
+            "@test/*": ["./test/*"],
             "@shared/*": ["../shared/src/*"]
         }
     },
-    "include": ["src", "../shared/src"]
+    "include": ["src", "test", "../shared/src"]
 }
