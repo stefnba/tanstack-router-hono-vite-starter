@@ -31,9 +31,9 @@ export type THttpStatusCodeMapping = Record<string, ContentfulStatusCode>;
 // ============================================
 
 /**
- * Complete parameters required to construct an AppError
+ * Complete parameters required to construct an BaseError
  *
- * This is the full parameter set that AppError constructor accepts.
+ * This is the full parameter set that BaseError constructor accepts.
  * Contains all error metadata including HTTP status, public error info,
  * and internal error details.
  *
@@ -59,34 +59,6 @@ export type TAppErrorParams = Required<Omit<TErrorRegistryDefinition, 'layers'>>
         details?: Record<string, unknown>;
         i18nKey?: string;
     };
-};
-
-/**
- * Domain-specific error parameters
- *
- * Type helper for creating domain error classes (ValidationError, AuthError, etc.)
- * that automatically set the category and constrain code to that category's valid codes.
- *
- * @template C - Error category type (e.g., 'VALIDATION', 'AUTH')
- *
- * @example
- * ```typescript
- * // ValidationError only accepts VALIDATION codes
- * class ValidationError extends AppError {
- *   constructor(params: TDomainErrorParams<'VALIDATION'>) {
- *     super({ ...params, category: 'VALIDATION' });
- *   }
- * }
- *
- * // TypeScript will only allow: 'INVALID_INPUT' | 'MISSING_FIELD' | 'INVALID_FORMAT'
- * new ValidationError({ code: 'INVALID_INPUT', ... });
- * ```
- */
-export type TDomainErrorParams<C extends TErrorCategory> = Omit<
-    TAppErrorParams,
-    'category' | 'code'
-> & {
-    code: TErrorCodeByCategory<C>;
 };
 
 // ============================================
@@ -119,17 +91,17 @@ export type TErrorRequestData = {
  * Single error in an error chain
  *
  * Represents one error in a chain of errors (error → cause → cause → ...)
- * Contains both standard Error fields and AppError-specific metadata.
+ * Contains both standard Error fields and BaseError-specific metadata.
  *
  * @property depth - Position in chain (0 = latest error, higher = deeper in chain)
  * @property name - Error name/class (e.g., 'ValidationError', 'TypeError')
  * @property message - Error message
  * @property location - Source file location where error was thrown (e.g., 'src/features/user/queries.ts:42:12')
- * @property id - Unique error instance ID (only for AppError)
- * @property key - Full error key like 'VALIDATION.INVALID_INPUT' (only for AppError)
- * @property code - Error code like 'INVALID_INPUT' (only for AppError)
- * @property category - Error category like 'VALIDATION' (only for AppError)
- * @property layer - Application layer where error was thrown (only for AppError)
+ * @property id - Unique error instance ID (only for BaseError)
+ * @property key - Full error key like 'VALIDATION.INVALID_INPUT' (only for BaseError)
+ * @property code - Error code like 'INVALID_INPUT' (only for BaseError)
+ * @property category - Error category like 'VALIDATION' (only for BaseError)
+ * @property layer - Application layer where error was thrown (only for BaseError)
  */
 export type TErrorChainItem = {
     depth: number;
@@ -178,9 +150,9 @@ export interface ErrorChainContext {
 // ============================================
 
 /**
- * Serialized AppError for JSON responses and logging
+ * Serialized BaseError for JSON responses and logging
  *
- * Plain object representation of an AppError that can be safely
+ * Plain object representation of an BaseError that can be safely
  * serialized to JSON for API responses or log storage.
  *
  * @property name - Error name (e.g., 'ValidationError')

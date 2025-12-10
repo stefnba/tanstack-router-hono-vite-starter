@@ -1,22 +1,20 @@
 import z, { ZodError } from 'zod';
 
-import { TErrorCategory } from '@server/config/error-registry';
 import { logger } from '@server/lib/logger';
 
 import { TAPIErrorResponse } from '@shared/lib/error/response';
-import { generateUniqueId, typedEntries } from '@shared/lib/utils';
+import { generateUniqueId } from '@shared/lib/utils';
 
 import {
     ErrorChainContext,
     SerializedAppError,
     TAppErrorParams,
-    TDomainErrorParams,
     TErrorChainItem,
     TErrorLayer,
     TErrorRequestData,
 } from './types';
 
-export class AppError extends Error {
+export class BaseError extends Error {
     /**
      * The full qualified key of the error
      */
@@ -119,8 +117,8 @@ export class AppError extends Error {
     toObject(depth = 0): SerializedAppError {
         let serializedCause: SerializedAppError | { message: string; stack?: string } | undefined;
 
-        if (this.cause && depth < AppError.MAX_SERIALIZATION_DEPTH) {
-            if (AppError.isAppError(this.cause)) {
+        if (this.cause && depth < BaseError.MAX_SERIALIZATION_DEPTH) {
+            if (BaseError.isAppError(this.cause)) {
                 serializedCause = this.cause.toObject(depth + 1);
             } else if (this.cause instanceof Error) {
                 serializedCause = {
@@ -128,9 +126,9 @@ export class AppError extends Error {
                     stack: this.isExpected ? undefined : this.cause.stack,
                 };
             }
-        } else if (this.cause && depth >= AppError.MAX_SERIALIZATION_DEPTH) {
+        } else if (this.cause && depth >= BaseError.MAX_SERIALIZATION_DEPTH) {
             serializedCause = {
-                message: `[Max serialization depth ${AppError.MAX_SERIALIZATION_DEPTH} reached]`,
+                message: `[Max serialization depth ${BaseError.MAX_SERIALIZATION_DEPTH} reached]`,
             };
         }
 
@@ -186,38 +184,38 @@ export class AppError extends Error {
     }
 
     /**
-     * Type guard to check if an unknown value is a AppError
+     * Type guard to check if an unknown value is a BaseError
      *
      * @param error - The value to check
-     * @returns True if the value is a AppError
+     * @returns True if the value is a BaseError
      */
-    static isAppError(error: unknown): error is AppError {
-        return !!error && typeof error === 'object' && error instanceof AppError;
+    static isAppError(error: unknown): error is BaseError {
+        return !!error && typeof error === 'object' && error instanceof BaseError;
     }
 
     /**
-     * Converts an unknown error to a AppError.
+     * Converts an unknown error to a BaseError.
      *
      * It handles also the following error types:
-     * - AppError
+     * - BaseError
      * - ZodError
      * - Error
      *
      * @param error - The error to convert
      * @param details - Additional details to attach to the error
-     * @returns The converted AppError
+     * @returns The converted BaseError
      *
      * @example
      * ```typescript
      * try {
      *   await someOperation();
      * } catch (err) {
-     *   throw AppError.fromUnknown(err, { context: 'someOperation' });
+     *   throw BaseError.fromUnknown(err, { context: 'someOperation' });
      * }
      * ```
      */
-    static fromUnknown(error: unknown, details?: Record<string, unknown>): AppError {
-        if (AppError.isAppError(error)) {
+    static fromUnknown(error: unknown, details?: Record<string, unknown>): BaseError {
+        if (BaseError.isAppError(error)) {
             return error;
         }
 
@@ -228,14 +226,14 @@ export class AppError extends Error {
             httpStatus: 500,
         };
 
-        // Convert Zod error to AppError
+        // Convert Zod error to BaseError
         if (error instanceof ZodError) {
-            return AppError.fromZodError(error);
+            return BaseError.fromZodError(error);
         }
 
         // Create error directly to avoid circular dependency with factories
         if (error instanceof Error) {
-            return new AppError({
+            return new BaseError({
                 category: 'SERVER',
                 code: 'INTERNAL_ERROR',
                 httpStatus: 500,
@@ -248,7 +246,7 @@ export class AppError extends Error {
         }
 
         // Create error directly to avoid circular dependency with factories
-        return new AppError({
+        return new BaseError({
             category: 'SERVER',
             code: 'INTERNAL_ERROR',
             httpStatus: 500,
@@ -260,10 +258,10 @@ export class AppError extends Error {
     }
 
     /**
-     * Converts a Zod error to a AppError
+     * Converts a Zod error to a BaseError
      *
      * @param error - The Zod error to convert
-     * @returns A AppError
+     * @returns A BaseError
      */
     static fromZodError(error: ZodError) {
         const flattenedError = z.flattenError(error);
@@ -274,7 +272,7 @@ export class AppError extends Error {
             return `Field '${key}' is invalid: ${valueAsString}`; // todo improve error message
         })[0];
 
-        return new AppError({
+        return new BaseError({
             category: 'VALIDATION',
             code: 'INVALID_INPUT',
             httpStatus: 400,
@@ -294,13 +292,13 @@ export class AppError extends Error {
     }
 
     /**
-     * Type guard to check if an unknown value is a AppError
+     * Type guard to check if an unknown value is a BaseError
      *
      * @param error - The value to check
-     * @returns True if the value is a AppError
+     * @returns True if the value is a BaseError
      */
-    isAppError(error: unknown): error is AppError {
-        return !!error && typeof error === 'object' && error instanceof AppError;
+    isAppError(error: unknown): error is BaseError {
+        return !!error && typeof error === 'object' && error instanceof BaseError;
     }
 
     /**
@@ -388,7 +386,7 @@ export class AppError extends Error {
      *
      * @example
      * ```typescript
-     * const location = AppError.extractLocation(error.stack);
+     * const location = BaseError.extractLocation(error.stack);
      * // Returns: "at createFromRegistry (src/server/lib/error/base/factory/error-factory.ts:80:16)"
      * ```
      */
@@ -420,7 +418,7 @@ export class AppError extends Error {
      * Get structured context for logging/monitoring
      *
      * Builds a complete picture of the error chain with metadata for each error.
-     * Includes depth, names, messages, source locations, and AppError-specific fields (id, key, httpStatus).
+     * Includes depth, names, messages, source locations, and BaseError-specific fields (id, key, httpStatus).
      *
      * Chain depth numbering: 0 = latest error (top of chain), highest = root cause (bottom of chain)
      *
@@ -453,11 +451,11 @@ export class AppError extends Error {
                 depth,
                 name: current.name,
                 message: current.message,
-                location: AppError.extractLocation(current.stack),
+                location: BaseError.extractLocation(current.stack),
             };
 
-            // Add AppError-specific fields
-            if (AppError.isAppError(current)) {
+            // Add BaseError-specific fields
+            if (BaseError.isAppError(current)) {
                 entry.id = current.id;
                 entry.key = current.key;
                 entry.code = current.code;
@@ -542,14 +540,5 @@ export class AppError extends Error {
         } else {
             logger.error(this.message, { data: logData });
         }
-    }
-}
-
-export class BaseAppError<C extends TErrorCategory> extends AppError {
-    constructor(category: C, params: TDomainErrorParams<C>) {
-        super({
-            ...params,
-            category,
-        });
     }
 }

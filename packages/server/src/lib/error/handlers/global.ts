@@ -1,6 +1,6 @@
 import { Context } from 'hono';
 
-import { AppError } from '@server/lib/error/base';
+import { BaseError } from '@server/lib/error/base';
 
 /**
  * Global error handler for Hono applications
@@ -27,8 +27,8 @@ export const handleGlobalError = async (error: unknown, c: Context) => {
     // get the user id from the context
     const userId = c.get('user')?.id;
 
-    // convert any error to an AppError
-    const appError = AppError.fromUnknown(error);
+    // convert any error to an BaseError
+    const appError = BaseError.fromUnknown(error);
 
     /**
      * Logging Strategy:

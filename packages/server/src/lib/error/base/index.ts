@@ -1,8 +1,7 @@
-export { AppError } from './error';
+export { BaseError } from './error';
 
 export type {
     TAppErrorParams,
-    TDomainErrorParams,
     TErrorChainItem,
     TErrorLayer,
     TErrorRequestData,

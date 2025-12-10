@@ -1,5 +1,8 @@
 import { ErrorRegistry } from '@server/lib/error/registry/private';
-import { InferErrorCategoriesFromRegistry } from '@server/lib/error/registry/types';
+import {
+    InferErrorCategoriesFromRegistry,
+    InferErrorKeysFromRegistry,
+} from '@server/lib/error/registry/types';
 
 import { PUBLIC_ERROR_REGISTRY } from '@shared/config/error-registry';
 import { HTTP_STATUS_CODES } from '@shared/lib/error/config';
@@ -217,6 +220,19 @@ export const ERROR_REGISTRY = ErrorRegistry.fromObject({
         },
     },
 });
+
+/**
+ * Union type of all valid error keys in the registry
+ *
+ * Represents all possible error keys in dot-notation format (e.g., 'VALIDATION.INVALID_INPUT')
+ *
+ * @example
+ * ```typescript
+ * const key: TErrorKeys = 'VALIDATION.INVALID_INPUT'; // ✓ Valid
+ * const invalid: TErrorKeys = 'INVALID.KEY'; // ✗ Type error
+ * ```
+ */
+export type TErrorKeys = InferErrorKeysFromRegistry<typeof ERROR_REGISTRY.registry>;
 
 /**
  * Union type of all error categories in the registry
