@@ -1,10 +1,12 @@
-import { Context, Env, Input } from 'hono';
+import { Context, Env, Input, TypedResponse } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { SuccessStatusCode } from 'hono/utils/http-status';
 import { JSONValue } from 'hono/utils/types';
 import z from 'zod';
 
 import { TAuthUser, getUser } from '@server/lib/auth';
+import { BaseError } from '@server/lib/error/base';
+import { handleRouteError } from '@server/lib/error/handlers/route';
 import { TValidationObject } from '@server/lib/router/route/types';
 
 import { typedEntries } from '@shared/lib/utils';
@@ -40,10 +42,13 @@ export class RouteHandler<E extends Env, P extends string, I extends Input> {
     withUser() {
         type NewUserOut = { user: Prettify<TAuthUser> };
 
-        // Explicitly merge 'out' to include user
+        // Safely access properties or default to unknown
+        type CurrentIn = I extends { in: infer In } ? In : unknown;
+        type CurrentOut = I extends { out: infer Out } ? Out : unknown;
+
         type MergedInput = {
-            in: I['in'];
-            out: Prettify<I['out'] & NewUserOut>;
+            in: Prettify<CurrentIn>;
+            out: Prettify<CurrentOut & NewUserOut>;
         };
 
         return new RouteHandler<E, P, MergedInput>({
@@ -133,7 +138,8 @@ export class RouteHandler<E extends Env, P extends string, I extends Input> {
      * ```
      */
     handleQuery<R extends JSONValue>(
-        handler: ({ c, validated }: { c: Context<E, P, I>; validated: I['out'] }) => R | Promise<R>
+        handler: ({ c, validated }: { c: Context<E, P, I>; validated: I['out'] }) => R | Promise<R>,
+        status: Exclude<SuccessStatusCode, 204 | 205> = 200
     ) {
         // Explicitly declare return type for correct client inference
         return async (c: Context<E, P, I>) => {
@@ -141,13 +147,12 @@ export class RouteHandler<E extends Env, P extends string, I extends Input> {
 
             try {
                 const result = await handler({ c, validated: validatedInputFinal });
-                return c.json(result, 200);
+
+                // TypeScript tries to infer the full complex type chain through Hono's JSON response system, leading to infinite type recursion.
+                // But when we create an explicit response object with a defined structure, TypeScript can work with the concrete type.
+                return c.json(result, status) as TypedResponse<R, typeof status, 'json'>;
             } catch (error) {
-                console.error(error);
-                if (error instanceof HTTPException) {
-                    throw error;
-                }
-                throw new HTTPException(500, { message: 'Internal server error' });
+                return await handleRouteError(error, c);
             }
         };
     }
@@ -183,11 +188,7 @@ export class RouteHandler<E extends Env, P extends string, I extends Input> {
                     status
                 );
             } catch (error) {
-                console.error(error);
-                if (error instanceof HTTPException) {
-                    throw error;
-                }
-                throw new HTTPException(500, { message: 'Internal server error' });
+                return await handleRouteError(error, c);
             }
         };
     }
@@ -201,8 +202,6 @@ export class RouteHandler<E extends Env, P extends string, I extends Input> {
 
         for (const [target, schema] of typedEntries(this.schemas)) {
             let value: unknown;
-
-            // console.log('target', target);
 
             switch (target) {
                 case 'json':
@@ -231,17 +230,10 @@ export class RouteHandler<E extends Env, P extends string, I extends Input> {
             }
 
             if (value !== undefined && schema) {
-                // console.log('result', value);
                 const result = schema.safeParse(value);
 
                 if (!result.success) {
-                    // const zodError = z.prettifyError(result.error);
-                    // console.log('zodError', zodError);
-                    // console.log('zodError flattened');
-                    // todo improve error message
-                    throw new HTTPException(400, {
-                        message: JSON.stringify(z.flattenError(result.error).fieldErrors),
-                    });
+                    throw BaseError.fromZodError(result.error);
                 }
 
                 validatedInput[target] = result.data;
