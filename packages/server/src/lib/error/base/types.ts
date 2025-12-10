@@ -1,6 +1,5 @@
 import { ContentfulStatusCode } from 'hono/utils/http-status';
 
-import { TErrorCategory, TErrorCodeByCategory } from '@server/config/error-registry';
 import { TErrorRegistryDefinition } from '@server/lib/error/registry/types';
 import { TAppLayer } from '@server/types/app';
 

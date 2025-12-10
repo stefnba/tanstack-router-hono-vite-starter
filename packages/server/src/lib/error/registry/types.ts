@@ -108,3 +108,17 @@ export type FlattenedRegistryValue<R extends TErrorRegistryObject> = InferErrorD
     R,
     InferErrorKeys<R>
 >;
+
+/**
+ * Extract all possible error keys from a registry object
+ *
+ * Helper type that avoids circular reference to ErrorRegistry class.
+ * Use this when you need to extract keys from typeof ERROR_REGISTRY.registry
+ *
+ * @example
+ * ```typescript
+ * type Keys = InferErrorKeysFromRegistry<typeof ERROR_REGISTRY.registry>
+ * // Result: "AUTH.INVALID_TOKEN" | "VALIDATION.INVALID_FORMAT" | ...
+ * ```
+ */
+export type InferErrorKeysFromRegistry<R extends TErrorRegistryObject> = InferErrorKeys<R>;

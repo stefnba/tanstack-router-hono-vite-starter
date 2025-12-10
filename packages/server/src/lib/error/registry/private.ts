@@ -1,3 +1,5 @@
+import { TErrorCategory } from '@server/lib/error/registry/infer';
+
 import { typedEntries } from '@shared/lib/utils';
 
 import {
@@ -138,3 +140,11 @@ export class ErrorRegistry<const R extends TErrorRegistryObject> {
         return new ErrorRegistry(obj);
     }
 }
+
+/**
+ * Type-safe helper function to get the error category from a code
+ *
+ * @param category - The error category
+ * @returns The error category
+ */
+export const getErrorCategory = <C extends TErrorCategory>(category: C): C => category;
