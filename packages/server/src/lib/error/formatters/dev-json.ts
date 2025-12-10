@@ -15,25 +15,19 @@
  * - DEV_ERROR_EXPORT: Enable/disable export (default: true)
  * - DEV_ERROR_LOG_DIR: Directory for error files (default: logs/errors)
  * - DEV_ERROR_MAX_FILES: Maximum files to keep (default: 100)
- *
- * @example
- * ```typescript
- * await exportErrorToJson(error, {
- *   method: 'POST',
- *   url: '/api/users',
- *   status: 500,
- *   userId: 'user123'
- * });
- * // Creates: logs/errors/{errorId}.json
- * ```
  */
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { AppError } from '@server/lib/error/base';
+import { BaseError } from '@server/lib/error/base';
 import { TErrorRequestData } from '@server/lib/error/base';
 
-import { getTimestamp } from './utils';
+import {
+    extractLineAndColumn,
+    extractLocationFromStack,
+    formatSourceLocation,
+    getTimestamp,
+} from './utils';
 
 const DEFAULT_LOG_DIR = path.join(process.cwd(), 'logs', 'errors');
 const DEFAULT_MAX_FILES = 100;
@@ -134,7 +128,7 @@ async function cleanupOldErrors(): Promise<void> {
 }
 
 /**
- * Exports an AppError to a JSON file with full details for debugging
+ * Exports an BaseError to a JSON file with full details for debugging
  *
  * Creates a JSON file named {errorId}.json containing:
  * - Complete error object (from toObject())
@@ -146,7 +140,7 @@ async function cleanupOldErrors(): Promise<void> {
  * If export is disabled via DEV_ERROR_EXPORT env variable, this function returns immediately.
  * Errors during export are caught and logged to console but don't crash the application.
  *
- * @param error - The AppError to export
+ * @param error - The BaseError to export
  * @param requestData - Optional HTTP request context
  *
  * @example
@@ -162,7 +156,7 @@ async function cleanupOldErrors(): Promise<void> {
  * ```
  */
 export async function exportErrorToJson(
-    error: AppError,
+    error: BaseError,
     requestData?: TErrorRequestData
 ): Promise<void> {
     if (!isExportEnabled()) {
@@ -178,8 +172,13 @@ export async function exportErrorToJson(
         const filename = `${timestamp}_${error.id}.json`;
         const filepath = path.join(logDir, filename);
 
+        // Use relative paths for cleaner JSON output (matching console format)
+        const location = extractLineAndColumn(extractLocationFromStack(error.stack));
+        const locationStr = formatSourceLocation(location);
+
         const errorData = {
             ...error.toObject(),
+            location: locationStr === 'unknown' ? undefined : locationStr,
             request: requestData,
             chain: error.cause ? error.getChain() : undefined,
             exportedAt: now.toISOString(),

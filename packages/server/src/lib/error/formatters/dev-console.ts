@@ -1,5 +1,5 @@
 /**
- * Development Console Formatter for AppError
+ * Development Console Formatter for BaseError
  *
  * Provides a smart, compact, and visually appealing console output for errors in development mode.
  * Creates a boxed format with emoji indicators, error chain visualization, and key information
@@ -13,13 +13,8 @@
  * - Truncated messages for readability
  * - Link to full JSON export for deep debugging
  *
- * @example
- * ```typescript
- * const formatted = formatDevConsole(error, { method: 'GET', url: '/api/users', status: 500 });
- * console.error(formatted);
- * ```
  */
-import { AppError } from '@server/lib/error/base';
+import { BaseError } from '@server/lib/error/base';
 import { TErrorRequestData } from '@server/lib/error/base';
 
 import {
@@ -61,7 +56,7 @@ function createBoxRow(content: string = ''): string {
 }
 
 /**
- * Formats an AppError into a compact, developer-friendly console output
+ * Formats an BaseError into a compact, developer-friendly console output
  *
  * Creates a visually appealing boxed format with key error information:
  * - Error category and code with emoji icon
@@ -73,7 +68,7 @@ function createBoxRow(content: string = ''): string {
  * - Request context (method, URL, status, userId)
  * - Link to full JSON export
  *
- * @param error - The AppError to format
+ * @param error - The BaseError to format
  * @param requestData - Optional HTTP request context
  * @returns Formatted string ready for console.error()
  *
@@ -88,7 +83,7 @@ function createBoxRow(content: string = ''): string {
  * console.error(formatted);
  * ```
  */
-export function formatDevConsole(error: AppError, requestData?: TErrorRequestData): string {
+export function formatDevConsole(error: BaseError, requestData?: TErrorRequestData): string {
     const lines: string[] = [];
 
     const icon = getErrorIcon(error);

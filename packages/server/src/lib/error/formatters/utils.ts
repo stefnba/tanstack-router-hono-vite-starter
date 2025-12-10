@@ -1,4 +1,4 @@
-import { AppError } from '@server/lib/error/base';
+import { BaseError } from '@server/lib/error/base';
 import { TErrorChainItem } from '@server/lib/error/base';
 
 /**
@@ -41,6 +41,11 @@ export function cleanFilePath(path?: string): string | undefined {
         }
     }
 
+    const cwd = process.cwd();
+    if (path.startsWith(cwd)) {
+        return path.substring(cwd.length + 1); // +1 for trailing slash
+    }
+
     return path;
 }
 
@@ -64,12 +69,7 @@ export function extractLocationFromStack(stack?: string): string | undefined {
     if (!stack) return undefined;
 
     const rootDirectory = 'src/';
-    const skipPatterns = [
-        '/error/base/factory/',
-        '/error/factories',
-        'AppErrors.raise',
-        'BaseErrorFactory',
-    ];
+    const skipPatterns = ['/error/factories/', 'AppErrorFactory', 'buildErrorParams'];
 
     const lines = stack.split('\n');
     for (const line of lines) {
@@ -157,6 +157,31 @@ export function extractLineAndColumn(location?: string): {
 }
 
 /**
+ * Formats a location object into a readable string
+ *
+ * @param location - Location object from extractLineAndColumn
+ * @returns Formatted string (e.g. "at myFunction (src/file.ts:10:5)" or "src/file.ts:10:5")
+ */
+export function formatSourceLocation(location: {
+    file: string;
+    line?: number;
+    column?: number;
+    functionName?: string;
+}): string {
+    if (location.file === 'unknown') return 'unknown';
+
+    const fileLoc = location.line
+        ? `${location.file}:${location.line}${location.column ? `:${location.column}` : ''}`
+        : location.file;
+
+    if (location.functionName) {
+        return `at ${location.functionName} (${fileLoc})`;
+    }
+
+    return fileLoc;
+}
+
+/**
  * Formats an error chain item for display in error logs
  *
  * Creates a formatted string representation of an error in the error chain,
@@ -176,7 +201,7 @@ export function extractLineAndColumn(location?: string): {
  */
 export function formatErrorChainItem(item: TErrorChainItem, isRootCause: boolean = false): string {
     const location = extractLineAndColumn(item.location);
-    const locationStr = location.line ? `${location.file}:${location.line}` : location.file;
+    const locationStr = formatSourceLocation(location);
 
     const prefix = isRootCause ? '   └─' : '   ├─';
     const marker = isRootCause ? ' (root cause)' : '';
@@ -207,7 +232,7 @@ export function truncateMessage(message: string, maxLength: number = 100): strin
 /**
  * Returns an appropriate emoji icon for an error based on its category
  *
- * @param error - The AppError to get an icon for
+ * @param error - The BaseError to get an icon for
  * @returns Emoji icon representing the error category
  *
  * @example
@@ -216,7 +241,7 @@ export function truncateMessage(message: string, maxLength: number = 100): strin
  * getErrorIcon(dbError) // Returns: '🗄️'
  * ```
  */
-export function getErrorIcon(error: AppError): string {
+export function getErrorIcon(error: BaseError): string {
     const category = error.category?.toUpperCase();
 
     switch (category) {
