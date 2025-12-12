@@ -1,7 +1,8 @@
 import { QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { Outlet, createRootRouteWithContext, useLoaderData } from '@tanstack/react-router';
+import { Outlet, createRootRouteWithContext } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+import { Toaster } from "@/components/ui/sonner"
 
 import { Header } from '@/components/layout/header';
 import { checkProtectedRoute } from '@/lib/auth/protected';
@@ -17,6 +18,7 @@ const RootLayout = () => {
             <Header isAuthenticated={isAuthenticated} />
             <hr />
             <Outlet />
+            <Toaster />
             <ReactQueryDevtools />
             <TanStackRouterDevtools />
         </>
