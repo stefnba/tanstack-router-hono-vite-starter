@@ -4,11 +4,13 @@ import { StatusCode } from 'hono/utils/http-status';
 
 import { TQueryKeyString } from '@/lib/api/types';
 import { buildQueryKey } from '@/lib/api/utils';
+import { handleApiError, normalizeApiError } from '@/lib/error/handler';
+import { TErrorHandler } from '@/lib/error/types';
 
 import { queryClientInstance } from './client';
 
 /**
- * Creates a pre-configured mutation options object for use with `useMutation`.
+ * Creates a factory function that generates strongly-typed `mutationOptions` for TanStack Query,
  * automatically inferring types from the Hono endpoint.
  *
  * This helper simplifies creating type-safe mutations by:
@@ -34,7 +36,11 @@ import { queryClientInstance } from './client';
  * );
  *
  * // Use in component
- * const mutation = useMutation(createPost);
+ * const mutation = useMutation(createPost({
+ *   errorHandlers: {
+ *     default: (error) => toast.error(error.message)
+ *   }
+ * }));
  * mutation.mutate({ json: { title: 'Hello' } });
  */
 export const createMutationOptions = <
@@ -82,7 +88,7 @@ export const createMutationOptions = <
                 });
             }
 
-            return response.json() as Promise<TResponse>;
+            return response.json();
         },
     };
 };
