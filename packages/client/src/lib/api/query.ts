@@ -3,7 +3,9 @@ import { isRedirect, redirect } from '@tanstack/react-router';
 import { InferRequestType, InferResponseType } from 'hono/client';
 import { StatusCode } from 'hono/utils/http-status';
 
-import { TQueryKeyString } from '@/lib/api/types';
+import { ErrorStatusCode } from '@shared/lib/error/types';
+
+import { AnyEndpoint, TQueryKeyString } from '@/lib/api/types';
 import { buildQueryKey } from '@/lib/api/utils';
 import { handleApiError, normalizeApiError } from '@/lib/error/handler';
 import { TErrorHandler } from '@/lib/error/types';
@@ -56,13 +58,10 @@ import { TErrorHandler } from '@/lib/error/types';
  * }
  */
 export const createQueryOptions = <
-    TEndpoint extends (args: InferRequestType<TEndpoint>) => Promise<Response>,
+    TEndpoint extends AnyEndpoint,
     TStatus extends StatusCode = 200,
     TResponse = InferResponseType<TEndpoint, TStatus>,
-    TResponseError = InferResponseType<
-        TEndpoint,
-        400 | 401 | 403 | 404 | 409 | 422 | 429 | 500 | 502
-    >,
+    TResponseError = InferResponseType<TEndpoint, ErrorStatusCode>,
 >(
     endpoint: TEndpoint,
     defaultQueryKey?: TQueryKeyString,
