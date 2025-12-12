@@ -1,11 +1,14 @@
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
-import { Link, createFileRoute, useSearch } from '@tanstack/react-router';
+import { Link, createFileRoute } from '@tanstack/react-router';
 import { zodValidator } from '@tanstack/zod-adapter';
+import React from 'react';
 import { z } from 'zod';
 
 import { apiEndpoints } from '@/api';
+import { AsyncBoundary } from '@/components/async-boundary';
 import { useAppForm } from '@/components/form';
 import { Button } from '@/components/ui/button';
+import { notification } from '@/lib/notification';
 
 export const Route = createFileRoute('/_protected/posts/')({
     validateSearch: zodValidator(
@@ -19,13 +22,13 @@ export const Route = createFileRoute('/_protected/posts/')({
     ),
     component: RouteComponent,
     loaderDeps: ({ search }) => ({ page: search?.page, limit: search?.limit }),
-    loader: async ({ context: { queryClient }, deps: { page, limit } }) => {
+    loader: ({ context: { queryClient }, deps: { page, limit } }) => {
         const options = {
             page: page,
             limit: limit,
         };
-        // Ensure data is fetched/cached
-        await queryClient.ensureQueryData(
+
+        queryClient.prefetchQuery(
             apiEndpoints.posts.getMany({
                 query: options,
             })
@@ -34,21 +37,51 @@ export const Route = createFileRoute('/_protected/posts/')({
         return { options };
     },
     pendingComponent: () => <div>Loading...</div>,
-    // errorComponent: () => <div>Error</div>,
 });
 
-function RouteComponent() {
+const PostList = () => {
     const { options } = Route.useLoaderData();
     const postsQuery = useSuspenseQuery(apiEndpoints.posts.getMany({ query: options }));
-
-    const search = useSearch({ from: Route.id });
-
-    const navigate = Route.useNavigate();
     const posts = postsQuery.data ?? [];
 
-    const createPostMutation = useMutation(apiEndpoints.posts.create);
+    return (
+        <div className="space-y-2">
+            {posts.map((post) => (
+                <div className="border p-2 rounded-md" key={post.id}>
+                    <Link
+                        className="text-blue-500 hover:underline"
+                        to={`/posts/$postId`}
+                        params={{ postId: post.id.toString() }}
+                    >
+                        {post.title}
+                    </Link>
+                    <p className="text-sm text-gray-500">{post.content}</p>
+                </div>
+            ))}
+        </div>
+    );
+};
 
-    const { Input, Form, SubmitButton } = useAppForm({
+function RouteComponent() {
+    const navigate = Route.useNavigate();
+
+    const createPostMutation = useMutation(
+        apiEndpoints.posts.create({
+            errorHandlers: {
+                default: (error) => {
+                    notification.error(error.error.message);
+                },
+            },
+            onSuccess: () => {
+                notification.success('Post created successfully');
+                // notification.info('This is an info notification');
+                // notification.warning('This is a warning notification');
+                // notification.error('This is an error notification');
+            },
+        })
+    );
+
+    const { Input, Form, SubmitButton, form } = useAppForm({
         schema: z.object({
             title: z.string().min(1),
             content: z.string().min(1),
@@ -62,7 +95,8 @@ function RouteComponent() {
                 { json: value },
                 {
                     onSuccess: () => {
-                        alert('Post created successfully');
+                        // alert('Post created successfully');
+                        form.reset();
                     },
                     onError: (error) => {
                         console.error('Create post error:', error);
@@ -89,18 +123,9 @@ function RouteComponent() {
                     Show 5 posts
                 </Button>
             </div>
-            {posts.slice(0, 10).map((post) => (
-                <div className="border p-2 rounded-md" key={post.id}>
-                    <Link
-                        className="text-blue-500 hover:underline"
-                        to={`/posts/$postId`}
-                        params={{ postId: post.id.toString() }}
-                    >
-                        {post.title}
-                    </Link>
-                    <p className="text-sm text-gray-500">{post.content}</p>
-                </div>
-            ))}
+            <AsyncBoundary resourceName="Posts">
+                <PostList />
+            </AsyncBoundary>
         </div>
     );
 }
