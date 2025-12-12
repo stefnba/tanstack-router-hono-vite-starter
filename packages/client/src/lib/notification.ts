@@ -1,3 +1,7 @@
+/**
+ * Notification library using Sonner
+ * Styles taken from https://shadcnstudio.com/docs/components/sonner
+ */
 import type React from 'react';
 import { type ExternalToast, toast as sonnerToast } from 'sonner';
 
