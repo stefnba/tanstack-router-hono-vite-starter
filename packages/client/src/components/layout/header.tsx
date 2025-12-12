@@ -16,6 +16,9 @@ export const Header = ({ isAuthenticated }: HeaderProps) => {
                 <Link to="/about" className="[&.active]:font-bold">
                     About
                 </Link>
+                <Link to="/showroom" className="[&.active]:font-bold">
+                    Showroom
+                </Link>
                 {isAuthenticated ? (
                     <>
                         <Link to="/posts" className="[&.active]:font-bold">
