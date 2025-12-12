@@ -43,6 +43,12 @@
         "files.insertFinalNewline": true,
         "files.trimTrailingWhitespace": true,
 
+        // Markdown Linting
+        "markdownlint.config": {
+            "MD007": false, // Disable list indentation check (Prettier handles this)
+            "MD013": false, // Disable line length check (Prettier handles this)
+        },
+
         // TypeScript
         "typescript.tsdk": "node_modules/typescript/lib",
         "typescript.enablePromptUseWorkspaceTsdk": true,
