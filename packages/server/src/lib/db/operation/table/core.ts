@@ -18,9 +18,7 @@ import type {
 } from 'drizzle-orm/pg-core';
 
 import { db } from '@server/lib/db';
-import { GetTableColumnDefinitions, GetTableColumnKeys } from '@server/lib/db/drizzle';
-import { InferTableTypes } from '@server/lib/db/drizzle/types';
-import { withDbQuery } from '@server/lib/db/query/handler';
+import { withDbQuery } from '@server/lib/db/operation/handler';
 import {
     TBooleanFilter,
     TOnConflict,
@@ -28,9 +26,11 @@ import {
     TPagination,
     TStandardTableOperation,
     TValidTableForFrom,
-} from '@server/lib/db/query/table-operations/types';
-import { withFilters, withOrdering, withPagination } from '@server/lib/db/query/utils';
+} from '@server/lib/db/operation/table/types';
+import { withFilters, withOrdering, withPagination } from '@server/lib/db/operation/utils';
 
+import { GetTableColumnDefinitions, GetTableColumnKeys } from '@shared/lib/db/drizzle';
+import { InferTableTypes } from '@shared/lib/db/drizzle/types';
 import { typedKeys } from '@shared/lib/utils';
 
 /**

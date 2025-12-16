@@ -1,7 +1,7 @@
 import { SQL, Table, and, asc, desc } from 'drizzle-orm';
 import { PgSelect } from 'drizzle-orm/pg-core';
 
-import { TOrderBy } from '@server/lib/db/query/table-operations/types';
+import { TOrderBy } from '@server/lib/db/operation/table/types';
 
 /**
  * Helper function to add pagination to a query
