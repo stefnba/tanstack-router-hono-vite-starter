@@ -8,6 +8,7 @@ import { apiEndpoints } from '@/api';
 import { AsyncBoundary } from '@/components/async-boundary';
 import { useAppForm } from '@/components/form';
 import { Button } from '@/components/ui/button';
+import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@/components/ui/item';
 import { notification } from '@/lib/notification';
 
 export const Route = createFileRoute('/_protected/posts/')({
@@ -42,21 +43,44 @@ export const Route = createFileRoute('/_protected/posts/')({
 const PostList = () => {
     const { options } = Route.useLoaderData();
     const postsQuery = useSuspenseQuery(apiEndpoints.posts.getMany({ query: options }));
+    const deletePostMutation = useMutation(
+        apiEndpoints.posts.delete({
+            errorHandlers: {
+                default: (error) => {
+                    notification.error(error.error.message);
+                },
+            },
+            onSuccess: () => {
+                notification.success('Post deleted successfully');
+            },
+        })
+    );
     const posts = postsQuery.data ?? [];
 
     return (
-        <div className="space-y-2">
+        <div className="space-y-2 max-w-2xl">
             {posts.map((post) => (
-                <div className="border p-2 rounded-md" key={post.id}>
-                    <Link
-                        className="text-blue-500 hover:underline"
-                        to={`/posts/$postId`}
-                        params={{ postId: post.id.toString() }}
-                    >
-                        {post.title}
+                <Item asChild variant="outline" key={post.id}>
+                    <Link to={`/posts/$postId`} params={{ postId: post.id }}>
+                        <ItemContent>
+                            <ItemTitle>{post.title}</ItemTitle>
+                            <ItemDescription>{post.content}</ItemDescription>
+                        </ItemContent>
+                        <ItemActions>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    deletePostMutation.mutate({ param: { postId: post.id } });
+                                }}
+                            >
+                                Delete
+                            </Button>
+                        </ItemActions>
                     </Link>
-                    <p className="text-sm text-gray-500">{post.content}</p>
-                </div>
+                </Item>
             ))}
         </div>
     );
@@ -114,7 +138,7 @@ function RouteComponent() {
                 <Input name="content" label="Content" required />
                 <SubmitButton className="">Create Post</SubmitButton>
             </Form>
-            <h1 className="text-lg font-medium">Test Backend API Calls with Posts</h1>
+            <h1 className="text-lg font-medium">Posts</h1>
             <div className="flex gap-2">
                 <Button variant="outline" onClick={() => navigate({ search: { limit: 2 } })}>
                     Show 2 posts

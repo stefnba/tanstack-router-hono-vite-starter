@@ -4,6 +4,8 @@ import { z } from 'zod';
 
 import { post } from '@server/db/tables';
 import { db } from '@server/lib/db';
+import { appError } from '@server/lib/error';
+import { postQueries } from '@server/queries/post';
 
 import { createHonoRouter } from '../lib/router';
 
@@ -31,12 +33,22 @@ export const endopints = router
                 query: paginationSchema,
             })
             .handleQuery(async ({ validated }) => {
+                // return appError.server('INTERNAL_ERROR').throw();
                 const { limit = 10, page = 0 } = validated.query ?? {};
-                const posts = await db.query.post.findMany({
-                    where: eq(post.userId, validated.user.id),
-                    limit: limit,
-                    offset: page,
+
+                const posts = await postQueries.getManyRecords({
+                    identifiers: [{ field: 'userId', value: validated.user.id }],
+                    pagination: {
+                        page,
+                        pageSize: limit,
+                    },
                 });
+
+                // const posts = await db.query.post.findMany({
+                //     where: eq(post.userId, validated.user.id),
+                //     limit: limit,
+                //     offset: page,
+                // });
 
                 return posts;
             })
@@ -53,17 +65,17 @@ export const endopints = router
                 json: postSchema,
             })
             .handleMutation(async ({ validated }) => {
+                // return appError.server('INTERNAL_ERROR').throw();
+
                 const { title, content } = validated.json;
 
-                const [newPost] = await db
-                    .insert(post)
-                    .values({
-                        id: crypto.randomUUID(),
+                const newPost = await postQueries.createRecord({
+                    data: {
                         title,
                         content,
                         userId: validated.user.id,
-                    })
-                    .returning();
+                    },
+                });
 
                 return newPost;
             })
@@ -85,8 +97,11 @@ export const endopints = router
             .handleQuery(async ({ validated }) => {
                 const { postId } = validated.param;
 
-                const postData = await db.query.post.findFirst({
-                    where: and(eq(post.id, postId), eq(post.userId, validated.user.id)),
+                const postData = await postQueries.getFirstRecord({
+                    identifiers: [
+                        { field: 'id', value: postId },
+                        { field: 'userId', value: validated.user.id },
+                    ],
                 });
 
                 if (!postData) {
@@ -94,5 +109,27 @@ export const endopints = router
                 }
 
                 return postData;
+            })
+    )
+    .delete(
+        '/:postId',
+        router
+            .createEndpoint({
+                param: z.object({
+                    postId: z.string(),
+                }),
+            })
+            .withUser()
+            .handleMutation(async ({ validated }) => {
+                const { postId } = validated.param;
+
+                const deletedPost = await postQueries.deleteRecord({
+                    identifiers: [
+                        { field: 'id', value: postId },
+                        { field: 'userId', value: validated.user.id },
+                    ],
+                });
+
+                return deletedPost;
             })
     );

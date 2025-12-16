@@ -13,4 +13,5 @@ export const posts = {
     }),
     getOne: createQueryOptions(apiClient.posts[':postId'].$get, KEYS.POST),
     create: createMutationOptions(apiClient.posts.$post, KEYS.POSTS),
+    delete: createMutationOptions(apiClient.posts[':postId'].$delete, KEYS.POSTS),
 };
