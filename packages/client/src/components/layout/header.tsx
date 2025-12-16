@@ -22,10 +22,10 @@ export const Header = ({ isAuthenticated }: HeaderProps) => {
                 {isAuthenticated ? (
                     <>
                         <Link to="/posts" className="[&.active]:font-bold">
-                            Posts (Protected)
+                            Posts
                         </Link>
                         <Link to="/dashboard" className="[&.active]:font-bold">
-                            Dashboard (protected)
+                            Dashboard
                         </Link>
                         <Link to="/auth/status" className="[&.active]:font-bold">
                             Auth Status
