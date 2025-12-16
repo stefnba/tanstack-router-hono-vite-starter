@@ -1,0 +1,62 @@
+---
+globs: packages/client/**
+alwaysApply: false
+---
+
+# Client Rules
+
+## General Context
+
+- This is a React application using Vite.
+- **Routing:** TanStack Router (File-based routing).
+- **State/Fetching:** TanStack Query (React Query).
+- **Forms:** TanStack Form (with Zod validation).
+- **Styling:** Tailwind CSS v4.
+- **UI Library:** Shadcn UI (Radix Primitives + Tailwind).
+- **API:** Hono RPC (Typed client).
+
+## TypeScript
+
+- **Strict Typing:** Avoid `any` and `as` assertions. Prefer narrowing types or using generics.
+- **Zod:** Use Zod for schema validation, especially for API responses and Forms.
+
+## Routing (TanStack Router)
+
+- **Location:** All routes are defined in `src/routes`.
+- **File Structure:** Follow the `__root.tsx` and file-based routing conventions (e.g., `posts/index.tsx`, `posts/$postId.tsx`).
+- **Loaders:** Use route `loader`s for data fetching requirements to ensure data is present before rendering.
+- **Navigation:** Use the typed `Link` component or `useNavigate` hook. Avoid hardcoded string paths.
+
+## Components & Styling
+
+- **Shadcn UI:**
+    - Use components from `src/components/ui`.
+    - If a component is missing, check if it needs to be added via CLI or if a similar one exists.
+
+- **Tailwind v4:**
+    - Use utility classes for styling.
+    - Avoid `style` props.
+    - Use `cn()` (clsx + tailwind-merge) for conditional class names.
+    - **Important:** We are using Tailwind v4. Configuration is largely automatic via CSS.
+
+## Forms
+
+- **Strict Requirement:** MUST use the custom form wrappers located in `src/components/form`.
+- **Components:**
+    - `FormInput`, `FormSelect`, `FormTextarea`, `FormSwitch`, `FormCheckbox`, `FormRadioGroup`.
+- **Hook:** Use `useAppForm` for form instantiation.
+- **Validation:** Always define a Zod schema for form validation.
+
+## Data Fetching (TanStack Query + Hono RPC)
+
+- **API Client:** Use the typed Hono client exported from `src/lib/api`.
+- **Query Keys:** Define strict query keys (preferably using a factory pattern or constants) to ensure proper caching and invalidation.
+- **Mutations:** Use `useMutation` for side effects. Invalidate relevant queries on success.
+
+## Directory Structure
+
+- `src/routes`: Application routes.
+- `src/components/ui`: Reusable UI components (Shadcn).
+- `src/components/form`: Form-specific wrappers.
+- `src/lib/api`: API client configuration.
+- `src/hooks`: Custom React hooks.

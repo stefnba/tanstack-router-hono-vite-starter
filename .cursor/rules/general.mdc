@@ -1,0 +1,45 @@
+---
+alwaysApply: true
+---
+
+# General Rules
+
+## Monorepo Structure
+
+- **Structure:**
+    - `packages/client`: Frontend application (Vite + React).
+    - `packages/server`: Backend API (Hono + Bun).
+    - `packages/shared`: Shared code (Types, Schemas, Utils).
+- **Shared Code:**
+    - ANY logic, types, constants, or Zod schemas used by both client and server MUST be placed in `packages/shared`.
+    - Access shared code via the `@shared/*` alias.
+- **Dependencies:**
+    - Do not import `packages/server` runtime code into `packages/client`. Type-only imports are allowed.
+    - Do not import `packages/client` code into `packages/server`.
+
+## TypeScript & Code Style
+
+- **Strict Typing:**
+    - Avoid `any` and `as` assertions.
+    - Use generics and type narrowing.
+    - Ensure no type errors exist after changes (`bun run typecheck` or IDE check).
+- **Imports:**
+    - Use absolute paths/aliases over relative paths where possible:
+        - `@shared/*` for shared code.
+        - `@/*` for client local source.
+        - `@server/*` for server local source.
+- **Conventions:**
+    - Prefer functional programming patterns.
+    - Use early returns to reduce nesting.
+    - **Naming:**
+        - Variables/Functions: `camelCase`
+        - Components/Types/Interfaces: `PascalCase`
+        - Constants: `UPPER_CASE`
+
+## Package Management
+
+- **Tool:** Use **Bun** for all package management and script execution.
+- **Commands:**
+    - Install: `bun install`
+    - Run scripts: `bun run <script>`
+    - Run from root or specific package directory as needed.

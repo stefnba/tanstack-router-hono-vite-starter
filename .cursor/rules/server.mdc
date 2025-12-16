@@ -1,0 +1,47 @@
+---
+globs: packages/server/**
+alwaysApply: false
+---
+
+# Server Rules
+
+## General Context
+
+- **Framework:** Hono (running on Bun).
+- **Database:** PostgreSQL with Drizzle ORM.
+- **Validation:** Zod.
+- **Auth:** Better Auth.
+- **Type Safety:** strict TypeScript with shared types for client RPC.
+
+## Route Definitions & RPC
+
+- **Router Factory:** ALWAYS use `createHonoRouter` from `@server/lib/router/factory` to create new router instances. DO NOT use `new Hono()` directly for sub-routers.
+- **Endpoint Creation:**
+    - Use `.createEndpoint()` for public or flexible endpoints.
+    - Use `.createUserEndpoint()` for endpoints requiring authentication (automatically adds user context).
+- **Validation:** ALWAYS provide a Zod schema to `.validate()` or the endpoint creator.
+- **Handlers:** Use `.handleQuery` (GET) or `.handleOperation` (POST/PUT/DELETE) methods provided by the custom route handler.
+- **RPC Export:** Ensure the main application type (`AppType`) is exported from `src/index.ts` to enable type-safe client fetching.
+
+## Database (Drizzle ORM)
+
+- **Schemas:** Define database schemas in `packages/shared/src/schemas/db` and re-export them in `@server/db/tables`.
+- **Migrations:** Run migrations via `bun run db:migrate` or `db:push`.
+- **Queries:** Use the `db` instance from `@server/lib/db`. Prefer the query builder syntax (e.g., `db.query.users.findMany(...)`).
+
+## Authentication
+
+- **Middleware:** Auth is handled via `authMiddleware`.
+- **Protected Routes:** Use `createUserEndpoint` to ensure the route is protected and `ctx.var.user` is available.
+- **Context:** User and session data are available in `c.var.user` and `c.var.session`.
+
+## Environment Variables
+
+- **Access:** ALWAYS use `getEnvVariables()` from `@server/lib/env` to access environment variables. DO NOT use `process.env` directly.
+
+## Directory Structure
+
+- `src/endpoints`: Route definitions (controllers).
+- `src/db`: Database configuration and schema exports.
+- `src/lib`: Shared utilities (auth, env, error handling).
+- `src/index.ts`: Application entry point and global middleware setup.
