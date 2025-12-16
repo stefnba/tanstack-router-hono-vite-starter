@@ -1,3 +1,2 @@
-export * from '@shared/schemas/db';
-// export * from './post';
-// export * from './auth';
+export * from '@shared/features/post/table';
+export * from '@shared/features/auth/table';
