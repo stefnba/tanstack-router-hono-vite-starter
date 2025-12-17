@@ -8,6 +8,7 @@ import { post } from './table';
 const postResource = defineResource(post)
     .setUserId('userId')
     .setIds(['id'])
+    .enablePagination()
     .enableFilters({
         title: z.string(),
         content: z.string().optional(),

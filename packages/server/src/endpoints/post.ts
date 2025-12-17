@@ -1,30 +1,19 @@
-import { and, eq } from 'drizzle-orm';
 import { createInsertSchema } from 'drizzle-zod';
 import { HTTPException } from 'hono/http-exception';
 import { z } from 'zod';
 
-import { post } from '@server/db/tables';
-import { db } from '@server/lib/db';
-import { TableOperationsBuilder } from '@server/lib/db/operation/table/core';
-import { appError } from '@server/lib/error';
+import { postContract } from '@app/shared/features/post';
 
-import { createHonoRouter } from '../lib/router';
+import { post } from '@server/db/tables';
+import { TableOperationsBuilder } from '@server/lib/db/operation/table/core';
+import { createHonoRouter } from '@server/lib/router';
 
 const postQueries = new TableOperationsBuilder(post);
 
-const postSchema = z.object({
-    title: z.string(),
-    content: z.string(),
+const postInsert = createInsertSchema(post).pick({
+    title: true,
+    content: true,
 });
-
-const postInsert = createInsertSchema(post);
-
-const paginationSchema = z
-    .object({
-        page: z.union([z.string(), z.number()]).pipe(z.coerce.number()).default(1),
-        limit: z.union([z.string(), z.number()]).pipe(z.coerce.number()).default(10),
-    })
-    .optional();
 
 const router = createHonoRouter({ isProtected: true });
 export const endopints = router
@@ -35,17 +24,17 @@ export const endopints = router
         '/',
         router
             .createUserEndpoint({
-                query: paginationSchema,
+                query: postContract.getMany.endpoint.query,
             })
             .handleQuery(async ({ validated }) => {
                 // return appError.server('INTERNAL_ERROR').throw();
-                const { limit = 10, page = 0 } = validated.query ?? {};
+                const { pageSize = 10, page = 1 } = validated.query ?? {};
 
                 const posts = await postQueries.getManyRecords({
                     identifiers: [{ field: 'userId', value: validated.user.id }],
                     pagination: {
                         page,
-                        pageSize: limit,
+                        pageSize,
                     },
                 });
 

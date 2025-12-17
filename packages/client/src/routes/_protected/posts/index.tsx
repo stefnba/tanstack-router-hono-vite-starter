@@ -4,6 +4,8 @@ import { zodValidator } from '@tanstack/zod-adapter';
 import React from 'react';
 import { z } from 'zod';
 
+import { postContract } from '@app/shared/features/post';
+
 import { apiEndpoints } from '@/api';
 import { AsyncBoundary } from '@/components/async-boundary';
 import { useAppForm } from '@/components/form';
@@ -12,21 +14,13 @@ import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@/co
 import { notification } from '@/lib/notification';
 
 export const Route = createFileRoute('/_protected/posts/')({
-    validateSearch: zodValidator(
-        z
-            .object({
-                page: z.coerce.number(),
-                limit: z.coerce.number(),
-            })
-            .partial()
-            .optional()
-    ),
+    validateSearch: zodValidator(postContract.getMany.endpoint.query),
     component: RouteComponent,
-    loaderDeps: ({ search }) => ({ page: search?.page, limit: search?.limit }),
-    loader: ({ context: { queryClient }, deps: { page, limit } }) => {
+    loaderDeps: ({ search }) => search,
+    loader: ({ context: { queryClient }, deps: { page, pageSize } }) => {
         const options = {
-            page: page,
-            limit: limit,
+            page,
+            pageSize,
         };
 
         queryClient.prefetchQuery(
@@ -140,10 +134,10 @@ function RouteComponent() {
             </Form>
             <h1 className="text-lg font-medium">Posts</h1>
             <div className="flex gap-2">
-                <Button variant="outline" onClick={() => navigate({ search: { limit: 2 } })}>
+                <Button variant="outline" onClick={() => navigate({ search: { pageSize: 2 } })}>
                     Show 2 posts
                 </Button>
-                <Button variant="outline" onClick={() => navigate({ search: { limit: 5 } })}>
+                <Button variant="outline" onClick={() => navigate({ search: { pageSize: 5 } })}>
                     Show 5 posts
                 </Button>
             </div>
