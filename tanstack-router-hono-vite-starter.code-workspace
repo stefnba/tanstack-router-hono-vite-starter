@@ -29,6 +29,15 @@
             "**/node_modules": true,
         },
 
+        "search.exclude": {
+            "**/node_modules": true,
+            "**/dist": true,
+            "**/build": true,
+            "**/coverage": true,
+            "**/logs": true,
+            "**/tmp": true,
+        },
+
         // Editor and formatting
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "esbenp.prettier-vscode",
