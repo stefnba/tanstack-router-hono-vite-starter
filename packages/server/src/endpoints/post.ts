@@ -79,21 +79,19 @@ export const endopints = router
      * Using the raw context to return the post data
      */
     .get(
-        '/:postId',
+        '/:id',
         router
 
             .createEndpoint({
-                param: z.object({
-                    postId: z.string(),
-                }),
+                param: postContract.getById.endpoint.param,
             })
             .withUser()
             .handleQuery(async ({ validated }) => {
-                const { postId } = validated.param;
+                const { id } = validated.param;
 
                 const postData = await postQueries.getFirstRecord({
                     identifiers: [
-                        { field: 'id', value: postId },
+                        { field: 'id', value: id },
                         { field: 'userId', value: validated.user.id },
                     ],
                 });

@@ -119,16 +119,11 @@ class DrizzleResourceBuilder<T extends Table, C extends ResourceBuilderConfig<T>
      * Supports composite keys by passing multiple fields.
      */
     setIds<const F extends keyof C['raw']['select'] & string>(fields: F[]) {
-        // const selectSchema = this.config.raw.select;
-        // const idsSchema = pickFromObject(selectSchema, fields);
-        const idsSchema = createSelectSchema(this.config.table).pick({ id: true });
+        const idsSchema = pickFromObject(this.config.raw.select, fields);
 
         const newConfig = {
             ...this.config,
-            id: z.object({
-                id: z.string(),
-                name: z.string(),
-            }).shape,
+            id: idsSchema,
         };
 
         return new DrizzleResourceBuilder<T, typeof newConfig>(newConfig);
@@ -441,7 +436,9 @@ class DrizzleResourceBuilder<T extends Table, C extends ResourceBuilderConfig<T>
                 },
                 getById: {
                     [SCHEMA_KEYS.input]: z.object({ ...allIdentifiersForInput }),
-                    ids: z.object(this.config.id),
+                    [SCHEMA_KEYS.identifiers]: z.object({
+                        ...this.config.id,
+                    }),
                 },
                 // remove
                 removeById: {
