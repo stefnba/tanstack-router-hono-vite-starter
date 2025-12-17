@@ -17,6 +17,10 @@ import type {
     PgQueryResultHKT,
 } from 'drizzle-orm/pg-core';
 
+import { GetTableColumnDefinitions, GetTableColumnKeys } from '@app/shared/lib/db/drizzle';
+import { InferTableTypes } from '@app/shared/lib/db/drizzle/types';
+import { typedKeys } from '@app/shared/lib/utils';
+
 import { db } from '@server/lib/db';
 import { withDbQuery } from '@server/lib/db/operation/handler';
 import {
@@ -28,10 +32,6 @@ import {
     TValidTableForFrom,
 } from '@server/lib/db/operation/table/types';
 import { withFilters, withOrdering, withPagination } from '@server/lib/db/operation/utils';
-
-import { GetTableColumnDefinitions, GetTableColumnKeys } from '@shared/lib/db/drizzle';
-import { InferTableTypes } from '@shared/lib/db/drizzle/types';
-import { typedKeys } from '@shared/lib/utils';
 
 /**
  * TableOperationsBuilder - Generic low-level database CRUD operations builder.

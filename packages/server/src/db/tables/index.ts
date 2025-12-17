@@ -1,2 +1,2 @@
-export * from '@shared/features/post/table';
-export * from '@shared/features/auth/table';
+export * from '@app/shared/features/post/table';
+export * from '@app/shared/features/auth/table';

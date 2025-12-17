@@ -1,10 +1,10 @@
 import z, { ZodError } from 'zod';
 
+import { TAPIErrorResponse } from '@app/shared/lib/error/response';
+import { generateUniqueId } from '@app/shared/lib/utils';
+
 import { getEnvVariables } from '@server/lib/env';
 import { logger } from '@server/lib/logger';
-
-import { TAPIErrorResponse } from '@shared/lib/error/response';
-import { generateUniqueId } from '@shared/lib/utils';
 
 import {
     ErrorChainContext,

@@ -10,10 +10,13 @@
         "baseUrl": ".",
         "paths": {
             "@/*": ["./src/*"],
-            "@server/*": ["../server/src/*"],
             "@shared/*": ["../shared/src/*"]
         }
     },
-    "include": ["src", "../shared/src"],
-    "references": [{ "path": "./tsconfig.node.json" }]
+    "include": ["src"],
+    "references": [
+        { "path": "./tsconfig.node.json" },
+        { "path": "../shared" },
+        { "path": "../server" }
+    ]
 }

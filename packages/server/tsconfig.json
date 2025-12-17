@@ -2,12 +2,16 @@
     "extends": "../../tsconfig.json",
     "compilerOptions": {
         "types": ["bun-types"],
+        "composite": true,
         "baseUrl": ".",
+        "noEmit": false,
+        "emitDeclarationOnly": true,
         "paths": {
             "@server/*": ["./src/*"],
-            "@test/*": ["./test/*"],
-            "@shared/*": ["../shared/src/*"]
+            "@app/shared/*": ["../shared/src/*"]
+            // "@test/*": ["./test/*"]
         }
     },
-    "include": ["src", "test", "../shared/src"]
+    "include": ["src"],
+    "references": [{ "path": "../shared" }]
 }

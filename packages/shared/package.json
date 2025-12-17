@@ -11,5 +11,8 @@
     "devDependencies": {
         "bun-types": "latest",
         "typescript": "^5.4.0"
+    },
+    "exports": {
+        "./*": "./src/*"
     }
 }

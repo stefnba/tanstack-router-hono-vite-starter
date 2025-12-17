@@ -1,18 +1,23 @@
 import { and, eq } from 'drizzle-orm';
+import { createInsertSchema } from 'drizzle-zod';
 import { HTTPException } from 'hono/http-exception';
 import { z } from 'zod';
 
 import { post } from '@server/db/tables';
 import { db } from '@server/lib/db';
+import { TableOperationsBuilder } from '@server/lib/db/operation/table/core';
 import { appError } from '@server/lib/error';
-import { postQueries } from '@server/queries/post';
 
 import { createHonoRouter } from '../lib/router';
+
+const postQueries = new TableOperationsBuilder(post);
 
 const postSchema = z.object({
     title: z.string(),
     content: z.string(),
 });
+
+const postInsert = createInsertSchema(post);
 
 const paginationSchema = z
     .object({
@@ -62,7 +67,7 @@ export const endopints = router
             .createEndpoint()
             .withUser()
             .validate({
-                json: postSchema,
+                json: postInsert,
             })
             .handleMutation(async ({ validated }) => {
                 // return appError.server('INTERNAL_ERROR').throw();

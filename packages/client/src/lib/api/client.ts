@@ -26,3 +26,5 @@ export const queryClientInstance = new QueryClient({
         },
     },
 });
+
+const a = apiClient.posts.$post;

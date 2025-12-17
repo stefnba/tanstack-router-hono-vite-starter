@@ -1,8 +1,8 @@
 import { ContentfulStatusCode } from 'hono/utils/http-status';
 
-import { TErrorLayer } from '@server/lib/error/base/types';
+import { TPublicErrorRegistryDefinition } from '@app/shared/lib/error/registry/types';
 
-import { TPublicErrorRegistryDefinition } from '@shared/lib/error/registry/types';
+import { TErrorLayer } from '@server/lib/error/base/types';
 
 /**
  * Definition for a single error in the registry
