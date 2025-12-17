@@ -10,6 +10,11 @@ COPY packages/shared/package.json ./packages/shared/
 COPY packages/server/package.json ./packages/server/
 COPY packages/client/package.json ./packages/client/
 
+# 🚨 CRITICAL FIX: Copy the patches folder BEFORE installing
+# Bun needs to find the .patch file listed in package.json immediately.
+# patch to fix drizzle-zod buffer issue: https://github.com/drizzle-team/drizzle-orm/issues/4705#event-21563349567
+COPY patches ./patches
+
 # 2. Install dependencies (Frozen lockfile ensures stability)
 RUN bun install --frozen-lockfile
 

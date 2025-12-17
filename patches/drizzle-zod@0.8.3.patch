@@ -1,0 +1,45 @@
+diff --git a/node_modules/drizzle-zod/.bun-tag-5718d6a1e1a63109 b/.bun-tag-5718d6a1e1a63109
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/node_modules/drizzle-zod/.bun-tag-c934067ac4be31ee b/.bun-tag-c934067ac4be31ee
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/column.types.d.cts b/column.types.d.cts
+index 920655c6af1bbd6b1796ccef9d9e748c4536e21c..7cf3bfd278f39232f5c54d501b5663be4aa45b56 100644
+--- a/column.types.d.cts
++++ b/column.types.d.cts
+@@ -8,7 +8,7 @@ type HasBaseColumn<TColumn> = TColumn extends {
+ } ? IsNever<TColumn['_']['baseColumn']> extends false ? true : false : false;
+ export type GetZodType<TColumn extends Column, TCoerce extends Partial<Record<'bigint' | 'boolean' | 'date' | 'number' | 'string', true>> | true | undefined> = HasBaseColumn<TColumn> extends true ? z.ZodArray<GetZodType<Assume<TColumn['_']['baseColumn'], Column>, TCoerce>> : TColumn['_']['columnType'] extends 'PgUUID' ? z.ZodUUID : IsEnumDefined<TColumn['_']['enumValues']> extends true ? z.ZodEnum<{
+     [K in Assume<TColumn['_']['enumValues'], [string, ...string[]]>[number]]: K;
+-}> : TColumn['_']['columnType'] extends 'PgGeometry' | 'PgPointTuple' ? z.ZodTuple<[z.ZodNumber, z.ZodNumber], null> : TColumn['_']['columnType'] extends 'PgLine' ? z.ZodTuple<[z.ZodNumber, z.ZodNumber, z.ZodNumber], null> : TColumn['_']['data'] extends Date ? CanCoerce<TCoerce, 'date'> extends true ? z.coerce.ZodCoercedDate : z.ZodDate : TColumn['_']['data'] extends Buffer ? z.ZodType<Buffer> : TColumn['_']['dataType'] extends 'array' ? z.ZodArray<GetZodPrimitiveType<Assume<TColumn['_']['data'], any[]>[number], '', TCoerce>> : TColumn['_']['data'] extends Record<string, any> ? TColumn['_']['columnType'] extends 'PgJson' | 'PgJsonb' | 'MySqlJson' | 'SingleStoreJson' | 'SQLiteTextJson' | 'SQLiteBlobJson' ? z.ZodType<TColumn['_']['data'], TColumn['_']['data']> : z.ZodObject<{
++}> : TColumn['_']['columnType'] extends 'PgGeometry' | 'PgPointTuple' ? z.ZodTuple<[z.ZodNumber, z.ZodNumber], null> : TColumn['_']['columnType'] extends 'PgLine' ? z.ZodTuple<[z.ZodNumber, z.ZodNumber, z.ZodNumber], null> : TColumn['_']['data'] extends Date ? CanCoerce<TCoerce, 'date'> extends true ? z.coerce.ZodCoercedDate : z.ZodDate : TColumn['_']['dataType'] extends 'buffer' ? z.ZodType<Buffer> : TColumn['_']['dataType'] extends 'array' ? z.ZodArray<GetZodPrimitiveType<Assume<TColumn['_']['data'], any[]>[number], '', TCoerce>> : TColumn['_']['data'] extends Record<string, any> ? TColumn['_']['columnType'] extends 'PgJson' | 'PgJsonb' | 'MySqlJson' | 'SingleStoreJson' | 'SQLiteTextJson' | 'SQLiteBlobJson' ? z.ZodType<TColumn['_']['data'], TColumn['_']['data']> : z.ZodObject<{
+     [K in keyof TColumn['_']['data']]: GetZodPrimitiveType<TColumn['_']['data'][K], '', TCoerce>;
+ }, {
+     out: {};
+diff --git a/column.types.d.mts b/column.types.d.mts
+index 61d81edfd46673546e310690a484ee8439d8c3db..a3e8a6b2d56efa60aa85790dd70cf8bc4e1460e3 100644
+--- a/column.types.d.mts
++++ b/column.types.d.mts
+@@ -8,7 +8,7 @@ type HasBaseColumn<TColumn> = TColumn extends {
+ } ? IsNever<TColumn['_']['baseColumn']> extends false ? true : false : false;
+ export type GetZodType<TColumn extends Column, TCoerce extends Partial<Record<'bigint' | 'boolean' | 'date' | 'number' | 'string', true>> | true | undefined> = HasBaseColumn<TColumn> extends true ? z.ZodArray<GetZodType<Assume<TColumn['_']['baseColumn'], Column>, TCoerce>> : TColumn['_']['columnType'] extends 'PgUUID' ? z.ZodUUID : IsEnumDefined<TColumn['_']['enumValues']> extends true ? z.ZodEnum<{
+     [K in Assume<TColumn['_']['enumValues'], [string, ...string[]]>[number]]: K;
+-}> : TColumn['_']['columnType'] extends 'PgGeometry' | 'PgPointTuple' ? z.ZodTuple<[z.ZodNumber, z.ZodNumber], null> : TColumn['_']['columnType'] extends 'PgLine' ? z.ZodTuple<[z.ZodNumber, z.ZodNumber, z.ZodNumber], null> : TColumn['_']['data'] extends Date ? CanCoerce<TCoerce, 'date'> extends true ? z.coerce.ZodCoercedDate : z.ZodDate : TColumn['_']['data'] extends Buffer ? z.ZodType<Buffer> : TColumn['_']['dataType'] extends 'array' ? z.ZodArray<GetZodPrimitiveType<Assume<TColumn['_']['data'], any[]>[number], '', TCoerce>> : TColumn['_']['data'] extends Record<string, any> ? TColumn['_']['columnType'] extends 'PgJson' | 'PgJsonb' | 'MySqlJson' | 'SingleStoreJson' | 'SQLiteTextJson' | 'SQLiteBlobJson' ? z.ZodType<TColumn['_']['data'], TColumn['_']['data']> : z.ZodObject<{
++}> : TColumn['_']['columnType'] extends 'PgGeometry' | 'PgPointTuple' ? z.ZodTuple<[z.ZodNumber, z.ZodNumber], null> : TColumn['_']['columnType'] extends 'PgLine' ? z.ZodTuple<[z.ZodNumber, z.ZodNumber, z.ZodNumber], null> : TColumn['_']['data'] extends Date ? CanCoerce<TCoerce, 'date'> extends true ? z.coerce.ZodCoercedDate : z.ZodDate : TColumn['_']['dataType'] extends 'buffer' ? z.ZodType<Buffer> : TColumn['_']['dataType'] extends 'array' ? z.ZodArray<GetZodPrimitiveType<Assume<TColumn['_']['data'], any[]>[number], '', TCoerce>> : TColumn['_']['data'] extends Record<string, any> ? TColumn['_']['columnType'] extends 'PgJson' | 'PgJsonb' | 'MySqlJson' | 'SingleStoreJson' | 'SQLiteTextJson' | 'SQLiteBlobJson' ? z.ZodType<TColumn['_']['data'], TColumn['_']['data']> : z.ZodObject<{
+     [K in keyof TColumn['_']['data']]: GetZodPrimitiveType<TColumn['_']['data'][K], '', TCoerce>;
+ }, {
+     out: {};
+diff --git a/column.types.d.ts b/column.types.d.ts
+index e3b725564840a2d73b7ade209baecf656c863b19..9fafc87e3cff8868efe9e496439587fecd0d3145 100644
+--- a/column.types.d.ts
++++ b/column.types.d.ts
+@@ -8,7 +8,7 @@ type HasBaseColumn<TColumn> = TColumn extends {
+ } ? IsNever<TColumn['_']['baseColumn']> extends false ? true : false : false;
+ export type GetZodType<TColumn extends Column, TCoerce extends Partial<Record<'bigint' | 'boolean' | 'date' | 'number' | 'string', true>> | true | undefined> = HasBaseColumn<TColumn> extends true ? z.ZodArray<GetZodType<Assume<TColumn['_']['baseColumn'], Column>, TCoerce>> : TColumn['_']['columnType'] extends 'PgUUID' ? z.ZodUUID : IsEnumDefined<TColumn['_']['enumValues']> extends true ? z.ZodEnum<{
+     [K in Assume<TColumn['_']['enumValues'], [string, ...string[]]>[number]]: K;
+-}> : TColumn['_']['columnType'] extends 'PgGeometry' | 'PgPointTuple' ? z.ZodTuple<[z.ZodNumber, z.ZodNumber], null> : TColumn['_']['columnType'] extends 'PgLine' ? z.ZodTuple<[z.ZodNumber, z.ZodNumber, z.ZodNumber], null> : TColumn['_']['data'] extends Date ? CanCoerce<TCoerce, 'date'> extends true ? z.coerce.ZodCoercedDate : z.ZodDate : TColumn['_']['data'] extends Buffer ? z.ZodType<Buffer> : TColumn['_']['dataType'] extends 'array' ? z.ZodArray<GetZodPrimitiveType<Assume<TColumn['_']['data'], any[]>[number], '', TCoerce>> : TColumn['_']['data'] extends Record<string, any> ? TColumn['_']['columnType'] extends 'PgJson' | 'PgJsonb' | 'MySqlJson' | 'SingleStoreJson' | 'SQLiteTextJson' | 'SQLiteBlobJson' ? z.ZodType<TColumn['_']['data'], TColumn['_']['data']> : z.ZodObject<{
++}> : TColumn['_']['columnType'] extends 'PgGeometry' | 'PgPointTuple' ? z.ZodTuple<[z.ZodNumber, z.ZodNumber], null> : TColumn['_']['columnType'] extends 'PgLine' ? z.ZodTuple<[z.ZodNumber, z.ZodNumber, z.ZodNumber], null> : TColumn['_']['data'] extends Date ? CanCoerce<TCoerce, 'date'> extends true ? z.coerce.ZodCoercedDate : z.ZodDate : TColumn['_']['dataType'] extends 'buffer' ? z.ZodType<Buffer> : TColumn['_']['dataType'] extends 'array' ? z.ZodArray<GetZodPrimitiveType<Assume<TColumn['_']['data'], any[]>[number], '', TCoerce>> : TColumn['_']['data'] extends Record<string, any> ? TColumn['_']['columnType'] extends 'PgJson' | 'PgJsonb' | 'MySqlJson' | 'SingleStoreJson' | 'SQLiteTextJson' | 'SQLiteBlobJson' ? z.ZodType<TColumn['_']['data'], TColumn['_']['data']> : z.ZodObject<{
+     [K in keyof TColumn['_']['data']]: GetZodPrimitiveType<TColumn['_']['data'][K], '', TCoerce>;
+ }, {
+     out: {};

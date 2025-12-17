@@ -32,5 +32,8 @@
         "prettier": "^3.7.3",
         "typescript": "^5.4.0",
         "typescript-eslint": "^8.48.1"
+    },
+    "patchedDependencies": {
+        "drizzle-zod@0.8.3": "patches/drizzle-zod@0.8.3.patch"
     }
 }
