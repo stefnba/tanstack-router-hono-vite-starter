@@ -1,8 +1,12 @@
+import { zValidator } from '@hono/zod-validator';
+import { createInsertSchema } from 'drizzle-zod';
 import { Hono } from 'hono';
 import { serveStatic } from 'hono/bun';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
+import z from 'zod';
 
+import { post } from '@server/db/tables';
 import {
     authEndopints,
     postEndpoints,
@@ -52,8 +56,14 @@ app.onError(handleGlobalError);
 // ================================
 // API Routes
 // ================================
+const testSchema = createInsertSchema(post);
 const apiRoutes = app
     .basePath('/api')
+    .get('/test', zValidator('json', testSchema), async (c) => {
+        return c.json({
+            message: 'Hello',
+        });
+    })
     // Important! Matches the proxy prefix
     .route('/auth', authEndopints)
     .route('/status', statusEndpoints)
