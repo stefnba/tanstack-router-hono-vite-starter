@@ -8,7 +8,7 @@ import tseslint from 'typescript-eslint';
 
 export default defineConfig([
     // 1. Global Ignores
-    { ignores: ['dist', 'node_modules', '**/*.gen.ts', 'out/', 'public/'] },
+    { ignores: ['**/dist', '**/node_modules', '**/*.gen.ts', 'out/', 'public/'] },
 
     // 2. Base Configurations
     js.configs.recommended,
@@ -21,7 +21,7 @@ export default defineConfig([
             ecmaVersion: 2021,
             globals: globals.browser,
             parserOptions: {
-                project: './tsconfig.json', // Restore type-aware linting
+                project: ['./tsconfig.json', './packages/*/tsconfig.json'],
                 tsconfigRootDir: import.meta.dirname,
             },
         },
