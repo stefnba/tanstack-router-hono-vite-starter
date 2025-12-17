@@ -1,6 +1,6 @@
 import { ValidationTargets } from 'hono';
 
-import { AnyZodType } from '@shared/lib/validation/zod/types';
+import { AnyZodType } from '../../lib/validation/zod/types';
 
 /**
  * Endpoint schema object supporting Hono validation targets

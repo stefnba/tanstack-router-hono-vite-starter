@@ -1,16 +1,20 @@
 import { Table } from 'drizzle-orm';
-import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-zod';
+import { createSelectSchema } from 'drizzle-zod';
 import z from 'zod';
 
-import { SYSTEM_TABLE_CONFIG_KEYS } from '@shared/lib/db/system-fields';
-import { paginationSchema } from '@shared/lib/resource/common';
+import { SYSTEM_TABLE_CONFIG_KEYS } from '../../lib/db/system-fields';
+import { paginationSchema } from '../../lib/resource/common';
+import { DrizzleResourceBuilderReturn, ResourceBuilderConfig } from '../../lib/resource/types';
+import { conditionalZodField, getTableShapes } from '../../lib/resource/utils';
+import { omitFromObject, pickFromObject } from '../../lib/utils';
 import {
-    DrizzleResourceBuilderReturn,
-    RawTableShapes,
-    ResourceBuilderConfig,
-} from '@shared/lib/resource/types';
-import { omitFromObject, pickFromObject } from '@shared/lib/utils';
-import { AnyZodArray, AnyZodType, EmptyZodSchema } from '@shared/lib/validation/zod/types';
+    AnyZodArray,
+    AnyZodShape,
+    AnyZodType,
+    EmptyZodObject,
+    EmptyZodSchema,
+} from '../../lib/validation/zod/types';
+import { post } from '../../table/post';
 
 export const SCHEMA_KEYS = {
     input: 'input',
@@ -22,14 +26,32 @@ export const SCHEMA_KEYS = {
 } as const;
 
 class DrizzleResourceBuilder<T extends Table, C extends ResourceBuilderConfig<T>> {
-    config: C;
+    config: {
+        base: C['base'];
+        table: C['table'];
+        raw: C['raw'];
+        userId: C['userId'];
+        id: C['id'];
+        updateData: C['updateData'];
+        createData: C['createData'];
+        returnCols: C['returnCols'];
+        filters: C['filters'];
+        pagination: C['pagination'];
+        ordering: C['ordering'];
+    };
 
     constructor(config: C) {
         this.config = config;
     }
 
+    /**
+     * Creates a new resource builder for a given table.
+     *
+     * This is the entry point for defining a resource. It initializes the builder with the table's raw schemas
+     * and sets up default configurations for base, update, create, and return fields.
+     */
     static create<T extends Table>(table: T) {
-        const raw = this.getTableShapes(table);
+        const raw = getTableShapes(table);
 
         const base = omitFromObject(raw.create, SYSTEM_TABLE_CONFIG_KEYS, 'loose');
         const updateData = omitFromObject(raw.update, SYSTEM_TABLE_CONFIG_KEYS, 'loose');
@@ -64,18 +86,16 @@ class DrizzleResourceBuilder<T extends Table, C extends ResourceBuilderConfig<T>
         });
     }
 
-    static getTableShapes<T extends Table>(table: T): RawTableShapes<T> {
-        const create = createInsertSchema(table);
-        const select = createSelectSchema(table);
-        const update = createUpdateSchema(table);
+    // ========================================
+    // Set Identifiers
+    // ========================================
 
-        return {
-            create: create.shape,
-            select: select.shape,
-            update: update.shape,
-        };
-    }
-
+    /**
+     * Define which field contains the user ID for row-level security (RLS).
+     *
+     * This field will be automatically used to filter queries so users only
+     * see/modify their own data.
+     */
     setUserId<const F extends keyof C['raw']['select'] & string>(field: F) {
         const selectSchema = this.config.raw.select;
         const userIdSchema = pickFromObject(selectSchema, [field]);
@@ -84,117 +104,200 @@ class DrizzleResourceBuilder<T extends Table, C extends ResourceBuilderConfig<T>
             throw new Error(`Field ${String(field)} is not a valid user ID field`);
         }
 
-        return new DrizzleResourceBuilder<T, Omit<C, 'userId'> & { userId: typeof userIdSchema }>({
+        const newConfig = {
             ...this.config,
             userId: userIdSchema,
-        });
+        };
+
+        return new DrizzleResourceBuilder<T, typeof newConfig>(newConfig);
     }
 
+    /**
+     * Define which field(s) are used as primary keys.
+     *
+     * Used for operations like getById, deleteById, etc.
+     * Supports composite keys by passing multiple fields.
+     */
     setIds<const F extends keyof C['raw']['select'] & string>(fields: F[]) {
-        const selectSchema = this.config.raw.select;
-        const idsSchema = pickFromObject(selectSchema, fields);
+        // const selectSchema = this.config.raw.select;
+        // const idsSchema = pickFromObject(selectSchema, fields);
+        const idsSchema = createSelectSchema(this.config.table).pick({ id: true });
 
-        return new DrizzleResourceBuilder<T, Omit<C, 'id'> & { id: typeof idsSchema }>({
+        const newConfig = {
             ...this.config,
-            id: idsSchema,
-        });
-    }
+            id: z.object({
+                id: z.string(),
+                name: z.string(),
+            }).shape,
+        };
 
-    pickBaseSchema<const F extends keyof C['raw']['create'] & string>(fields: F[]) {
-        const shape = this.config.raw.create;
-        const schema = pickFromObject(shape, fields);
-
-        return new DrizzleResourceBuilder<T, Omit<C, 'base'> & { base: typeof schema }>({
-            ...this.config,
-            base: schema,
-        });
+        return new DrizzleResourceBuilder<T, typeof newConfig>(newConfig);
     }
 
     // ========================================
-    // Restrict
+    // Restrict / pick
     // ========================================
 
+    /**
+     * Restricts the fields that are allowed in the base schema. Only the specified fields are allowed.
+     *
+     * This only affects the base schema, not the create or update schemas.
+     */
     restrictBaseSchema<
         const F extends keyof C['raw']['create'] & keyof C['raw']['update'] & string,
     >(fields: F[]) {
         const shape = this.config.raw.create;
         const schema = pickFromObject(shape, fields);
 
-        return new DrizzleResourceBuilder<T, Omit<C, 'base'> & { base: typeof schema }>({
+        const newConfig = {
             ...this.config,
             base: schema,
-        });
+        };
+
+        return new DrizzleResourceBuilder<T, typeof newConfig>(newConfig);
     }
 
-    restrictUpdateDataFields<const F extends keyof C['raw']['update'] & string>(fields: F[]) {
+    /**
+     * Restricts the fields that are allowed in the base, create, and update schemas.  Only the specified fields are allowed.
+     *
+     * This affects also the create and update schemas, not just the base schema.
+     */
+    restrictAllFields<const F extends keyof C['base'] & string>(fields: F[]) {
+        const newConfig = {
+            ...this.config,
+            base: pickFromObject(this.config.base, fields),
+            updateData: pickFromObject(this.config.updateData, fields),
+            createData: pickFromObject(this.config.createData, fields),
+        };
+
+        return new DrizzleResourceBuilder<T, typeof newConfig>(newConfig);
+    }
+
+    /**
+     * Restricts the fields that are allowed for update operations.
+     *
+     * Use this when update fields differ from create fields.
+     * For same fields in both, use `.restrictUpsertDataFields()` instead.
+     */
+    restrictUpdateDataFields<const F extends keyof C['base'] & string>(fields: F[]) {
         const shape = this.config.raw.update;
         const schema = pickFromObject(shape, fields);
 
-        return new DrizzleResourceBuilder<T, Omit<C, 'updateData'> & { updateData: typeof schema }>(
-            {
-                ...this.config,
-                updateData: schema,
-            }
-        );
+        const newConfig = {
+            ...this.config,
+            updateData: schema,
+        };
+
+        return new DrizzleResourceBuilder<T, typeof newConfig>(newConfig);
     }
 
-    restrictCreateDataFields<const F extends keyof C['raw']['create'] & string>(fields: F[]) {
+    /**
+     * Restricts the fields that are allowed for create operations.
+     *
+     * Use this when insert fields differ from update fields.
+     * For same fields in both, use `.restrictUpsertDataFields()` instead.
+     */
+    restrictCreateDataFields<const F extends keyof C['base'] & string>(fields: F[]) {
         const shape = this.config.raw.create;
         const schema = pickFromObject(shape, fields);
 
-        return new DrizzleResourceBuilder<T, Omit<C, 'createData'> & { createData: typeof schema }>(
-            {
-                ...this.config,
-                createData: schema,
-            }
-        );
+        const newConfig = {
+            ...this.config,
+            createData: schema,
+        };
+
+        return new DrizzleResourceBuilder<T, typeof newConfig>(newConfig);
     }
 
-    restrictUpsertDataFields<
-        const F extends keyof C['raw']['update'] & keyof C['raw']['create'] & string,
-    >(fields: F[]) {
-        return new DrizzleResourceBuilder<T, C>(this.config)
-            .restrictUpdateDataFields(fields)
-            .restrictCreateDataFields(fields);
+    /**
+     * Restricts the fields that are allowed for both create and update operations.
+     *
+     * If update and create fields are different, use `.restrictUpdateDataFields()` and `.restrictCreateDataFields()` instead.
+     */
+    restrictUpsertDataFields<const F extends keyof C['base'] & string>(fields: F[]) {
+        const newConfig = {
+            ...this.config,
+            updateData: pickFromObject(this.config.updateData, fields),
+            createData: pickFromObject(this.config.createData, fields),
+        };
+
+        return new DrizzleResourceBuilder<T, typeof newConfig>(newConfig);
     }
 
+    /**
+     * Restricts the fields that are allowed to be returned from the database.
+     */
     restrictReturnColsFields<const F extends keyof C['raw']['select'] & string>(fields: F[]) {
         const shape = this.config.raw.select;
         const schema = pickFromObject(shape, fields);
 
-        return new DrizzleResourceBuilder<T, Omit<C, 'returnCols'> & { returnCols: typeof schema }>(
-            {
-                ...this.config,
-                returnCols: schema,
-            }
-        );
-    }
-
-    restrictAllFields<const F extends keyof C['raw']['create'] & keyof C['raw']['update'] & string>(
-        fields: F[]
-    ) {
-        return new DrizzleResourceBuilder<T, C>(this.config)
-            .restrictBaseSchema(fields)
-            .restrictUpdateDataFields(fields)
-            .restrictCreateDataFields(fields);
-    }
-
-    allowSystemFields() {
-        const raw = DrizzleResourceBuilder.getTableShapes(this.config.table);
-
-        return new DrizzleResourceBuilder<
-            T,
-            Omit<C, 'create' | 'update' | 'base'> & {
-                create: typeof raw.create;
-                update: typeof raw.update;
-                base: typeof raw.create;
-            }
-        >({
+        const newConfig = {
             ...this.config,
-            create: raw.create,
-            update: raw.update,
+            returnCols: schema,
+        };
+
+        return new DrizzleResourceBuilder<T, typeof newConfig>(newConfig);
+    }
+
+    /**
+     * Allows all system fields to be included in the base, update, and create data.
+     *
+     * Resets any field restrictions set via `.restrictUpsertDataFields()`, `.restrictCreateDataFields()`,
+     * or `.restrictUpdateDataFields()`.
+     *
+     * **Warning:** This overwrites previously specified create/update schemas.
+     */
+    allowSystemFields() {
+        const raw = getTableShapes(this.config.table);
+
+        const newConfig = {
+            ...this.config,
             base: raw.create,
-        });
+            updateData: raw.update,
+            createData: raw.create,
+        };
+
+        return new DrizzleResourceBuilder<T, typeof newConfig>(newConfig);
+    }
+
+    // ========================================
+    // Transform
+    // ========================================
+
+    /**
+     * Transform the current base, createData, and updateData schemas using a custom transformation function.
+     * This allows you to extend, modify, or completely reshape the schema.
+     *
+     * **Note:** This overwrites previously specified base, createData, and updateData schemas.
+     *
+     * @param transformer - Function that takes the current base schema and returns a new schema
+     * @returns New builder instance with the transformed schema
+     *
+     * @example
+     * ```typescript
+     * const builder = createFeatureTableConfig(userTable)
+     *   .transform(schema =>
+     *     schema.extend({
+     *       fullName: z.string().min(1),
+     *     })
+     *   )
+     *   .done();
+     * ```
+     */
+    transform<TOut extends AnyZodShape>(
+        transformer: (schema: z.ZodObject<C['base']>) => z.ZodObject<TOut>
+    ) {
+        const transformed = transformer(z.object(this.config.base));
+        const transformedPartial = transformed.partial();
+
+        const newConfig = {
+            ...this.config,
+            base: transformed.shape,
+            createData: transformed.shape,
+            updateData: transformedPartial.shape,
+        };
+
+        return new DrizzleResourceBuilder<T, typeof newConfig>(newConfig);
     }
 
     // ========================================
@@ -204,10 +307,12 @@ class DrizzleResourceBuilder<T extends Table, C extends ResourceBuilderConfig<T>
     enablePagination() {
         const shape = paginationSchema.shape;
 
-        return new DrizzleResourceBuilder<T, Omit<C, 'pagination'> & { pagination: typeof shape }>({
+        const newConfig = {
             ...this.config,
             pagination: shape,
-        });
+        };
+
+        return new DrizzleResourceBuilder<T, typeof newConfig>(newConfig);
     }
 
     enableOrdering<const Col extends keyof C['raw']['select'] & string>(columns: Col[]) {
@@ -218,10 +323,12 @@ class DrizzleResourceBuilder<T extends Table, C extends ResourceBuilderConfig<T>
             })
         );
 
-        return new DrizzleResourceBuilder<T, Omit<C, 'ordering'> & { ordering: typeof shape }>({
+        const newConfig = {
             ...this.config,
             ordering: shape,
-        });
+        };
+
+        return new DrizzleResourceBuilder<T, typeof newConfig>(newConfig);
     }
 
     enableFilters<
@@ -229,10 +336,12 @@ class DrizzleResourceBuilder<T extends Table, C extends ResourceBuilderConfig<T>
             Record<string, AnyZodType>,
     >(schema: S) {
         const shape = z.object(schema).shape;
-        return new DrizzleResourceBuilder<T, Omit<C, 'filters'> & { filters: typeof shape }>({
+        const newConfig = {
             ...this.config,
             filters: shape,
-        });
+        };
+
+        return new DrizzleResourceBuilder<T, typeof newConfig>(newConfig);
     }
 
     // ========================================
@@ -240,81 +349,140 @@ class DrizzleResourceBuilder<T extends Table, C extends ResourceBuilderConfig<T>
     // ========================================
 
     done() {
-        // base schema
-        const base: z.ZodObject<C['base']> = z.object(this.config.base);
-
-        // raw table schemas
-        const rawCreate: z.ZodObject<C['raw']['create']> = z.object(this.config.raw.create);
-        const rawSelect: z.ZodObject<C['raw']['select']> = z.object(this.config.raw.select);
-        const rawUpdate: z.ZodObject<C['raw']['update']> = z.object(this.config.raw.update);
-
         // identifier schemas
-        const identifiers: z.ZodObject<C['id']> = z.object(this.config.id);
-        const userId: z.ZodObject<C['userId']> = z.object(this.config.userId);
+        // const identifiers = z.object(this.config.id);
+        // const userId = z.object(this.config.userId);
 
-        const userOnlyIdentifiers = z.object({
-            [SCHEMA_KEYS.identifiers]: userId,
-        });
+        // const fullIdentifiers = z.object({
+        //     ...identifiers.shape,
+        //     ...userId.shape,
+        // });
 
-        const fullIdentifiers = z.object({
-            ...identifiers.shape,
-            ...userId.shape,
-        });
-
-        // data schemas
-        const createData: z.ZodObject<C['createData']> = z.object(this.config.createData);
-        const updateData: z.ZodObject<C['updateData']> = z.object(this.config.updateData);
+        // data for create and update operations
+        const createData = z.object(this.config.createData);
+        const updateData = z.object(this.config.updateData);
 
         // getMany filters
-        const ordering: C['ordering'] = this.config.ordering;
-        const filters: z.ZodObject<C['filters']> = z.object(this.config.filters);
-        const pagination: z.ZodOptional<z.ZodObject<C['pagination']>> = z
-            .object(this.config.pagination)
-            .optional();
+        const ordering = this.config.ordering;
+        const filters = z.object(this.config.filters).partial();
+        const pagination = z.object(this.config.pagination);
 
-        // return cols
-        const returnCols: z.ZodObject<C['returnCols']> = z.object(this.config.returnCols);
+        // identifiers
+        const allIdentifiersShapes = { ...this.config.userId, ...this.config.id };
+        const allIdentifiersSchema = z.object(allIdentifiersShapes);
+
+        const userOnlyIdentifierSchema = z.object(this.config.userId);
+        const otherIdsIdentifierSchema = z.object(this.config.id);
+
+        const allIdentifiersForInput = conditionalZodField({
+            shapeToCheck: allIdentifiersShapes,
+            key: SCHEMA_KEYS.identifiers,
+            returnSchema: allIdentifiersSchema,
+        });
+
+        const userIdIdentifierForInput = conditionalZodField({
+            shapeToCheck: this.config.userId,
+            key: SCHEMA_KEYS.identifiers,
+            returnSchema: userOnlyIdentifierSchema,
+        });
 
         return {
-            base: base,
+            table: this.config.table,
+            base: z.object(this.config.base),
             rawTable: {
-                create: rawCreate,
-                select: rawSelect,
-                update: rawUpdate,
+                create: z.object(this.config.raw.create),
+                select: z.object(this.config.raw.select),
+                update: z.object(this.config.raw.update),
             },
-            returnCols: returnCols,
+            returnCols: z.object(this.config.returnCols),
             operation: {
+                // create
                 create: {
                     [SCHEMA_KEYS.input]: z.object({
                         [SCHEMA_KEYS.data]: createData,
                     }),
                     [SCHEMA_KEYS.data]: createData,
                 },
-                update: {
+                createMany: {
+                    [SCHEMA_KEYS.input]: z.object({
+                        [SCHEMA_KEYS.data]: z.array(createData),
+                    }),
+                    [SCHEMA_KEYS.data]: z.array(createData),
+                },
+                // update
+                updateById: {
                     [SCHEMA_KEYS.input]: z.object({
                         [SCHEMA_KEYS.data]: updateData,
-                        [SCHEMA_KEYS.identifiers]: fullIdentifiers,
+                        ...allIdentifiersForInput,
                     }),
                     [SCHEMA_KEYS.data]: updateData,
-                    [SCHEMA_KEYS.identifiers]: fullIdentifiers,
+                    [SCHEMA_KEYS.identifiers]: allIdentifiersSchema,
                 },
+                // get
                 getMany: {
-                    [SCHEMA_KEYS.identifiers]: userOnlyIdentifiers,
-                    [SCHEMA_KEYS.input]: userOnlyIdentifiers,
+                    [SCHEMA_KEYS.input]: z.object({
+                        ...userIdIdentifierForInput,
+                        ...conditionalZodField({
+                            shapeToCheck: this.config.pagination,
+                            key: SCHEMA_KEYS.pagination,
+                            returnSchema: pagination.optional(),
+                        }),
+                        ...conditionalZodField({
+                            shapeToCheck: this.config.filters,
+                            key: SCHEMA_KEYS.filters,
+                            returnSchema: filters.optional(),
+                        }),
+                        // [SCHEMA_KEYS.ordering]: ordering.optional(),
+                    }),
+                    [SCHEMA_KEYS.identifiers]: userOnlyIdentifierSchema,
                     [SCHEMA_KEYS.pagination]: pagination,
                     [SCHEMA_KEYS.filters]: filters,
                     [SCHEMA_KEYS.ordering]: ordering,
                 },
                 getById: {
-                    [SCHEMA_KEYS.identifiers]: fullIdentifiers,
+                    [SCHEMA_KEYS.input]: z.object({ ...allIdentifiersForInput }),
+                    ids: z.object(this.config.id),
+                },
+                // remove
+                removeById: {
+                    [SCHEMA_KEYS.input]: z.object({ ...allIdentifiersForInput }),
+                    [SCHEMA_KEYS.identifiers]: allIdentifiersSchema,
                 },
             },
             identifier: {
-                userId: userId,
-                otherIds: identifiers,
+                userId: userOnlyIdentifierSchema,
+                otherIds: otherIdsIdentifierSchema,
             },
         } as const satisfies DrizzleResourceBuilderReturn;
     }
 }
 
+/**
+ * Defines a resource from a Drizzle table.
+ *
+ * This builder allows you to:
+ * - Define user identifiers (e.g., `userId`).
+ * - Define primary keys.
+ * - Restrict or pick fields for base, create, and update operations.
+ * - Enable filtering, pagination, and ordering capabilities.
+ *
+ * @example
+ * ```ts
+ * const postResource = defineResource(postTable)
+ *     .setUserId('authorId')
+ *     .setIds(['id'])
+ *     .enableFilters({
+ *         status: z.string(),
+ *         createdAt: z.date(),
+ *     })
+ *     .done();
+ * ```
+ */
 export const defineResource = DrizzleResourceBuilder.create;
+
+const select = createSelectSchema(post).pick({ id: true }).shape;
+const shape = select;
+const reObject = z.object(shape);
+
+type ReObjectType = z.input<typeof reObject>;
+type DirectOutputType = z.output<typeof select>;
