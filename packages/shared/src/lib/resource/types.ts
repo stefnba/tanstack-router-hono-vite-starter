@@ -3,12 +3,7 @@ import z from 'zod';
 
 import { InferTableSchema } from '../../lib/db/drizzle/types';
 import { SCHEMA_KEYS } from '../../lib/resource/builder';
-import {
-    AnyZodArray,
-    AnyZodObject,
-    AnyZodShape,
-    AnyZodType,
-} from '../../lib/validation/zod/types';
+import { AnyZodArray, AnyZodObject, AnyZodShape, AnyZodType } from '../../lib/validation/zod/types';
 
 export type ResourceBuilderConfig<T extends Table> = {
     table: T;
@@ -67,7 +62,7 @@ export type DrizzleResourceBuilderReturn = {
         };
         getById: {
             [SCHEMA_KEYS.input]: AnyZodObject;
-            ids: AnyZodType;
+            [SCHEMA_KEYS.identifiers]: AnyZodType;
         };
         // remove
         removeById: {

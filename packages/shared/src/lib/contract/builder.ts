@@ -1,10 +1,10 @@
-import { ContractStandardOperationsBuilder } from '../../lib/contract/standard';
-import { TFeatureSchemaObject } from '../../lib/contract/types';
+import { ContractStandardOperationsBuilder } from '@shared/lib/contract/standard';
+import { TFeatureSchemaObject } from '@shared/lib/contract/types';
 import {
     AnyDrizzleResourceBuilderReturn,
     DrizzleResourceBuilderReturn,
-} from '../../lib/resource/types';
-import { StripIndexSignature } from '../../types/utils';
+} from '@shared/lib/resource/types';
+import { StripIndexSignature } from '@shared/types/utils';
 
 class ContractBuilder<
     S extends Record<string, TFeatureSchemaObject>,

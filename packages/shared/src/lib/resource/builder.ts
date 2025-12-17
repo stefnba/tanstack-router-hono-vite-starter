@@ -2,19 +2,19 @@ import { Table } from 'drizzle-orm';
 import { createSelectSchema } from 'drizzle-zod';
 import z from 'zod';
 
-import { SYSTEM_TABLE_CONFIG_KEYS } from '../../lib/db/system-fields';
-import { paginationSchema } from '../../lib/resource/common';
-import { DrizzleResourceBuilderReturn, ResourceBuilderConfig } from '../../lib/resource/types';
-import { conditionalZodField, getTableShapes } from '../../lib/resource/utils';
-import { omitFromObject, pickFromObject } from '../../lib/utils';
+import { post } from '@shared/features/post/table';
+import { SYSTEM_TABLE_CONFIG_KEYS } from '@shared/lib/db/system-fields';
+import { paginationSchema } from '@shared/lib/resource/common';
+import { DrizzleResourceBuilderReturn, ResourceBuilderConfig } from '@shared/lib/resource/types';
+import { conditionalZodField, getTableShapes } from '@shared/lib/resource/utils';
+import { omitFromObject, pickFromObject } from '@shared/lib/utils';
+
 import {
     AnyZodArray,
     AnyZodShape,
     AnyZodType,
-    EmptyZodObject,
     EmptyZodSchema,
 } from '../../lib/validation/zod/types';
-import { post } from '../../table/post';
 
 export const SCHEMA_KEYS = {
     input: 'input',
