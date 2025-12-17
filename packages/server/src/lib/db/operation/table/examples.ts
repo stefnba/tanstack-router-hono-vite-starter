@@ -1,7 +1,7 @@
 import { createId } from '@paralleldrive/cuid2';
 
-import { user } from '@shared/features/auth/table';
-import { post } from '@shared/features/post/table';
+import { user } from '@app/shared/features/auth/table';
+import { post } from '@app/shared/features/post/table';
 
 import { TableOperationsBuilder } from './core';
 

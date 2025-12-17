@@ -1,6 +1,6 @@
-import { TErrorCategory } from '@server/lib/error/registry/infer';
+import { typedEntries } from '@app/shared/lib/utils';
 
-import { typedEntries } from '@shared/lib/utils';
+import { TErrorCategory } from '@server/lib/error/registry/infer';
 
 import {
     FlattenedRegistryValue,

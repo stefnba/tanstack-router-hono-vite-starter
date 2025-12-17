@@ -9,9 +9,9 @@
         "paths": {
             "@server/*": ["./src/*"],
             "@app/shared/*": ["../shared/src/*"]
-            // "@test/*": ["./test/*"]
         }
     },
     "include": ["src"],
+    "exclude": ["test"],
     "references": [{ "path": "../shared" }]
 }

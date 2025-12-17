@@ -1,5 +1,5 @@
-import type { TPublicErrorCode } from '@shared/config/error-registry';
-import type { TAPIErrorResponse } from '@shared/lib/error/response';
+import type { TPublicErrorCode } from '@app/shared/config/error-registry';
+import type { TAPIErrorResponse } from '@app/shared/lib/error/response';
 
 /**
  * Maps public error codes to handler functions.

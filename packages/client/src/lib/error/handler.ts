@@ -1,4 +1,4 @@
-import { type TAPIErrorResponse, errorResponseApiSchema } from '@shared/lib/error/response';
+import { type TAPIErrorResponse, errorResponseApiSchema } from '@app/shared/lib/error/response';
 
 import { TErrorHandler } from './types';
 

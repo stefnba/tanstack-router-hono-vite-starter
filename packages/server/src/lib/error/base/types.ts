@@ -1,10 +1,10 @@
 import { ContentfulStatusCode } from 'hono/utils/http-status';
 
+import { TPublicErrorCode } from '@app/shared/config/error-registry';
+import { TPublicErrorRegistryDefinition } from '@app/shared/lib/error/registry/types';
+
 import { TErrorRegistryDefinition } from '@server/lib/error/registry/types';
 import { TAppLayer } from '@server/types/app';
-
-import { TPublicErrorCode } from '@shared/config/error-registry';
-import { TPublicErrorRegistryDefinition } from '@shared/lib/error/registry/types';
 
 // ============================================
 // LAYER & HTTP STATUS TYPES
