@@ -396,6 +396,7 @@ class DrizzleResourceBuilder<T extends Table, C extends ResourceBuilderConfig<T>
                 create: {
                     [SCHEMA_KEYS.input]: z.object({
                         [SCHEMA_KEYS.data]: createData,
+                        ...userIdIdentifierForInput,
                     }),
                     [SCHEMA_KEYS.data]: createData,
                 },

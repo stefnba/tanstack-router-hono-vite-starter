@@ -1,6 +1,6 @@
 import { postContract } from '@app/shared/features/post';
 
-import { postQueries } from '@app/server/features/post/db';
+import { postQueries, postRepository } from '@app/server/features/post/db';
 import { appError } from '@app/server/lib/error';
 import { createHonoRouter } from '@app/server/lib/router';
 
@@ -19,19 +19,15 @@ export const endopints = router
                 // return appError.server('INTERNAL_ERROR').throw();
                 const { pageSize = 10, page = 1 } = validated.query ?? {};
 
-                const posts = await postQueries.getManyRecords({
-                    identifiers: [{ field: 'userId', value: validated.user.id }],
+                const posts = await postRepository.getMany({
+                    ids: {
+                        userId: validated.user.id,
+                    },
                     pagination: {
                         page,
                         pageSize,
                     },
                 });
-
-                // const posts = await db.query.post.findMany({
-                //     where: eq(post.userId, validated.user.id),
-                //     limit: limit,
-                //     offset: page,
-                // });
 
                 return posts;
             })
@@ -52,10 +48,12 @@ export const endopints = router
 
                 const { title, content } = validated.json;
 
-                const newPost = await postQueries.createRecord({
+                const newPost = await postRepository.create({
                     data: {
                         title,
                         content,
+                    },
+                    ids: {
                         userId: validated.user.id,
                     },
                 });
