@@ -44,7 +44,7 @@ const PostList = () => {
     const { options } = Route.useLoaderData();
     const postsQuery = useSuspenseQuery(apiEndpoints.posts.getMany({ query: options }));
     const deletePostMutation = useMutation(
-        apiEndpoints.posts.delete({
+        apiEndpoints.posts.deleteById({
             errorHandlers: {
                 default: (error) => {
                     notification.error(error.error.message);
@@ -73,7 +73,7 @@ const PostList = () => {
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    deletePostMutation.mutate({ param: { postId: post.id } });
+                                    deletePostMutation.mutate({ param: { id: post.id } });
                                 }}
                             >
                                 Delete

@@ -103,25 +103,55 @@ export const endopints = router
                 return postData;
             })
     )
+    /**
+     * Delete a post
+     */
     .delete(
-        '/:postId',
+        '/:id',
         router
             .createEndpoint({
-                param: z.object({
-                    postId: z.string(),
-                }),
+                param: postContract.removeById.endpoint.param,
             })
             .withUser()
             .handleMutation(async ({ validated }) => {
-                const { postId } = validated.param;
+                const { id } = validated.param;
 
                 const deletedPost = await postQueries.deleteRecord({
                     identifiers: [
-                        { field: 'id', value: postId },
+                        { field: 'id', value: id },
                         { field: 'userId', value: validated.user.id },
                     ],
                 });
 
                 return deletedPost;
+            })
+    )
+    /**
+     * Update a post
+     */
+    .patch(
+        '/:id',
+        router
+            .createEndpoint({
+                param: postContract.updateById.endpoint.param,
+                json: postContract.updateById.endpoint.json,
+            })
+            .withUser()
+            .handleMutation(async ({ validated }) => {
+                const { id } = validated.param;
+                const { title, content } = validated.json;
+
+                const updatedPost = await postQueries.updateRecord({
+                    identifiers: [
+                        { field: 'id', value: id },
+                        { field: 'userId', value: validated.user.id },
+                    ],
+                    data: {
+                        title,
+                        content,
+                    },
+                });
+
+                return updatedPost;
             })
     );

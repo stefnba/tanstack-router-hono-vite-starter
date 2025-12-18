@@ -11,7 +11,8 @@ export const posts = {
     getMany: createQueryOptions(apiClient.posts.$get, KEYS.POSTS, {
         staleTime: 1000 * 60 * 1,
     }),
-    getOne: createQueryOptions(apiClient.posts[':id'].$get, KEYS.POST),
+    getById: createQueryOptions(apiClient.posts[':id'].$get, KEYS.POST),
     create: createMutationOptions(apiClient.posts.$post, KEYS.POSTS),
-    delete: createMutationOptions(apiClient.posts[':postId'].$delete, KEYS.POSTS),
+    deleteById: createMutationOptions(apiClient.posts[':id'].$delete, KEYS.POSTS),
+    updateById: createMutationOptions(apiClient.posts[':id'].$patch, KEYS.POSTS),
 };
