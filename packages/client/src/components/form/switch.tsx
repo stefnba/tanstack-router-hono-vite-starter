@@ -6,9 +6,9 @@ import {
     FieldDescription,
     FieldError,
     FieldLabel,
-} from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
+} from '@app/client/components/ui/field';
+import { Input } from '@app/client/components/ui/input';
+import { Switch } from '@app/client/components/ui/switch';
 
 import { TAppForm } from './types';
 import { buildFormFieldId, convertToFormValue } from './utils';

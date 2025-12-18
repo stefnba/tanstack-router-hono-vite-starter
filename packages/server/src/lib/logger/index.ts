@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { getEnvVariables } from '@server/lib/env';
+import { getEnvVariables } from '@app/server/lib/env';
 
 import { Logger } from './logger';
 import { LoggerOptions } from './types';

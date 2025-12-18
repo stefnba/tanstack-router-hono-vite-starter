@@ -1,7 +1,7 @@
 import { AnyRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 
-import { useResponsiveSheet } from '@/components/responsive-sheet/hooks';
+import { useResponsiveSheet } from '@app/client/components/responsive-sheet/hooks';
 
 // Re-export common options for consistency (DRY from modal factory logic ideally, but kept separate for clarity)
 export const SHEET_OPTION_SHOW = z.enum(['show']);

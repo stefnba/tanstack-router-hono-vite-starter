@@ -1,9 +1,9 @@
 import { createFileRoute, stripSearchParams } from '@tanstack/react-router';
 import z from 'zod';
 
-import { createModal } from '@/components/responsive-modal/factory';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { createModal } from '@app/client/components/responsive-modal/factory';
+import { Button } from '@app/client/components/ui/button';
+import { Separator } from '@app/client/components/ui/separator';
 
 const testModalWithViews = createModal('test-modal', ['create', 'update'], 'create');
 const testModalWithoutViews = createModal('test-modal-without-views', ['show']);

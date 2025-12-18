@@ -1,4 +1,4 @@
-import { OperationError } from '@server/lib/error/error-type';
+import { OperationError } from '@app/server/lib/error/error-type';
 
 import { AppErrorFactory } from './base';
 

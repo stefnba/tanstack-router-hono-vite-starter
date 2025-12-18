@@ -1,6 +1,6 @@
 import { Env, Input } from 'hono';
 
-import { RouteHandler } from '@server/lib/router/route/handler';
+import { RouteHandler } from '@app/server/lib/router/route/handler';
 
 /**
  * Create a new route handler that simplifies the creation of Hono endpoints.

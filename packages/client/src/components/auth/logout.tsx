@@ -1,8 +1,8 @@
 import { useRouter } from '@tanstack/react-router';
 
-import { Button } from '@/components/ui/button';
-import { queryClientInstance } from '@/lib/api/client';
-import { authClient } from '@/lib/auth/client';
+import { Button } from '@app/client/components/ui/button';
+import { queryClientInstance } from '@app/client/lib/api/client';
+import { authClient } from '@app/client/lib/auth/client';
 
 export const Logout = () => {
     const router = useRouter();

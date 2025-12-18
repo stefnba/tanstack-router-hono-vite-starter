@@ -1,4 +1,4 @@
-import { PermissionError } from '@server/lib/error/error-type';
+import { PermissionError } from '@app/server/lib/error/error-type';
 
 import { AppErrorFactory } from './base';
 

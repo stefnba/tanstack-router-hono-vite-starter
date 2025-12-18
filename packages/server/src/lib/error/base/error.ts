@@ -3,8 +3,8 @@ import z, { ZodError } from 'zod';
 import { TAPIErrorResponse } from '@app/shared/lib/error/response';
 import { generateUniqueId } from '@app/shared/lib/utils';
 
-import { getEnvVariables } from '@server/lib/env';
-import { logger } from '@server/lib/logger';
+import { getEnvVariables } from '@app/server/lib/env';
+import { logger } from '@app/server/lib/logger';
 
 import {
     ErrorChainContext,
@@ -514,7 +514,7 @@ export class BaseError extends Error {
     ) {
         if (process.env.NODE_ENV === 'development') {
             const { formatDevConsole, exportErrorToJson } =
-                await import('@server/lib/error/formatters');
+                await import('@app/server/lib/error/formatters');
 
             await exportErrorToJson(this, requestData);
 

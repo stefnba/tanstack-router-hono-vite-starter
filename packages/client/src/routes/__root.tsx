@@ -2,10 +2,10 @@ import { QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet, createRootRouteWithContext } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
-import { Toaster } from "@/components/ui/sonner"
 
-import { Header } from '@/components/layout/header';
-import { checkProtectedRoute } from '@/lib/auth/protected';
+import { Header } from '@app/client/components/layout/header';
+import { Toaster } from '@app/client/components/ui/sonner';
+import { checkProtectedRoute } from '@app/client/lib/auth/protected';
 
 export interface RouterContext {
     queryClient: QueryClient;

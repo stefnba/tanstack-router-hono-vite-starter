@@ -19,8 +19,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { BaseError } from '@server/lib/error/base';
-import { TErrorRequestData } from '@server/lib/error/base';
+import { BaseError } from '@app/server/lib/error/base';
+import { TErrorRequestData } from '@app/server/lib/error/base';
 
 import {
     extractLineAndColumn,

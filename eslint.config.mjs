@@ -14,7 +14,7 @@ export default defineConfig([
     js.configs.recommended,
     ...tseslint.configs.recommended,
 
-    // 3. Project Rules
+    // 3. General Project Rules
     {
         files: ['**/*.{js,jsx,ts,tsx}'],
         languageOptions: {
@@ -50,8 +50,15 @@ export default defineConfig([
             // Restore strict type checks
             '@typescript-eslint/no-explicit-any': 'warn',
 
-            // No imprt from server except types
+            // Disable standard restricted imports to rely on TS version where needed
             'no-restricted-imports': 'off',
+        },
+    },
+
+    // 4. Client and Shared-specific rules (Block Server Imports)
+    {
+        files: ['packages/client/**/*.{ts,tsx}', 'packages/shared/**/*.{ts,tsx}'],
+        rules: {
             '@typescript-eslint/no-restricted-imports': [
                 'error',
                 {
@@ -75,6 +82,6 @@ export default defineConfig([
         },
     },
 
-    // 4. Prettier (must be last)
+    // 5. Prettier (must be last)
     eslintConfigPrettier,
 ]);

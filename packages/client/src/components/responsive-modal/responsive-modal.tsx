@@ -8,7 +8,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '@/components/ui/dialog';
+} from '@app/client/components/ui/dialog';
 import {
     Drawer,
     DrawerContent,
@@ -16,9 +16,9 @@ import {
     DrawerFooter,
     DrawerHeader,
     DrawerTitle,
-} from '@/components/ui/drawer';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { cn } from '@/lib/utils';
+} from '@app/client/components/ui/drawer';
+import { useIsMobile } from '@app/client/hooks/use-mobile';
+import { cn } from '@app/client/lib/utils';
 
 interface ResponsiveModalContextValue {
     isMobile: boolean;

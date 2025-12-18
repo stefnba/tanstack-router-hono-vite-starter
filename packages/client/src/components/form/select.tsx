@@ -6,14 +6,14 @@ import {
     FieldDescription,
     FieldError,
     FieldLabel,
-} from '@/components/ui/field';
+} from '@app/client/components/ui/field';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select';
+} from '@app/client/components/ui/select';
 
 import { TAppForm } from './types';
 import { buildFormFieldId, convertToFormValue } from './utils';

@@ -1,6 +1,6 @@
-import { SYSTEM_TABLE_CONFIG } from '@shared/lib/db/system-fields/config';
-import { pickFromObject, typedKeys } from '@shared/lib/utils';
-import { Prettify } from '@shared/types/utils';
+import { SYSTEM_TABLE_CONFIG } from '@app/shared/lib/db/system-fields/config';
+import { pickFromObject, typedKeys } from '@app/shared/lib/utils';
+import { Prettify } from '@app/shared/types/utils';
 
 /**
  * Factory function to generate system-managed fields for tables.

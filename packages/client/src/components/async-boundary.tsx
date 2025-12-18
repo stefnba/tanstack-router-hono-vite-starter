@@ -1,9 +1,9 @@
 import { CatchBoundary } from '@tanstack/react-router';
 import { ReactNode, Suspense } from 'react';
 
-import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
-import { normalizeApiError } from '@/lib/error/handler';
+import { Button } from '@app/client/components/ui/button';
+import { Spinner } from '@app/client/components/ui/spinner';
+import { normalizeApiError } from '@app/client/lib/error/handler';
 
 interface AsyncBoundaryProps {
     children: ReactNode;

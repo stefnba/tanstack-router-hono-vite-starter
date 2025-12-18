@@ -1,4 +1,4 @@
-import { DbError } from '@server/lib/error/error-type';
+import { DbError } from '@app/server/lib/error/error-type';
 
 import { AppErrorFactory } from './base';
 

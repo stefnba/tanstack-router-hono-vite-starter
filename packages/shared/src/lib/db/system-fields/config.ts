@@ -1,8 +1,8 @@
 import { createId } from '@paralleldrive/cuid2';
 import { boolean, text, timestamp } from 'drizzle-orm/pg-core';
 
-import { user } from '@shared/features/auth/table';
-import { typedKeys } from '@shared/lib/utils';
+import { user } from '@app/shared/features/auth/table';
+import { typedKeys } from '@app/shared/lib/utils';
 
 /**
  * System-managed fields included in tables.

@@ -1,19 +1,18 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "target": "ES2020",
+        "target": "ES2022",
         "useDefineForClassFields": true,
-        "lib": ["ES2020", "DOM", "DOM.Iterable"],
+        "lib": ["ES2022", "DOM", "DOM.Iterable"],
         "isolatedModules": true,
         "jsx": "react-jsx",
         "types": ["vite/client", "bun-types"],
         "baseUrl": ".",
         "paths": {
-            "@/*": ["./src/*"],
+            "@app/client/*": ["./src/*"],
             "@app/shared/*": ["../shared/src/*"],
-            "@shared/*": ["../shared/src/*"],
             "@app/server": ["../server/src/index.ts"],
-            "@server/*": ["../server/src/*"]
+            "@app/server/*": ["../server/src/*"]
         }
     },
     "include": ["src"],

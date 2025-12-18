@@ -1,4 +1,4 @@
-import { TQueryKey, TQueryKeyString } from '@/lib/api/types';
+import { TQueryKey, TQueryKeyString } from '@app/client/lib/api/types';
 
 export interface BuildQueryKeyParams<T = Record<string, unknown>> {
     defaultKey?: TQueryKeyString;

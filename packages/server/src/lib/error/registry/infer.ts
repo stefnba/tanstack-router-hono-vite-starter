@@ -1,8 +1,8 @@
-import { ERROR_REGISTRY } from '@server/config/error-registry';
+import { ERROR_REGISTRY } from '@app/server/config/error-registry';
 import {
     InferErrorCategoriesFromRegistry,
     InferErrorKeysFromRegistry,
-} from '@server/lib/error/registry/types';
+} from '@app/server/lib/error/registry/types';
 
 /**
  * Union type of all valid error keys in the registry

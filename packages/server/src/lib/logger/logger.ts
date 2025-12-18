@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+
 import { LOG_CONTEXT, LOG_LEVELS, LogLevel, LogMessage, LogOptions, LoggerOptions } from './types';
 
 export class Logger {

@@ -1,7 +1,7 @@
 import z from 'zod';
 
-import { defineContract } from '@shared/lib/contract/builder';
-import { defineResource } from '@shared/lib/resource/builder';
+import { defineContract } from '@app/shared/lib/contract/builder';
+import { defineResource } from '@app/shared/lib/resource/builder';
 
 import { post } from './table';
 

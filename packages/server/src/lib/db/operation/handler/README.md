@@ -39,9 +39,8 @@ const user = await withDbQuery({
 Use when you want to **create a reusable query function** with validation.
 
 ```typescript
-import { z } from 'zod';
-
 import { dbQueryFnHandler } from '@/server/lib/db/query/handler';
+import { z } from 'zod';
 
 // Create reusable function with validation
 const getUserById = dbQueryFnHandler({

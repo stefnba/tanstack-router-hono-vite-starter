@@ -1,9 +1,9 @@
 import { AnyRoute } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
-import { SHEET_OPTIONS } from '@/components/responsive-sheet/factory';
-import { ResponsiveSheet } from '@/components/responsive-sheet/responsive-sheet';
-import { useSearchParamState } from '@/hooks/use-search-param-state';
+import { SHEET_OPTIONS } from '@app/client/components/responsive-sheet/factory';
+import { ResponsiveSheet } from '@app/client/components/responsive-sheet/responsive-sheet';
+import { useSearchParamState } from '@app/client/hooks/use-search-param-state';
 
 /**
  * A hook for managing responsive sheet state synchronized with TanStack Router search parameters.

@@ -1,7 +1,6 @@
+import type { AppType } from '@app/server';
 import { QueryClient } from '@tanstack/react-query';
 import { hc } from 'hono/client';
-
-import type { AppType } from '@app/server';
 
 // Pre-calculated type following Hono's recommendation for large apps
 // This prevents TypeScript from re-inferring the complex app type on every import
@@ -26,5 +25,3 @@ export const queryClientInstance = new QueryClient({
         },
     },
 });
-
-const a = apiClient.test.$get;

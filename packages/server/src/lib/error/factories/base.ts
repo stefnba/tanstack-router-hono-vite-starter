@@ -1,4 +1,4 @@
-import { BaseError } from '@server/lib/error/base';
+import { BaseError } from '@app/server/lib/error/base';
 
 /**
  * Abstract Base Factory for all application errors.

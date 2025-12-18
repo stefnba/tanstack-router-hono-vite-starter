@@ -1,7 +1,7 @@
 import { createMiddleware } from 'hono/factory';
 
-import { auth } from '@server/lib/auth/config';
-import type { TAuthContext } from '@server/lib/auth/types';
+import { auth } from '@app/server/lib/auth/config';
+import type { TAuthContext } from '@app/server/lib/auth/types';
 
 export const authMiddleware = createMiddleware<{
     Variables: TAuthContext;

@@ -1,9 +1,9 @@
 import { AnyRoute } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
-import { MODAL_OPTIONS } from '@/components/responsive-modal/factory';
-import { ResponsiveModal } from '@/components/responsive-modal/responsive-modal';
-import { useSearchParamState } from '@/hooks/use-search-param-state';
+import { MODAL_OPTIONS } from '@app/client/components/responsive-modal/factory';
+import { ResponsiveModal } from '@app/client/components/responsive-modal/responsive-modal';
+import { useSearchParamState } from '@app/client/hooks/use-search-param-state';
 
 /**
  * A hook for managing responsive modal state synchronized with TanStack Router search parameters.

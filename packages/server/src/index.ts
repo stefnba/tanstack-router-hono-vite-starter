@@ -6,16 +6,16 @@ import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import z from 'zod';
 
-import { post } from '@server/db/tables';
+import { post } from '@app/server/db/tables';
 import {
     authEndopints,
     postEndpoints,
     protectedEndpoints,
     statusEndpoints,
-} from '@server/endpoints';
-import { TAuthContext } from '@server/lib/auth';
-import { getEnvVariables } from '@server/lib/env';
-import { handleGlobalError } from '@server/lib/error/handlers';
+} from '@app/server/endpoints';
+import { TAuthContext } from '@app/server/lib/auth';
+import { getEnvVariables } from '@app/server/lib/env';
+import { handleGlobalError } from '@app/server/lib/error/handlers';
 
 const { CLIENT_URL } = getEnvVariables();
 

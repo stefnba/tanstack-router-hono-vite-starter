@@ -1,6 +1,6 @@
 import { createId } from '@paralleldrive/cuid2';
 
-import { auth } from '@server/lib/auth/config';
+import { auth } from '../../src/lib/auth/config';
 
 export interface TestAuthUser {
     id: string;

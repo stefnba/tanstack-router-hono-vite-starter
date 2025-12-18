@@ -1,8 +1,8 @@
 import z, { util } from 'zod';
 
-import { typedFromEntries } from '@shared/lib/utils';
-import { AnyZodShape } from '@shared/lib/validation/zod/types';
-import { Prettify } from '@shared/types/utils';
+import { typedFromEntries } from '@app/shared/lib/utils';
+import { AnyZodShape } from '@app/shared/lib/validation/zod/types';
+import { Prettify } from '@app/shared/types/utils';
 
 /**
  * Utility to pick specific fields from a Zod object schema.

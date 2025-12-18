@@ -4,9 +4,9 @@ import { z } from 'zod';
 
 import { postContract } from '@app/shared/features/post';
 
-import { post } from '@server/db/tables';
-import { TableOperationsBuilder } from '@server/lib/db/operation/table/core';
-import { createHonoRouter } from '@server/lib/router';
+import { post } from '@app/server/db/tables';
+import { TableOperationsBuilder } from '@app/server/lib/db/operation/table/core';
+import { createHonoRouter } from '@app/server/lib/router';
 
 const postQueries = new TableOperationsBuilder(post);
 

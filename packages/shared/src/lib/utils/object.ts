@@ -1,4 +1,4 @@
-import { Prettify, objectHasKey } from '@shared/types/utils';
+import { Prettify, objectHasKey } from '@app/shared/types/utils';
 
 /**
  * Type-safe wrapper for Object.entries

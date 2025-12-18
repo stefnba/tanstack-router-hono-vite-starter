@@ -1,13 +1,13 @@
 import z from 'zod';
 
-import { TFeatureSchemaObject } from '@shared/lib/contract/types';
-import { SCHEMA_KEYS } from '@shared/lib/resource/builder';
-import { orderingSchema } from '@shared/lib/resource/common';
+import { TFeatureSchemaObject } from '@app/shared/lib/contract/types';
+import { SCHEMA_KEYS } from '@app/shared/lib/resource/builder';
+import { orderingSchema } from '@app/shared/lib/resource/common';
 import {
     AnyDrizzleResourceBuilderReturn,
     DrizzleResourceBuilderReturn,
-} from '@shared/lib/resource/types';
-import { StripIndexSignature } from '@shared/types/utils';
+} from '@app/shared/lib/resource/types';
+import { StripIndexSignature } from '@app/shared/types/utils';
 
 export class ContractStandardOperationsBuilder<
     S extends Record<string, TFeatureSchemaObject>,

@@ -1,7 +1,7 @@
-import { TAppErrorParams } from '@server/lib/error/base';
-import { BaseError } from '@server/lib/error/base/error';
-import { TErrorCategory, TErrorCodeByCategory } from '@server/lib/error/registry/infer';
-import { getErrorCategory } from '@server/lib/error/registry/private';
+import { TAppErrorParams } from '@app/server/lib/error/base';
+import { BaseError } from '@app/server/lib/error/base/error';
+import { TErrorCategory, TErrorCodeByCategory } from '@app/server/lib/error/registry/infer';
+import { getErrorCategory } from '@app/server/lib/error/registry/private';
 
 /**
  * Type helper for creating domain error classes (ValidationError, AuthError, etc.)

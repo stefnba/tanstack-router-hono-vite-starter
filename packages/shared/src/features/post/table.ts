@@ -1,8 +1,8 @@
 import { relations } from 'drizzle-orm';
 import { pgTable, text } from 'drizzle-orm/pg-core';
 
-import { user } from '@shared/features/auth/table';
-import { createSystemTableFields } from '@shared/lib/db/system-fields/factory';
+import { user } from '@app/shared/features/auth/table';
+import { createSystemTableFields } from '@app/shared/lib/db/system-fields/factory';
 
 export const post = pgTable('post', {
     ...createSystemTableFields(),

@@ -1,5 +1,5 @@
-import { HTTP_STATUS_CODES } from '@shared/lib/error/config';
-import { createPublicErrorRecord } from '@shared/lib/error/registry/public';
+import { HTTP_STATUS_CODES } from '@app/shared/lib/error/config';
+import { createPublicErrorRecord } from '@app/shared/lib/error/registry/public';
 
 /**
  * Public error registry containing user-facing error definitions

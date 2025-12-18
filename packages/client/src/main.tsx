@@ -3,7 +3,7 @@ import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 
-import { queryClientInstance } from '@/lib/api/client';
+import { queryClientInstance } from '@app/client/lib/api/client';
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen';

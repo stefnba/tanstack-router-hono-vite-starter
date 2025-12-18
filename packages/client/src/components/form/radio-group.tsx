@@ -9,9 +9,9 @@ import {
     FieldLegend,
     FieldSet,
     FieldTitle,
-} from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+} from '@app/client/components/ui/field';
+import { Input } from '@app/client/components/ui/input';
+import { RadioGroup, RadioGroupItem } from '@app/client/components/ui/radio-group';
 
 import { TAppForm } from './types';
 import { buildFormFieldId, convertToFormValue } from './utils';

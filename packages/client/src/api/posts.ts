@@ -1,6 +1,6 @@
-import { apiClient } from '@/lib/api/client';
-import { createMutationOptions } from '@/lib/api/mutation';
-import { createQueryOptions } from '@/lib/api/query';
+import { apiClient } from '@app/client/lib/api/client';
+import { createMutationOptions } from '@app/client/lib/api/mutation';
+import { createQueryOptions } from '@app/client/lib/api/query';
 
 const KEYS = {
     POSTS: 'posts',

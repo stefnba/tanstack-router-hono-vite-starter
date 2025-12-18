@@ -1,8 +1,8 @@
 import { createFileRoute, stripSearchParams } from '@tanstack/react-router';
 
-import { createSheet } from '@/components/responsive-sheet';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { createSheet } from '@app/client/components/responsive-sheet';
+import { Button } from '@app/client/components/ui/button';
+import { Separator } from '@app/client/components/ui/separator';
 
 const testSheet = createSheet('test-sheet', ['view1', 'view2'], 'view1');
 

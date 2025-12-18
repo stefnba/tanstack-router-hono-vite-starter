@@ -21,8 +21,8 @@ import { GetTableColumnDefinitions, GetTableColumnKeys } from '@app/shared/lib/d
 import { InferTableTypes } from '@app/shared/lib/db/drizzle/types';
 import { typedKeys } from '@app/shared/lib/utils';
 
-import { db } from '@server/lib/db';
-import { withDbQuery } from '@server/lib/db/operation/handler';
+import { db } from '@app/server/lib/db';
+import { withDbQuery } from '@app/server/lib/db/operation/handler';
 import {
     TBooleanFilter,
     TOnConflict,
@@ -30,8 +30,8 @@ import {
     TPagination,
     TStandardTableOperation,
     TValidTableForFrom,
-} from '@server/lib/db/operation/table/types';
-import { withFilters, withOrdering, withPagination } from '@server/lib/db/operation/utils';
+} from '@app/server/lib/db/operation/table/types';
+import { withFilters, withOrdering, withPagination } from '@app/server/lib/db/operation/utils';
 
 /**
  * TableOperationsBuilder - Generic low-level database CRUD operations builder.

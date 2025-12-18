@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { QueryFn } from '@server/lib/db/operation/types';
+import { QueryFn } from '@app/server/lib/db/operation/types';
 
 /**
  * Configuration parameters for the query function handler wrapper.

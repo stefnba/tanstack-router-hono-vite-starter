@@ -5,7 +5,7 @@
 // import { fail } from 'assert';
 // import { beforeAll, describe, expect, it } from 'vitest';
 
-// import { TableOperationsBuilder } from '@server/lib/db/query/table-operations';
+// import { TableOperationsBuilder } from '@app/server/lib/db/query/table-operations';
 
 // describe('TableOperationsBuilder', () => {
 //     let testUser: Awaited<ReturnType<typeof createTestUser>>;

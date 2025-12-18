@@ -1,6 +1,6 @@
 import { ZodError } from 'zod';
 
-import { ValidationError } from '@server/lib/error/error-type';
+import { ValidationError } from '@app/server/lib/error/error-type';
 
 import { AppErrorFactory } from './base';
 

@@ -2,9 +2,9 @@ import { createFileRoute } from '@tanstack/react-router';
 import { zodValidator } from '@tanstack/zod-adapter';
 import { z } from 'zod';
 
-import { useAppForm } from '@/components/form';
-import { sessionQueryOptions } from '@/lib/auth/api';
-import { authClient } from '@/lib/auth/client';
+import { useAppForm } from '@app/client/components/form';
+import { sessionQueryOptions } from '@app/client/lib/auth/api';
+import { authClient } from '@app/client/lib/auth/client';
 
 export const Route = createFileRoute('/_auth/signin')({
     component: RouteComponent,

@@ -5,7 +5,7 @@ import {
     ServerErrorStatusCode,
 } from 'hono/utils/http-status';
 
-import { BaseError } from '@server/lib/error/base';
+import { BaseError } from '@app/server/lib/error/base';
 
 /**
  * Type narrowing function to ensure we only return error status codes

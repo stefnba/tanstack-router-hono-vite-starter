@@ -2,12 +2,12 @@ import { UseMutationOptions } from '@tanstack/react-query';
 import { InferRequestType, InferResponseType } from 'hono';
 import { StatusCode } from 'hono/utils/http-status';
 
-import { ErrorStatusCode } from '@shared/lib/error/types';
+import { ErrorStatusCode } from '@app/shared/lib/error/types';
 
-import { AnyEndpoint, TQueryKeyString } from '@/lib/api/types';
-import { buildQueryKey } from '@/lib/api/utils';
-import { handleApiError } from '@/lib/error/handler';
-import { TErrorHandler } from '@/lib/error/types';
+import { AnyEndpoint, TQueryKeyString } from '@app/client/lib/api/types';
+import { buildQueryKey } from '@app/client/lib/api/utils';
+import { handleApiError } from '@app/client/lib/error/handler';
+import { TErrorHandler } from '@app/client/lib/error/types';
 
 import { queryClientInstance } from './client';
 

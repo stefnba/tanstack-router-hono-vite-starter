@@ -1,9 +1,9 @@
 import { Hono } from 'hono';
 
-import { TAuthContext } from '@server/lib/auth';
-import { authMiddleware } from '@server/lib/auth/middleware';
-import { createRouteHandler } from '@server/lib/router/route';
-import { TValidationObject } from '@server/lib/router/route/types';
+import { TAuthContext } from '@app/server/lib/auth';
+import { authMiddleware } from '@app/server/lib/auth/middleware';
+import { createRouteHandler } from '@app/server/lib/router/route';
+import { TValidationObject } from '@app/server/lib/router/route/types';
 
 export const createHonoRouter = (
     { isProtected = true }: { isProtected?: boolean } = { isProtected: true }

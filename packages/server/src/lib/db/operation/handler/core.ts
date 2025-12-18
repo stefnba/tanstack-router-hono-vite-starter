@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-import { QueryFnHandlerParams } from '@server/lib/db/operation/handler/types';
-import type { QueryFn } from '@server/lib/db/operation/types';
-import { appError } from '@server/lib/error';
+import { QueryFnHandlerParams } from '@app/server/lib/db/operation/handler/types';
+import type { QueryFn } from '@app/server/lib/db/operation/types';
+import { appError } from '@app/server/lib/error';
 
 import { handleDbQueryError } from './error';
 

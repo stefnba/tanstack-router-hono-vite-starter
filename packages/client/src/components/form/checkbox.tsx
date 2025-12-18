@@ -1,6 +1,6 @@
 import { DeepKeys } from '@tanstack/react-form';
 
-import { Checkbox } from '@/components/ui/checkbox';
+import { Checkbox } from '@app/client/components/ui/checkbox';
 import {
     Field,
     FieldContent,
@@ -10,8 +10,8 @@ import {
     FieldLabel,
     FieldLegend,
     FieldSet,
-} from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
+} from '@app/client/components/ui/field';
+import { Input } from '@app/client/components/ui/input';
 
 import { TAppForm } from './types';
 import { buildFormFieldId, ensureArray } from './utils';

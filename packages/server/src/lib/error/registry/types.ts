@@ -2,7 +2,7 @@ import { ContentfulStatusCode } from 'hono/utils/http-status';
 
 import { TPublicErrorRegistryDefinition } from '@app/shared/lib/error/registry/types';
 
-import { TErrorLayer } from '@server/lib/error/base/types';
+import { TErrorLayer } from '@app/server/lib/error/base/types';
 
 /**
  * Definition for a single error in the registry

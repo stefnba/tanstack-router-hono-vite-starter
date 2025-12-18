@@ -1,8 +1,8 @@
 import { Table } from 'drizzle-orm';
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-zod';
 
-import { RawTableShapes } from '@shared/lib/resource/types';
-import type { AnyZodShape, AnyZodType } from '@shared/lib/validation/zod/types';
+import { RawTableShapes } from '@app/shared/lib/resource/types';
+import type { AnyZodShape, AnyZodType } from '@app/shared/lib/validation/zod/types';
 
 /**
  * Gets the raw create, select, and update schemas for a given table.

@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { Button } from '@/components/ui/button';
-import { notification } from '@/lib/notification';
+import { Button } from '@app/client/components/ui/button';
+import { notification } from '@app/client/lib/notification';
 
 export const Route = createFileRoute('/showroom/toast')({
     component: RouteComponent,

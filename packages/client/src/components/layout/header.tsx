@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router';
 
-import { Logout } from '@/components/auth/logout';
+import { Logout } from '@app/client/components/auth/logout';
 
 interface HeaderProps {
     isAuthenticated: boolean;

@@ -2,8 +2,8 @@ import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
-import * as schema from '@server/db/tables';
-import { getEnvVariables } from '@server/lib/env';
+import * as schema from '@app/server/db/tables';
+import { getEnvVariables } from '@app/server/lib/env';
 
 const { DATABASE_URL } = getEnvVariables();
 

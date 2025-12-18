@@ -1,4 +1,4 @@
-import { ResourceError } from '@server/lib/error/error-type';
+import { ResourceError } from '@app/server/lib/error/error-type';
 
 import { AppErrorFactory } from './base';
 

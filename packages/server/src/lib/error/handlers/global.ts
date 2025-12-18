@@ -1,6 +1,6 @@
 import { Context } from 'hono';
 
-import { BaseError } from '@server/lib/error/base';
+import { BaseError } from '@app/server/lib/error/base';
 
 /**
  * Global error handler for Hono applications

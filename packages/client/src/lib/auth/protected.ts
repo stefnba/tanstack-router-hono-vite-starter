@@ -1,6 +1,6 @@
 import { redirect } from '@tanstack/react-router';
 
-import { RouterContext } from '@/routes/__root';
+import { RouterContext } from '@app/client/routes/__root';
 
 import { sessionQueryOptions } from './api';
 

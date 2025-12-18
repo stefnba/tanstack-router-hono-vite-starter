@@ -6,12 +6,18 @@ import { z } from 'zod';
 
 import { postContract } from '@app/shared/features/post';
 
-import { apiEndpoints } from '@/api';
-import { AsyncBoundary } from '@/components/async-boundary';
-import { useAppForm } from '@/components/form';
-import { Button } from '@/components/ui/button';
-import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@/components/ui/item';
-import { notification } from '@/lib/notification';
+import { apiEndpoints } from '@app/client/api';
+import { AsyncBoundary } from '@app/client/components/async-boundary';
+import { useAppForm } from '@app/client/components/form';
+import { Button } from '@app/client/components/ui/button';
+import {
+    Item,
+    ItemActions,
+    ItemContent,
+    ItemDescription,
+    ItemTitle,
+} from '@app/client/components/ui/item';
+import { notification } from '@app/client/lib/notification';
 
 export const Route = createFileRoute('/_protected/posts/')({
     validateSearch: zodValidator(postContract.getMany.endpoint.query),

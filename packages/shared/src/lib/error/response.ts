@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { PUBLIC_ERROR_REGISTRY, TPublicErrorCode } from '@shared/config/error-registry';
-import { typedKeys } from '@shared/lib/utils';
+import { PUBLIC_ERROR_REGISTRY, TPublicErrorCode } from '@app/shared/config/error-registry';
+import { typedKeys } from '@app/shared/lib/utils';
 
 /**
  * Zod schema for the public error codes

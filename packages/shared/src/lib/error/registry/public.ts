@@ -1,5 +1,8 @@
-import { TPublicErrorRegistry, TPublicErrorRegistryOutput } from '@shared/lib/error/registry/types';
-import { typedEntries } from '@shared/lib/utils';
+import {
+    TPublicErrorRegistry,
+    TPublicErrorRegistryOutput,
+} from '@app/shared/lib/error/registry/types';
+import { typedEntries } from '@app/shared/lib/utils';
 
 /**
  * Create a public error registry

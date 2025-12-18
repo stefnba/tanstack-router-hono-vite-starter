@@ -1,7 +1,7 @@
 import { DrizzleQueryError } from 'drizzle-orm';
 import postgres from 'postgres';
 
-import { appError } from '@server/lib/error';
+import { appError } from '@app/server/lib/error';
 
 export type THandleDbQueryDetailsParams = {
     /** The table name being queried (for error context) */

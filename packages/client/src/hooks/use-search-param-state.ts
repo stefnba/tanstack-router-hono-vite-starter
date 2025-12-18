@@ -2,7 +2,7 @@ import { AnyRoute } from '@tanstack/react-router';
 import { useCallback, useRef } from 'react';
 import { z } from 'zod';
 
-import { useSearchParamView } from '@/components/search-param-view';
+import { useSearchParamView } from '@app/client/components/search-param-view';
 
 // Shared constants for options
 export const OPTION_SHOW = z.enum(['show']);

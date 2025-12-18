@@ -1,7 +1,7 @@
 import { PUBLIC_ERROR_REGISTRY } from '@app/shared/config/error-registry';
 import { HTTP_STATUS_CODES } from '@app/shared/lib/error/config';
 
-import { ErrorRegistry } from '@server/lib/error/registry/private';
+import { ErrorRegistry } from '@app/server/lib/error/registry/private';
 
 /**
  * Internal error registry containing detailed error definitions

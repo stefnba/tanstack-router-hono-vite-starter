@@ -14,8 +14,8 @@
  * - Link to full JSON export for deep debugging
  *
  */
-import { BaseError } from '@server/lib/error/base';
-import { TErrorRequestData } from '@server/lib/error/base';
+import { BaseError } from '@app/server/lib/error/base';
+import { TErrorRequestData } from '@app/server/lib/error/base';
 
 import {
     extractLineAndColumn,

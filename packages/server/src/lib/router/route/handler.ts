@@ -7,10 +7,10 @@ import z from 'zod';
 import { typedEntries } from '@app/shared/lib/utils';
 import { Prettify } from '@app/shared/types/utils';
 
-import { TAuthUser, getUser } from '@server/lib/auth';
-import { BaseError } from '@server/lib/error/base';
-import { handleRouteError } from '@server/lib/error/handlers/route';
-import { TValidationObject } from '@server/lib/router/route/types';
+import { TAuthUser, getUser } from '@app/server/lib/auth';
+import { BaseError } from '@app/server/lib/error/base';
+import { handleRouteError } from '@app/server/lib/error/handlers/route';
+import { TValidationObject } from '@app/server/lib/router/route/types';
 
 export class RouteHandler<E extends Env, P extends string, I extends Input> {
     private requireAuth: boolean = false;

@@ -2,10 +2,10 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 import z from 'zod';
 
-import { useAppForm } from '@/components/form';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { authClient } from '@/lib/auth/client';
+import { useAppForm } from '@app/client/components/form';
+import { Button } from '@app/client/components/ui/button';
+import { Label } from '@app/client/components/ui/label';
+import { authClient } from '@app/client/lib/auth/client';
 
 export const Route = createFileRoute('/_auth/signup')({
     component: RouteComponent,

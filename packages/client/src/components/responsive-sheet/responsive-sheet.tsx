@@ -7,8 +7,8 @@ import {
     SheetFooter,
     SheetHeader,
     SheetTitle,
-} from '@/components/ui/sheet';
-import { cn } from '@/lib/utils';
+} from '@app/client/components/ui/sheet';
+import { cn } from '@app/client/lib/utils';
 
 export interface ResponsiveSheetProps {
     open: boolean;

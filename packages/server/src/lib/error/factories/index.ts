@@ -1,4 +1,4 @@
-import { ERROR_REGISTRY } from '@server/config/error-registry';
+import { ERROR_REGISTRY } from '@app/server/config/error-registry';
 import {
     DbError,
     OperationError,
@@ -6,9 +6,13 @@ import {
     ResourceError,
     ServerError,
     ValidationError,
-} from '@server/lib/error/error-type';
-import { TErrorCategory, TErrorCodeByCategory, TErrorKeys } from '@server/lib/error/registry/infer';
-import { TErrorFactoryParams } from '@server/lib/error/types';
+} from '@app/server/lib/error/error-type';
+import {
+    TErrorCategory,
+    TErrorCodeByCategory,
+    TErrorKeys,
+} from '@app/server/lib/error/registry/infer';
+import { TErrorFactoryParams } from '@app/server/lib/error/types';
 
 import { DbErrorFactory } from './db';
 import { OperationErrorFactory } from './operation';

@@ -1,7 +1,7 @@
 import { AnyRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 
-import { useResponsiveModal } from '@/components/responsive-modal/hooks';
+import { useResponsiveModal } from '@app/client/components/responsive-modal/hooks';
 
 export const MODAL_OPTION_SHOW = z.enum(['show']);
 export const MODAL_OPTION_HIDE = z.enum(['hide']);

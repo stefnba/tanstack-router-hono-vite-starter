@@ -2,8 +2,8 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 import * as z from 'zod';
 
-import { useAppForm } from '@/components/form';
-import { Button } from '@/components/ui/button';
+import { useAppForm } from '@app/client/components/form';
+import { Button } from '@app/client/components/ui/button';
 import {
     Card,
     CardContent,
@@ -11,8 +11,8 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { Field, FieldGroup } from '@/components/ui/field';
+} from '@app/client/components/ui/card';
+import { Field, FieldGroup } from '@app/client/components/ui/field';
 
 const formSchema = z.object({
     username: z

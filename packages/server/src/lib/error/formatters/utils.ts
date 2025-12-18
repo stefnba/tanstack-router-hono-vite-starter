@@ -1,5 +1,5 @@
-import { BaseError } from '@server/lib/error/base';
-import { TErrorChainItem } from '@server/lib/error/base';
+import { BaseError } from '@app/server/lib/error/base';
+import { TErrorChainItem } from '@app/server/lib/error/base';
 
 /**
  * Cleans and simplifies file paths for better readability in error logs

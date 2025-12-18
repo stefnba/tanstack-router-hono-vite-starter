@@ -1,7 +1,7 @@
 import { DrizzleTypeError, GetColumnData, Table } from 'drizzle-orm';
 import { TableLikeHasEmptySelection } from 'drizzle-orm/pg-core';
 
-import { GetTableColumnKeys } from '@shared/lib/db/drizzle';
+import { GetTableColumnKeys } from '@app/shared/lib/db/drizzle';
 
 /**
  * The standard table operation types the TableOperationsBuilder supports

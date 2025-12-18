@@ -3,12 +3,12 @@ import { isRedirect, redirect } from '@tanstack/react-router';
 import { InferRequestType, InferResponseType } from 'hono/client';
 import { StatusCode } from 'hono/utils/http-status';
 
-import { ErrorStatusCode } from '@shared/lib/error/types';
+import { ErrorStatusCode } from '@app/shared/lib/error/types';
 
-import { AnyEndpoint, TQueryKeyString } from '@/lib/api/types';
-import { buildQueryKey } from '@/lib/api/utils';
-import { handleApiError, normalizeApiError } from '@/lib/error/handler';
-import { TErrorHandler } from '@/lib/error/types';
+import { AnyEndpoint, TQueryKeyString } from '@app/client/lib/api/types';
+import { buildQueryKey } from '@app/client/lib/api/utils';
+import { handleApiError, normalizeApiError } from '@app/client/lib/error/handler';
+import { TErrorHandler } from '@app/client/lib/error/types';
 
 /**
  * Creates a factory function that generates strongly-typed `queryOptions` for TanStack Query,

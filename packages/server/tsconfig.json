@@ -4,7 +4,7 @@
         "types": ["bun-types"],
         "baseUrl": ".",
         "paths": {
-            "@server/*": ["./src/*"],
+            "@app/server/*": ["./src/*"],
             "@app/shared/*": ["../shared/src/*"]
         }
     },
