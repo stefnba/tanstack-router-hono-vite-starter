@@ -1,4 +1,8 @@
 import { createId } from '@paralleldrive/cuid2';
+import { eq } from 'drizzle-orm';
+
+import { user } from '@app/server/db/tables';
+import { db } from '@app/server/lib/db';
 
 import { auth } from '../../src/lib/auth/config';
 
@@ -56,4 +60,26 @@ export const createTestAuth = async (): Promise<TestAuthSetup> => {
     const testUser = { id: userId, email };
 
     return { testUser, authHeaders };
+};
+
+export const setupTestAuth = async (): Promise<TestAuthSetup> => {
+    const { testUser, authHeaders } = await createTestAuth();
+
+    // Only log in non-silent test mode
+    if (process.env.SILENT_TESTS !== 'true') {
+        console.log('✅  Test user created:', testUser.email, '\n');
+    }
+
+    return { testUser, authHeaders };
+};
+
+export const cleanupTestUser = async (testUser?: TestAuthUser) => {
+    if (testUser?.id) {
+        await db
+            .delete(user)
+            .where(eq(user.id, testUser.id))
+            .then(() => {
+                console.log('\n🗑️  Test user deleted:', testUser.email);
+            });
+    }
 };

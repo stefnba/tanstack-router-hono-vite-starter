@@ -1,7 +1,8 @@
 import { createId } from '@paralleldrive/cuid2';
 
-import { user } from '../../../shared/src/features/auth/table';
-import { db } from '../../src/lib/db';
+import { user } from '@app/shared/features/auth/table';
+
+import { db } from '@app/server/lib/db';
 
 /**
  * Creates a user in the database and returns the user object.

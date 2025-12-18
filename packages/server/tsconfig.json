@@ -4,10 +4,14 @@
         "types": ["bun-types"],
         "baseUrl": ".",
         "paths": {
+            "@app/server/testing/*": ["./test/*"],
             "@app/server/*": ["./src/*"],
             "@app/shared/*": ["../shared/src/*"]
         }
     },
-    "include": ["src"],
-    "exclude": ["test"]
+    // We include "test" here to ensure IDE support and type safety for test files.
+    // This is safe because "noEmit": true in the root tsconfig prevents any JS output.
+    // Production builds (Bun) run from "src/index.ts" directly and won't bundle tests
+    // unless explicitly imported by the source code.
+    "include": ["src", "test"]
 }
