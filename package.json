@@ -10,6 +10,7 @@
         "dev:client": "bun --filter @app/client dev",
         "dev:server": "bun --filter @app/server dev",
         "lint": "eslint .",
+        "typecheck": "bun --filter '*' typecheck",
         "lint:fix": "eslint . --fix",
         "format": "prettier --write ."
     },

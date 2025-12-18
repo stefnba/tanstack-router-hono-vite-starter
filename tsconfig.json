@@ -10,20 +10,13 @@
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "esModuleInterop": true,
-        "composite": true,
-        "declaration": true,
-        "declarationMap": true,
+        "allowJs": true,
         "baseUrl": ".",
         "paths": {
             // Don't specify other paths, this willlikely cause your app to crash at runtime
             "@app/*": ["packages/*/src"]
         }
     },
-    "files": [],
-    "references": [
-        { "path": "./packages/shared" },
-        { "path": "./packages/server" },
-        { "path": "./packages/client" }
-    ],
+    "include": ["eslint.config.mjs"],
     "exclude": ["node_modules", "dist"]
 }

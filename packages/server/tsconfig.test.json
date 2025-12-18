@@ -1,0 +1,15 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": ".",
+        "noEmit": true,
+        "composite": false,
+        "paths": {
+            "@app/shared/*": ["../shared/src/*"],
+            "@server/*": ["./src/*"],
+            "@test/*": ["./test/*"]
+        }
+    },
+    "include": ["src", "test", "../shared", "drizzle.config.ts", "drizzle"],
+    "exclude": ["node_modules"]
+}

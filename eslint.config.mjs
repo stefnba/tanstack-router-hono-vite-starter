@@ -21,7 +21,12 @@ export default defineConfig([
             ecmaVersion: 2021,
             globals: globals.browser,
             parserOptions: {
-                project: ['./tsconfig.json', './packages/*/tsconfig.json'],
+                project: [
+                    './tsconfig.json',
+                    './packages/*/tsconfig.json',
+                    './packages/*/tsconfig.node.json',
+                    './packages/*/tsconfig.test.json',
+                ],
                 tsconfigRootDir: import.meta.dirname,
             },
         },
@@ -44,6 +49,29 @@ export default defineConfig([
 
             // Restore strict type checks
             '@typescript-eslint/no-explicit-any': 'warn',
+
+            // No imprt from server except types
+            'no-restricted-imports': 'off',
+            '@typescript-eslint/no-restricted-imports': [
+                'error',
+                {
+                    paths: [
+                        {
+                            name: '@app/server',
+                            message: 'Only import TYPES from @app/server. Use "import type ..."',
+                            allowTypeImports: true,
+                        },
+                    ],
+                    patterns: [
+                        {
+                            group: ['@app/server/*'],
+                            message:
+                                'Do not import implementation details from server. Use type imports only.',
+                            allowTypeImports: true,
+                        },
+                    ],
+                },
+            ],
         },
     },
 
