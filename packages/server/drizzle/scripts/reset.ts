@@ -4,13 +4,13 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
 import * as dbTable from '../../src/db/tables';
-import { getEnvVariables } from '../../src/lib/env';
+import { env } from '../../src/lib/env';
 
 // Import all feature schemas
 
 // Handle both default and named exports
 
-const { DATABASE_URL, NODE_ENV } = getEnvVariables();
+const { DATABASE_URL, NODE_ENV } = env;
 
 if (NODE_ENV !== 'development') {
     throw new Error('This script can only be run in development mode');

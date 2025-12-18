@@ -3,7 +3,7 @@ import z, { ZodError } from 'zod';
 import { TAPIErrorResponse } from '@app/shared/lib/error/response';
 import { generateUniqueId } from '@app/shared/lib/utils';
 
-import { getEnvVariables } from '@app/server/lib/env';
+import { env } from '@app/server/lib/env';
 import { logger } from '@app/server/lib/logger';
 
 import {
@@ -172,7 +172,7 @@ export class BaseError extends Error {
         };
 
         // In development, include debug info for easier troubleshooting
-        if (getEnvVariables().NODE_ENV === 'development') {
+        if (env.NODE_ENV === 'development') {
             baseResponse.error.details = {
                 ...publicError?.details,
                 originalCode: this.key,

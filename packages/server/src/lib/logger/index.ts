@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { getEnvVariables } from '@app/server/lib/env';
+import { env } from '@app/server/lib/env';
 
 import { Logger } from './logger';
 import { LoggerOptions } from './types';
@@ -12,7 +12,7 @@ export * from './types';
  * Creates a logger instance with environment-specific configuration
  */
 export function createLogger() {
-    const { NODE_ENV } = getEnvVariables();
+    const { NODE_ENV } = env;
     const isTest = NODE_ENV === 'test';
     const isProd = NODE_ENV === 'production';
 

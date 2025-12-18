@@ -13,10 +13,10 @@ import {
     statusEndpoints,
 } from '@app/server/endpoints';
 import { TAuthContext } from '@app/server/lib/auth';
-import { getEnvVariables } from '@app/server/lib/env';
+import { env } from '@app/server/lib/env';
 import { handleGlobalError } from '@app/server/lib/error/handlers';
 
-const { CLIENT_URL } = getEnvVariables();
+const { CLIENT_URL, NODE_ENV } = env;
 
 // Extend Hono's Context type to include our user
 declare module 'hono' {
@@ -37,7 +37,9 @@ const app = new Hono<{
 // ================================
 // Middleware
 // ================================
-app.use('*', logger());
+if (NODE_ENV !== 'test') {
+    app.use('*', logger());
+}
 app.use(
     '*',
     cors({
@@ -84,7 +86,7 @@ app.on(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/api/*', (c) => {
 // ================================
 // Serve Static Assets (The React Build)
 // This serves files like /assets/index.js directly
-if (getEnvVariables().NODE_ENV === 'production') {
+if (env.NODE_ENV === 'production') {
     app.use(
         '/*',
         serveStatic({

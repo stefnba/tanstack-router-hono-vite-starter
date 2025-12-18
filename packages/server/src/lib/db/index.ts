@@ -3,9 +3,9 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
 import * as schema from '@app/server/db/tables';
-import { getEnvVariables } from '@app/server/lib/env';
+import { env } from '@app/server/lib/env';
 
-const { DATABASE_URL } = getEnvVariables();
+const { DATABASE_URL } = env;
 
 // Create connection with connection pooling
 const client = postgres(DATABASE_URL, {

@@ -3,12 +3,12 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { customSession, openAPI } from 'better-auth/plugins';
 
 import { SESSION_COOKIE, SESSION_DATA } from '@app/server/lib/auth/constants';
-import { getEnvVariables } from '@app/server/lib/env';
+import { env } from '@app/server/lib/env';
 
 // !!! relative import required because of better-auth bug !!!
 import { db } from '../db';
 
-const { CLIENT_URL } = getEnvVariables();
+const { CLIENT_URL } = env;
 
 const options = {
     database: drizzleAdapter(db, {
