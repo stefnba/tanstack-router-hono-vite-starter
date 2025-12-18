@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { TFeatureSchemaObject } from '@app/shared/lib/contract/types';
+import { ContractOperationSchemas } from '@app/shared/lib/contract/types';
 import { SCHEMA_KEYS } from '@app/shared/lib/resource/builder';
 import { orderingSchema } from '@app/shared/lib/resource/common';
 import {
@@ -10,7 +10,7 @@ import {
 import { StripIndexSignature } from '@app/shared/types/utils';
 
 export class ContractStandardOperationsBuilder<
-    S extends Record<string, TFeatureSchemaObject>,
+    S extends Record<string, ContractOperationSchemas>,
     R extends DrizzleResourceBuilderReturn,
 > {
     private schemas: S;
@@ -28,7 +28,7 @@ export class ContractStandardOperationsBuilder<
     }
 
     static create<R extends DrizzleResourceBuilderReturn>(resource: R) {
-        return new ContractStandardOperationsBuilder<Record<string, TFeatureSchemaObject>, R>({
+        return new ContractStandardOperationsBuilder<Record<string, ContractOperationSchemas>, R>({
             schemas: {},
             resource: {
                 table: resource.table,
@@ -93,7 +93,7 @@ export class ContractStandardOperationsBuilder<
 
     getMany() {
         const manyInputSchema = this.resource.operation.getMany.input.and(
-            z.object({ [SCHEMA_KEYS.ordering]: orderingSchema(this.resource.table) })
+            z.object({ [SCHEMA_KEYS.ordering]: orderingSchema(this.resource.table).optional() })
         );
 
         const paginationSchema = this.resource.operation.getMany.pagination;

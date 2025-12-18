@@ -5,7 +5,7 @@ import { defineResource } from '@app/shared/lib/resource/builder';
 
 import { post } from './table';
 
-const postResource = defineResource(post)
+export const postResource = defineResource(post)
     .setUserId('userId')
     .setIds(['id'])
     .transform((schema) =>
@@ -17,8 +17,7 @@ const postResource = defineResource(post)
     .enablePagination()
     .enableFilters({
         title: z.string(),
-        content: z.string().optional(),
-        startDate: z.date(),
+        content: z.string(),
     })
     .done();
 

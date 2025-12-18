@@ -1,5 +1,5 @@
 import { ContractStandardOperationsBuilder } from '@app/shared/lib/contract/standard';
-import { TFeatureSchemaObject } from '@app/shared/lib/contract/types';
+import { ContractOperationSchemas, EmptyContract } from '@app/shared/lib/contract/types';
 import {
     AnyDrizzleResourceBuilderReturn,
     DrizzleResourceBuilderReturn,
@@ -7,7 +7,7 @@ import {
 import { StripIndexSignature } from '@app/shared/types/utils';
 
 class ContractBuilder<
-    S extends Record<string, TFeatureSchemaObject>,
+    S extends Record<string, ContractOperationSchemas>,
     R extends DrizzleResourceBuilderReturn,
 > {
     private schemas: S;
@@ -35,7 +35,7 @@ class ContractBuilder<
      * @param resource - The configuration for the operation.
      * @returns A new contract builder with the operation added.
      */
-    addOperation<const K extends string, const T extends TFeatureSchemaObject>(
+    addOperation<const K extends string, const T extends ContractOperationSchemas>(
         key: K,
         resource: (args: { schemas: AnyDrizzleResourceBuilderReturn<R> }) => T
     ) {
@@ -79,7 +79,7 @@ class ContractBuilder<
  * - **Service Contract**: Input/output shapes for business logic.
  * - **Query Contract**: Input/output shapes for database access.
  * - **Endpoint Contract**: Validation schemas for Hono routes (json, query, param, form).
- *
+ * *
  * @example
  * ```ts
  * export const postContract = defineContract(postResource)
@@ -94,7 +94,7 @@ class ContractBuilder<
  * ```
  */
 export const defineContract = <R extends DrizzleResourceBuilderReturn>(c: R) => {
-    return new ContractBuilder<Record<string, TFeatureSchemaObject>, R>({
+    return new ContractBuilder<EmptyContract, R>({
         schemas: {},
         resource: c,
     });
