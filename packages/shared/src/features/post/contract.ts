@@ -8,6 +8,12 @@ import { post } from './table';
 const postResource = defineResource(post)
     .setUserId('userId')
     .setIds(['id'])
+    .transform((schema) =>
+        schema.extend({
+            title: z.string().min(1),
+            content: z.string().min(1),
+        })
+    )
     .enablePagination()
     .enableFilters({
         title: z.string(),

@@ -6,8 +6,8 @@ import { createSystemTableFields } from '@app/shared/lib/db/system-fields/factor
 
 export const post = pgTable('post', {
     ...createSystemTableFields(),
-    title: text('title').notNull(),
-    content: text('content').notNull(),
+    title: text().notNull(),
+    content: text().notNull(),
 });
 
 export const postRelations = relations(post, ({ one }) => ({

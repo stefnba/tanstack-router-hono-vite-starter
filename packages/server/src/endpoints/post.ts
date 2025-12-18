@@ -1,19 +1,8 @@
-import { createInsertSchema } from 'drizzle-zod';
-import { HTTPException } from 'hono/http-exception';
-import { z } from 'zod';
-
 import { postContract } from '@app/shared/features/post';
 
-import { post } from '@app/server/db/tables';
-import { TableOperationsBuilder } from '@app/server/lib/db/operation/table/core';
+import { postQueries } from '@app/server/features/post/db';
+import { appError } from '@app/server/lib/error';
 import { createHonoRouter } from '@app/server/lib/router';
-
-const postQueries = new TableOperationsBuilder(post);
-
-const postInsert = createInsertSchema(post).pick({
-    title: true,
-    content: true,
-});
 
 const router = createHonoRouter({ isProtected: true });
 export const endopints = router
@@ -56,7 +45,7 @@ export const endopints = router
             .createEndpoint()
             .withUser()
             .validate({
-                json: postInsert,
+                json: postContract.create.endpoint.json,
             })
             .handleMutation(async ({ validated }) => {
                 // return appError.server('INTERNAL_ERROR').throw();
@@ -97,7 +86,7 @@ export const endopints = router
                 });
 
                 if (!postData) {
-                    throw new HTTPException(404, { message: 'Post not found' });
+                    throw appError.resource('NOT_FOUND').get();
                 }
 
                 return postData;
@@ -122,6 +111,10 @@ export const endopints = router
                         { field: 'userId', value: validated.user.id },
                     ],
                 });
+
+                if (!deletedPost) {
+                    throw appError.resource('NOT_FOUND').get();
+                }
 
                 return deletedPost;
             })
@@ -151,6 +144,10 @@ export const endopints = router
                         content,
                     },
                 });
+
+                if (!updatedPost) {
+                    throw appError.resource('NOT_FOUND').get();
+                }
 
                 return updatedPost;
             })
