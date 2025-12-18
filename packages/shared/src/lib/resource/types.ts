@@ -1,5 +1,4 @@
 import { Table } from 'drizzle-orm';
-import z from 'zod';
 
 import { InferTableSchema } from '../../lib/db/drizzle/types';
 import { SCHEMA_KEYS } from '../../lib/resource/builder';

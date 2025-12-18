@@ -4,7 +4,6 @@ import { Hono } from 'hono';
 import { serveStatic } from 'hono/bun';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
-import z from 'zod';
 
 import { post } from '@app/server/db/tables';
 import {

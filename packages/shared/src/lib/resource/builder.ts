@@ -1,8 +1,6 @@
 import { Table } from 'drizzle-orm';
-import { createSelectSchema } from 'drizzle-zod';
 import z from 'zod';
 
-import { post } from '@app/shared/features/post/table';
 import { SYSTEM_TABLE_CONFIG_KEYS } from '@app/shared/lib/db/system-fields';
 import { paginationSchema } from '@app/shared/lib/resource/common';
 import {
@@ -479,10 +477,3 @@ class DrizzleResourceBuilder<T extends Table, C extends ResourceBuilderConfig<T>
  * ```
  */
 export const defineResource = DrizzleResourceBuilder.create;
-
-const select = createSelectSchema(post).pick({ id: true }).shape;
-const shape = select;
-const reObject = z.object(shape);
-
-type ReObjectType = z.input<typeof reObject>;
-type DirectOutputType = z.output<typeof select>;

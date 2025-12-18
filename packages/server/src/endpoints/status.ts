@@ -10,6 +10,7 @@ export const endopints = new Hono().get('/', async (c) => {
     try {
         await db.execute(sql`SELECT 1`);
     } catch (error: unknown) {
+        console.error('Database connection failed:', error);
         databaseStatus = 'ERROR';
     }
     return c.json({

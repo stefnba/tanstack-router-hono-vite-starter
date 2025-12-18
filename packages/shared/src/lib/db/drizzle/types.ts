@@ -2,8 +2,6 @@ import { GetColumnData, Table } from 'drizzle-orm';
 import { BuildSchema } from 'drizzle-zod';
 import z from 'zod';
 
-import { Prettify } from '../../../types/utils';
-
 /**
  * Get the full column definitions of a drizzle table
  * @param T - The table to get the column definitions from
