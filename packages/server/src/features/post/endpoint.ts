@@ -54,9 +54,7 @@ export const endpoints = router
                         title,
                         content,
                     },
-                    ids: {
-                        userId: validated.user.id,
-                    },
+                    userId: validated.user.id,
                 });
 
                 return newPost;

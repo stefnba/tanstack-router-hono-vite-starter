@@ -11,12 +11,12 @@ export const postQueries = new TableOperationBuilder(post);
 export const postRepository = defineRepository(postResource)
     .registerContract(postContract)
     .addQuery('create', ({ tableOps }) => ({
-        fn: async ({ data, ids }) => {
+        fn: async ({ data, userId }) => {
             return await tableOps.createRecord({
                 data: {
                     title: data.title,
                     content: data.content,
-                    userId: ids.userId,
+                    userId,
                 },
             });
         },
