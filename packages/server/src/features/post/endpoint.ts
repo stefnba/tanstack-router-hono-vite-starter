@@ -1,11 +1,12 @@
 import { postContract } from '@app/shared/features/post';
 
-import { postQueries, postRepository } from '@app/server/features/post/db';
+import { postQueries } from '@app/server/features/post/db';
+import { postService } from '@app/server/features/post/service';
 import { appError } from '@app/server/lib/error';
 import { createHonoRouter } from '@app/server/lib/router';
 
 const router = createHonoRouter({ isProtected: true });
-export const endopints = router
+export const endpoints = router
     /**
      * Get many posts
      */
@@ -19,7 +20,7 @@ export const endopints = router
                 // return appError.server('INTERNAL_ERROR').throw();
                 const { pageSize = 10, page = 1 } = validated.query ?? {};
 
-                const posts = await postRepository.getMany({
+                const posts = await postService.getMany({
                     ids: {
                         userId: validated.user.id,
                     },
@@ -48,7 +49,7 @@ export const endopints = router
 
                 const { title, content } = validated.json;
 
-                const newPost = await postRepository.create({
+                const newPost = await postService.create({
                     data: {
                         title,
                         content,
@@ -76,16 +77,21 @@ export const endopints = router
             .handleQuery(async ({ validated }) => {
                 const { id } = validated.param;
 
-                const postData = await postQueries.getFirstRecord({
-                    identifiers: [
-                        { field: 'id', value: id },
-                        { field: 'userId', value: validated.user.id },
-                    ],
+                const postData = await postService.getById({
+                    id,
+                    userId: validated.user.id,
                 });
 
-                if (!postData) {
-                    throw appError.resource('NOT_FOUND').get();
-                }
+                // const postData = await postQueries.getFirstRecord({
+                //     identifiers: [
+                //         { field: 'id', value: id },
+                //         { field: 'userId', value: validated.user.id },
+                //     ],
+                // });
+
+                // if (!postData) {
+                //     throw appError.resource('NOT_FOUND').get();
+                // }
 
                 return postData;
             })

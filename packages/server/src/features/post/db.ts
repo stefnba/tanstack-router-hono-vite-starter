@@ -3,10 +3,10 @@ import { eq, ilike } from 'drizzle-orm';
 import { postContract, postResource } from '@app/shared/features/post';
 
 import { post } from '@app/server/db/tables';
-import { TableOperationsBuilder } from '@app/server/lib/db/operation';
+import { TableOperationBuilder } from '@app/server/lib/db/operation';
 import { defineRepository } from '@app/server/lib/db/repository';
 
-export const postQueries = new TableOperationsBuilder(post);
+export const postQueries = new TableOperationBuilder(post);
 
 export const postRepository = defineRepository(postResource)
     .registerContract(postContract)
@@ -34,6 +34,16 @@ export const postRepository = defineRepository(postResource)
                     input.filters?.content
                         ? ilike(post.content, input.filters?.content)
                         : undefined,
+                ],
+            });
+        },
+    }))
+    .addQuery('getById', ({ tableOps }) => ({
+        fn: async (input) => {
+            return await tableOps.getFirstRecord({
+                identifiers: [
+                    { field: 'id', value: input.id },
+                    { field: 'userId', value: input.userId },
                 ],
             });
         },
