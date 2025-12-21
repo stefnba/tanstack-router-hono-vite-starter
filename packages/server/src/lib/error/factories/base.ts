@@ -1,4 +1,4 @@
-import { BaseError } from '@app/server/lib/error/base';
+import { BaseError, TErrorLayer } from '@app/server/lib/error/base';
 
 /**
  * Abstract Base Factory for all application errors.
@@ -31,6 +31,16 @@ export class AppErrorFactory<T extends BaseError> {
      */
     message(message: string): this {
         this.error.message = message;
+        return this;
+    }
+
+    /**
+     * Set the layer of the error.
+     *
+     * @param layer - The layer of the error
+     */
+    withLayer(layer: TErrorLayer): this {
+        this.error.layer = layer;
         return this;
     }
 
