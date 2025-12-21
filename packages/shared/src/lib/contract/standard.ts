@@ -32,11 +32,14 @@ export class ContractStandardOperationsBuilder<
             schemas: {},
             resource: {
                 table: resource.table,
-                base: resource.base,
-                rawTable: resource.rawTable,
-                returnCols: resource.returnCols,
-                operation: resource.operation,
-                identifier: resource.identifier,
+                schemas: {
+                    base: resource.schemas.base,
+                    rawTable: resource.schemas.rawTable,
+                    returnCols: resource.schemas.returnCols,
+                    operation: resource.schemas.operation,
+                    identifier: resource.schemas.identifier,
+                },
+                keys: resource.keys,
             },
         });
     }
@@ -50,8 +53,8 @@ export class ContractStandardOperationsBuilder<
      * - **Query**: Uses the full create input schema for internal queries.
      */
     create() {
-        const createInputSchema = this.resource.operation.create.input;
-        const createDataSchema = this.resource.operation.create.data;
+        const createInputSchema = this.resource.schemas.operation.create.input;
+        const createDataSchema = this.resource.schemas.operation.create.data;
 
         const schema = {
             create: {
@@ -71,8 +74,8 @@ export class ContractStandardOperationsBuilder<
     }
 
     createMany() {
-        const createManyInputSchema = this.resource.operation.createMany.input;
-        const createManyDataSchema = this.resource.operation.createMany.data;
+        const createManyInputSchema = this.resource.schemas.operation.createMany.input;
+        const createManyDataSchema = this.resource.schemas.operation.createMany.data;
 
         const schema = {
             createMany: {
@@ -92,12 +95,12 @@ export class ContractStandardOperationsBuilder<
     }
 
     getMany() {
-        const manyInputSchema = this.resource.operation.getMany.input.and(
+        const manyInputSchema = this.resource.schemas.operation.getMany.input.and(
             z.object({ [SCHEMA_KEYS.ordering]: orderingSchema(this.resource.table).optional() })
         );
 
-        const paginationSchema = this.resource.operation.getMany.pagination;
-        const filtersSchema = this.resource.operation.getMany.filters;
+        const paginationSchema = this.resource.schemas.operation.getMany.pagination;
+        const filtersSchema = this.resource.schemas.operation.getMany.filters;
 
         const schema = {
             getMany: {
@@ -124,11 +127,11 @@ export class ContractStandardOperationsBuilder<
      * - **Query**: Uses the full update input schema.
      */
     updateById() {
-        const updateInputSchema = this.resource.operation.updateById.input;
+        const updateInputSchema = this.resource.schemas.operation.updateById.input;
 
-        const updateDataSchema = this.resource.operation.updateById.data;
+        const updateDataSchema = this.resource.schemas.operation.updateById.data;
 
-        const publicIdentifiers = this.resource.identifier.otherIds;
+        const publicIdentifiers = this.resource.schemas.identifier.otherIds;
 
         const schema = {
             updateById: {
@@ -156,15 +159,15 @@ export class ContractStandardOperationsBuilder<
      * - **Query**: Uses the full identifier schema.
      */
     getById() {
-        const getByIdInputSchema = this.resource.operation.getById.ids;
+        const getByIdInputSchema = this.resource.schemas.operation.getById.ids;
 
-        const publicIdentifiers = this.resource.identifier.otherIds;
+        const publicIdentifiers = this.resource.schemas.identifier.otherIds;
 
         const schema = {
             getById: {
                 service: getByIdInputSchema,
                 endpoint: {
-                    param: getByIdInputSchema,
+                    param: publicIdentifiers,
                 },
                 query: getByIdInputSchema,
             },
@@ -177,8 +180,8 @@ export class ContractStandardOperationsBuilder<
     }
 
     removeById() {
-        const removeByIdInputSchema = this.resource.operation.removeById.input;
-        const publicIdentifiers = this.resource.identifier.otherIds;
+        const removeByIdInputSchema = this.resource.schemas.operation.removeById.input;
+        const publicIdentifiers = this.resource.schemas.identifier.otherIds;
 
         const schema = {
             removeById: {

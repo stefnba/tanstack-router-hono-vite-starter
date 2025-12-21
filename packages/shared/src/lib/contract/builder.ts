@@ -37,9 +37,9 @@ class ContractBuilder<
      */
     addOperation<const K extends string, const T extends ContractOperationSchemas>(
         key: K,
-        resource: (args: { schemas: AnyDrizzleResourceBuilderReturn<R> }) => T
+        resource: (args: { schemas: AnyDrizzleResourceBuilderReturn<R>['schemas'] }) => T
     ) {
-        const schema = resource({ schemas: this.resource });
+        const schema = resource({ schemas: this.resource.schemas });
 
         // Helper type to merge objects while effectively handling overwrites and removing index signatures for the new key
         type NewSchemas = {

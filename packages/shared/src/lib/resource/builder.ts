@@ -1,4 +1,4 @@
-import { Table } from 'drizzle-orm';
+import { Table, getTableColumns, getTableName } from 'drizzle-orm';
 import z from 'zod';
 
 import { SYSTEM_TABLE_CONFIG_KEYS } from '@app/shared/lib/db/system-fields';
@@ -8,14 +8,13 @@ import {
     ResourceBuilderConfig,
 } from '@app/shared/lib/resource/types';
 import { conditionalZodField, getTableShapes } from '@app/shared/lib/resource/utils';
-import { omitFromObject, pickFromObject } from '@app/shared/lib/utils';
-
+import { omitFromObject, pickFromObject, typedEntries, typedKeys } from '@app/shared/lib/utils';
 import {
     AnyZodArray,
     AnyZodShape,
     AnyZodType,
     EmptyZodSchema,
-} from '../../lib/validation/zod/types';
+} from '@app/shared/lib/validation/zod/types';
 
 export const SCHEMA_KEYS = {
     input: 'input',
@@ -98,6 +97,10 @@ class DrizzleResourceBuilder<T extends Table, C extends ResourceBuilderConfig<T>
      * see/modify their own data.
      */
     setUserId<const F extends keyof C['raw']['select'] & string>(field: F) {
+        if (!field || field?.length === 0) {
+            throw new Error(`[DrizzleResourceBuilder] setUserId: must provide a user ID field`);
+        }
+
         const selectSchema = this.config.raw.select;
         const userIdSchema = pickFromObject(selectSchema, [field]);
 
@@ -120,6 +123,10 @@ class DrizzleResourceBuilder<T extends Table, C extends ResourceBuilderConfig<T>
      * Supports composite keys by passing multiple fields.
      */
     setIds<const F extends keyof C['raw']['select'] & string>(fields: F[]) {
+        if (!fields || fields?.length === 0) {
+            throw new Error(`[DrizzleResourceBuilder] setIds: must provide at least one ID field`);
+        }
+
         const idsSchema = pickFromObject(this.config.raw.select, fields);
 
         const newConfig = {
@@ -341,18 +348,56 @@ class DrizzleResourceBuilder<T extends Table, C extends ResourceBuilderConfig<T>
     }
 
     // ========================================
+    // Validate Create Input
+    // ========================================
+
+    /**
+     * Runtime check if all required columns are present in the create input.
+     */
+    ensureCreateInputColumns() {
+        // 1. Get all columns from the table
+        const columns = getTableColumns(this.config.table);
+        const requiredTableKeys: string[] = [];
+
+        for (const [key, column] of typedEntries(columns)) {
+            // Check if column is required:
+            // - Not nullable
+            // - No default value (hasDefault)
+            // - Not a serial/generated column (often handled by hasDefault, but check logic)
+            if (column.notNull && !column.hasDefault) {
+                requiredTableKeys.push(String(key));
+            }
+        }
+
+        // 2. Get keys available in createData schema
+        // We use the shape keys because that's what Zod validates
+        const createInputKeys = [
+            ...typedKeys(this.config.createData),
+            ...typedKeys(this.config.userId),
+        ];
+
+        // 3. Find missing keys
+        // A key is missing if it is required by table BUT NOT present in (createData OR identifiers)
+        const missingKeys = requiredTableKeys.filter(
+            (key) => !createInputKeys.includes(key) && !createInputKeys.includes(key)
+        );
+
+        if (missingKeys.length > 0) {
+            const tableName = getTableName(this.config.table);
+            throw new Error(
+                `Resource Definition Error: Table '${tableName}' requires columns [${missingKeys.join(', ')}] for INSERT, ` +
+                    `but they are missing from 'createData' schema and identifiers. ` +
+                    `Please add them to .restrictCreateDataFields() or .setUserId().`
+            );
+        }
+    }
+
+    // ========================================
     // Done
     // ========================================
 
     done() {
-        // identifier schemas
-        // const identifiers = z.object(this.config.id);
-        // const userId = z.object(this.config.userId);
-
-        // const fullIdentifiers = z.object({
-        //     ...identifiers.shape,
-        //     ...userId.shape,
-        // });
+        this.ensureCreateInputColumns();
 
         // data for create and update operations
         const createData = z.object(this.config.createData);
@@ -382,76 +427,87 @@ class DrizzleResourceBuilder<T extends Table, C extends ResourceBuilderConfig<T>
             returnSchema: userOnlyIdentifierSchema,
         });
 
+        // create input with validation
+        const createInput = z.object({
+            [SCHEMA_KEYS.data]: createData,
+
+            ...this.config.userId,
+        });
+
         return {
             table: this.config.table,
-            base: z.object(this.config.base),
-            rawTable: {
-                create: z.object(this.config.raw.create),
-                select: z.object(this.config.raw.select),
-                update: z.object(this.config.raw.update),
+            keys: {
+                userId: z.object(this.config.userId).keyof().options[0]!,
+                ids: z.object(this.config.id).keyof().options,
             },
-            returnCols: z.object(this.config.returnCols),
-            operation: {
-                // create
-                create: {
-                    [SCHEMA_KEYS.input]: z.object({
+            schemas: {
+                base: z.object(this.config.base),
+                rawTable: {
+                    create: z.object(this.config.raw.create),
+                    select: z.object(this.config.raw.select),
+                    update: z.object(this.config.raw.update),
+                },
+                returnCols: z.object(this.config.returnCols),
+                operation: {
+                    // create
+                    create: {
+                        [SCHEMA_KEYS.input]: createInput,
                         [SCHEMA_KEYS.data]: createData,
-                        ...userIdIdentifierForInput,
-                    }),
-                    [SCHEMA_KEYS.data]: createData,
-                },
-                createMany: {
-                    [SCHEMA_KEYS.input]: z.object({
+                    },
+                    createMany: {
+                        [SCHEMA_KEYS.input]: z.object({
+                            [SCHEMA_KEYS.data]: z.array(createData),
+                            ...this.config.userId,
+                        }),
                         [SCHEMA_KEYS.data]: z.array(createData),
-                    }),
-                    [SCHEMA_KEYS.data]: z.array(createData),
-                },
-                // update
-                updateById: {
-                    [SCHEMA_KEYS.input]: z.object({
+                    },
+                    // update
+                    updateById: {
+                        [SCHEMA_KEYS.input]: z.object({
+                            [SCHEMA_KEYS.data]: updateData,
+                            ...allIdentifiersForInput,
+                        }),
                         [SCHEMA_KEYS.data]: updateData,
-                        ...allIdentifiersForInput,
-                    }),
-                    [SCHEMA_KEYS.data]: updateData,
-                    [SCHEMA_KEYS.identifiers]: allIdentifiersSchema,
-                },
-                // get
-                getMany: {
-                    [SCHEMA_KEYS.input]: z.object({
-                        ...userIdIdentifierForInput,
-                        ...conditionalZodField({
-                            shapeToCheck: this.config.pagination,
-                            key: SCHEMA_KEYS.pagination,
-                            returnSchema: pagination.optional(),
+                        [SCHEMA_KEYS.identifiers]: allIdentifiersSchema,
+                    },
+                    // get
+                    getMany: {
+                        [SCHEMA_KEYS.input]: z.object({
+                            ...userIdIdentifierForInput,
+                            ...conditionalZodField({
+                                shapeToCheck: this.config.pagination,
+                                key: SCHEMA_KEYS.pagination,
+                                returnSchema: pagination.optional(),
+                            }),
+                            ...conditionalZodField({
+                                shapeToCheck: this.config.filters,
+                                key: SCHEMA_KEYS.filters,
+                                returnSchema: filters.optional(),
+                            }),
+                            // [SCHEMA_KEYS.ordering]: ordering.optional(),
                         }),
-                        ...conditionalZodField({
-                            shapeToCheck: this.config.filters,
-                            key: SCHEMA_KEYS.filters,
-                            returnSchema: filters.optional(),
+                        [SCHEMA_KEYS.identifiers]: userOnlyIdentifierSchema,
+                        [SCHEMA_KEYS.pagination]: pagination,
+                        [SCHEMA_KEYS.filters]: filters,
+                        [SCHEMA_KEYS.ordering]: ordering,
+                    },
+                    getById: {
+                        [SCHEMA_KEYS.input]: z.object({ ...allIdentifiersForInput }),
+                        [SCHEMA_KEYS.identifiers]: z.object({
+                            ...this.config.id,
+                            ...this.config.userId,
                         }),
-                        // [SCHEMA_KEYS.ordering]: ordering.optional(),
-                    }),
-                    [SCHEMA_KEYS.identifiers]: userOnlyIdentifierSchema,
-                    [SCHEMA_KEYS.pagination]: pagination,
-                    [SCHEMA_KEYS.filters]: filters,
-                    [SCHEMA_KEYS.ordering]: ordering,
+                    },
+                    // remove
+                    removeById: {
+                        [SCHEMA_KEYS.input]: z.object({ ...allIdentifiersForInput }),
+                        [SCHEMA_KEYS.identifiers]: allIdentifiersSchema,
+                    },
                 },
-                getById: {
-                    [SCHEMA_KEYS.input]: z.object({ ...allIdentifiersForInput }),
-                    [SCHEMA_KEYS.identifiers]: z.object({
-                        ...this.config.id,
-                        ...this.config.userId,
-                    }),
+                identifier: {
+                    userId: userOnlyIdentifierSchema,
+                    otherIds: otherIdsIdentifierSchema,
                 },
-                // remove
-                removeById: {
-                    [SCHEMA_KEYS.input]: z.object({ ...allIdentifiersForInput }),
-                    [SCHEMA_KEYS.identifiers]: allIdentifiersSchema,
-                },
-            },
-            identifier: {
-                userId: userOnlyIdentifierSchema,
-                otherIds: otherIdsIdentifierSchema,
             },
         } as const satisfies DrizzleResourceBuilderReturn;
     }
