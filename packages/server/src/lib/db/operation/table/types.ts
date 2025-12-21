@@ -111,12 +111,12 @@ export type TOrderBy<T extends Table> = Array<
  * Pagination for the getManyRecords operation.
  * @example
  * ```typescript
- * const pagination: TPagination = {
+ * const pagination: Pagination = {
  *     page: 1,
  *     pageSize: 10,
  * };
  */
-export type TPagination = {
+export type Pagination = {
     page?: number;
     pageSize?: number;
 };

@@ -21,6 +21,6 @@ export type {
     DrizzleBooleanFilter,
     TOnConflict,
     TOrderBy,
-    TPagination,
+    Pagination,
     TValidTableForFrom,
 } from './types';

@@ -25,9 +25,9 @@ import { db } from '@app/server/lib/db';
 import { withDbQuery } from '@app/server/lib/db/operation/handler';
 import {
     DrizzleBooleanFilter,
+    Pagination,
     TOnConflict,
     TOrderBy,
-    TPagination,
     TStandardTableOperation,
     TValidTableForFrom,
 } from '@app/server/lib/db/operation/table/types';
@@ -372,7 +372,7 @@ export class TableOperationBuilder<T extends Table> {
         identifiers?: Array<DrizzleBooleanFilter<T>>;
         filters?: (SQL | undefined)[];
         orderBy?: TOrderBy<T>;
-        pagination?: TPagination;
+        pagination?: Pagination;
     } = {}) {
         // check if the table is a table
         if (!isTable(this.table)) {
