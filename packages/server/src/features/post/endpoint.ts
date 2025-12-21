@@ -76,8 +76,7 @@ export const endpoints = router
                 const { id } = validated.param;
 
                 const postData = await postService.getById({
-                    id,
-                    userId: validated.user.id,
+                    ids: { userId: validated.user.id, id },
                 });
 
                 // const postData = await postQueries.getFirstRecord({
