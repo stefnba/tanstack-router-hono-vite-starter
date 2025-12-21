@@ -10,6 +10,7 @@ import { Prettify, StripIndexSignature } from '@app/shared/types/utils';
 
 import { DrizzleBooleanFilter, QueryFn, TableOperationBuilder } from '@app/server/lib/db/operation';
 import { EmptyRepositoryOperations } from '@app/server/lib/db/repository/types';
+import { getStandardOperationKey } from '@app/server/lib/db/repository/utils';
 
 /**
  * The repository builder used to build the standard operations, e.g. create, getById, etc. for a resource.
@@ -103,7 +104,7 @@ export class RepositoryStandardOperationsBuilder<
      * Adds the getById operation to the repository.
      */
     getById() {
-        const key = 'getById' as const;
+        const key = getStandardOperationKey('getById');
         type Input = z.infer<
             (typeof this.resource.schemas.operation)[typeof key][typeof SCHEMA_KEYS.input]
         >;
@@ -128,7 +129,7 @@ export class RepositoryStandardOperationsBuilder<
         });
     }
     getMany() {
-        const key = 'getMany' as const;
+        const key = getStandardOperationKey('getMany');
         type Input = z.infer<
             (typeof this.resource.schemas.operation)[typeof key][typeof SCHEMA_KEYS.input]
         >;
@@ -176,7 +177,7 @@ export class RepositoryStandardOperationsBuilder<
      * Adds the create operation to the repository.
      */
     create() {
-        const key = 'create' as const;
+        const key = getStandardOperationKey('create');
         type Input = z.infer<
             (typeof this.resource.schemas.operation)[typeof key][typeof SCHEMA_KEYS.input]
         >;
@@ -216,7 +217,7 @@ export class RepositoryStandardOperationsBuilder<
      * Adds the createMany operation to the repository.
      */
     createMany() {
-        const key = 'createMany' as const;
+        const key = getStandardOperationKey('createMany');
         type Input = z.infer<
             (typeof this.resource.schemas.operation)[typeof key][typeof SCHEMA_KEYS.input]
         >;
@@ -256,7 +257,7 @@ export class RepositoryStandardOperationsBuilder<
     }
 
     updateById() {
-        const key = 'updateById' as const;
+        const key = getStandardOperationKey('updateById');
         type Input = z.infer<
             (typeof this.resource.schemas.operation)[typeof key][typeof SCHEMA_KEYS.input]
         >;
@@ -290,7 +291,7 @@ export class RepositoryStandardOperationsBuilder<
      * Adds the removeById operation to the repository.
      */
     removeById() {
-        const key = 'removeById' as const;
+        const key = getStandardOperationKey('removeById');
         type Input = z.infer<
             (typeof this.resource.schemas.operation)[typeof key][typeof SCHEMA_KEYS.input]
         >;
@@ -312,6 +313,9 @@ export class RepositoryStandardOperationsBuilder<
         });
     }
 
+    /**
+     * Adds all standard operations to the repository.
+     */
     all() {
         return this.create().createMany().getById().getMany().updateById().removeById();
     }

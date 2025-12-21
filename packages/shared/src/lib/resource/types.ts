@@ -154,3 +154,14 @@ type _StructureCheck =
 // This should equal 'true', otherwise you'll get a descriptive error
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const _assertStructure: _StructureCheck = true;
+
+/**
+ * The standard operation keys used across builders for resource, contract, repository, and service.
+ */
+export type StandardOperationKeys =
+    | 'create'
+    | 'createMany'
+    | 'updateById'
+    | 'getMany'
+    | 'getById'
+    | 'removeById';
