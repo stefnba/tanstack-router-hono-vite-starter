@@ -3,6 +3,7 @@ import { Prettify, StripIndexSignature } from '@app/shared/types/utils';
 
 import { QueryFn } from '@app/server/lib/db/operation';
 import { appError } from '@app/server/lib/error';
+import { ServiceStandardOperationsBuilder } from '@app/server/lib/service/standard';
 
 import { serviceHandler } from './handler';
 import { ServiceFn } from './types';
@@ -66,6 +67,7 @@ export class ServiceBuilder<
      * By default, if the service function returns null or undefined, an error will be thrown.
      * This enforces non-nullable return types for the consumer.
      */
+    // Overload for throw on null
     addService<
         const K extends Exclude<keyof C & string, keyof S> | (string & {}),
         I = InferContractInput<C, K, 'service'>,
@@ -78,12 +80,7 @@ export class ServiceBuilder<
             onNull?: 'throw';
         }
     ): ServiceBuilder<R, C, Prettify<Omit<S, K> & Record<K, ServiceFn<I, NonNullable<O>>>>>;
-
-    /**
-     * Adds a new service operation (Nullable return).
-     *
-     * If `onNull: 'return'` is specified, the service is allowed to return null.
-     */
+    // Overload for return on null
     addService<
         const K extends Exclude<keyof C & string, keyof S> | (string & {}),
         I = InferContractInput<C, K, 'service'>,
@@ -96,10 +93,7 @@ export class ServiceBuilder<
             onNull: 'return';
         }
     ): ServiceBuilder<R, C, Prettify<Omit<S, K> & Record<K, ServiceFn<I, O>>>>;
-
-    /**
-     * Implementation
-     */
+    // Implementation for all cases
     addService<
         const K extends Exclude<keyof C & string, keyof S> | (string & {}),
         I = InferContractInput<C, K, 'service'>,
@@ -144,6 +138,21 @@ export class ServiceBuilder<
             repository: this.repository,
             contract: this.contract,
             services: { ...this.services, [key]: wrappedFn },
+            name: this.name,
+        });
+    }
+
+    /**
+     * Registers all standard operations for the service.
+     */
+    registerStandardOperations() {
+        const builder = ServiceStandardOperationsBuilder.init(this.repository);
+        const ops = builder.all().done();
+
+        return new ServiceBuilder<R, C, Prettify<Omit<S, keyof typeof ops> & typeof ops>>({
+            repository: this.repository,
+            contract: this.contract,
+            services: { ...this.services, ...ops },
             name: this.name,
         });
     }
