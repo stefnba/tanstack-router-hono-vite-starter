@@ -3,11 +3,11 @@ import {
     AnyDrizzleResourceBuilderReturn,
     DrizzleResourceBuilderReturn,
 } from '@app/shared/lib/resource/types';
-import { Prettify, StripIndexSignature } from '@app/shared/types/utils';
+import { StripIndexSignature } from '@app/shared/types/utils';
 
 import { QueryFn } from '@app/server/lib/db/operation';
 import { dbQueryFnHandler } from '@app/server/lib/db/operation/handler';
-import { TableOperationsBuilder } from '@app/server/lib/db/operation/table';
+import { TableOperationBuilder } from '@app/server/lib/db/operation/table';
 import { appError } from '@app/server/lib/error';
 
 export class RepositoryBuilder<
@@ -18,7 +18,7 @@ export class RepositoryBuilder<
     private resource: R;
     private contract: C;
     private repositoryOperations: Q;
-    private tableOperations: TableOperationsBuilder<R['table']>;
+    private tableOperations: TableOperationBuilder<R['table']>;
 
     constructor({
         resource,
@@ -32,7 +32,7 @@ export class RepositoryBuilder<
         this.resource = resource;
         this.contract = contract;
         this.repositoryOperations = repositoryOperations;
-        this.tableOperations = new TableOperationsBuilder(resource.table);
+        this.tableOperations = new TableOperationBuilder(resource.table);
     }
 
     /**
@@ -66,7 +66,7 @@ export class RepositoryBuilder<
                   operation?: string;
               }
             | ((args: {
-                  tableOps: TableOperationsBuilder<R['table']>;
+                  tableOps: TableOperationBuilder<R['table']>;
                   resource: R;
                   contract: C;
                   error: typeof appError;

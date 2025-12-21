@@ -24,7 +24,7 @@ import { typedKeys } from '@app/shared/lib/utils';
 import { db } from '@app/server/lib/db';
 import { withDbQuery } from '@app/server/lib/db/operation/handler';
 import {
-    TBooleanFilter,
+    DrizzleBooleanFilter,
     TOnConflict,
     TOrderBy,
     TPagination,
@@ -34,7 +34,7 @@ import {
 import { withFilters, withOrdering, withPagination } from '@app/server/lib/db/operation/utils';
 
 /**
- * TableOperationsBuilder - Generic low-level database CRUD operations builder.
+ * TableOperationBuilder - Generic low-level database CRUD operations builder.
  *
  * This class provides type-safe methods for performing basic database operations
  * on any table without knowledge of feature-specific business logic.
@@ -58,7 +58,7 @@ import { withFilters, withOrdering, withPagination } from '@app/server/lib/db/op
  *
  * @example
  * ```typescript
- * const tableOps = new TableOperationsBuilder(userTable);
+ * const tableOps = new TableOperationBuilder(userTable);
  *
  * const user = await tableOps.createRecord({
  *   data: { name: 'John', email: 'john@example.com' },
@@ -66,7 +66,7 @@ import { withFilters, withOrdering, withPagination } from '@app/server/lib/db/op
  * });
  * ```
  */
-export class TableOperationsBuilder<T extends Table> {
+export class TableOperationBuilder<T extends Table> {
     private readonly tableName: string;
 
     constructor(public table: T) {
@@ -99,7 +99,7 @@ export class TableOperationsBuilder<T extends Table> {
      * @param identifiers - The identifiers to build the filters from
      * @returns The identifier filters
      */
-    private buildIdentifierFilters(identifiers: Array<TBooleanFilter<T>>) {
+    private buildIdentifierFilters(identifiers: Array<DrizzleBooleanFilter<T>>) {
         return identifiers.map(({ field, value }) => {
             const column = this.getColumn(field);
             return eq(column, value);
@@ -307,7 +307,7 @@ export class TableOperationsBuilder<T extends Table> {
         identifiers,
         columns,
     }: {
-        identifiers: Array<TBooleanFilter<T>>;
+        identifiers: Array<DrizzleBooleanFilter<T>>;
         columns?: Cols;
     }) {
         if (!isTable(this.table)) {
@@ -329,7 +329,11 @@ export class TableOperationsBuilder<T extends Table> {
                     .where(and(...filterConditions))
                     .limit(1);
 
-                return record ?? null;
+                if (!record) {
+                    return null;
+                }
+
+                return record;
             },
             operation: this.getOperationDescription('getFirstRecord'),
             table: this.tableName,
@@ -365,7 +369,7 @@ export class TableOperationsBuilder<T extends Table> {
         pagination = { page: 1, pageSize: 25 },
     }: {
         columns?: Cols;
-        identifiers?: Array<TBooleanFilter<T>>;
+        identifiers?: Array<DrizzleBooleanFilter<T>>;
         filters?: (SQL | undefined)[];
         orderBy?: TOrderBy<T>;
         pagination?: TPagination;
@@ -422,7 +426,7 @@ export class TableOperationsBuilder<T extends Table> {
         returnColumns,
     }: {
         data: InferTableTypes<T, 'update'>;
-        identifiers: Array<TBooleanFilter<T>>;
+        identifiers: Array<DrizzleBooleanFilter<T>>;
         returnColumns?: Cols;
     }) {
         const filterConditions = this.buildIdentifierFilters(identifiers);
@@ -430,13 +434,17 @@ export class TableOperationsBuilder<T extends Table> {
 
         return withDbQuery({
             queryFn: async () => {
-                const updatedRecord = await db
+                const [updatedRecord] = await db
                     .update(this.table)
                     .set(data)
                     .where(and(...filterConditions))
                     .returning(columns);
 
-                return updatedRecord[0] ?? null;
+                if (!updatedRecord) {
+                    return null;
+                }
+
+                return updatedRecord;
             },
             operation: this.getOperationDescription('updateRecord'),
             table: this.tableName,
@@ -456,7 +464,7 @@ export class TableOperationsBuilder<T extends Table> {
         returnColumns,
     }: {
         data: Partial<InferInsertModel<T>>;
-        identifiers: Array<TBooleanFilter<T>>;
+        identifiers: Array<DrizzleBooleanFilter<T>>;
         returnColumns?: Cols;
     }) {
         const filterConditions = this.buildIdentifierFilters(identifiers);
@@ -625,7 +633,7 @@ export class TableOperationsBuilder<T extends Table> {
         softDelete = true,
         returnColumns,
     }: {
-        identifiers: Array<TBooleanFilter<T>>;
+        identifiers: Array<DrizzleBooleanFilter<T>>;
         returnColumns?: Cols;
         softDelete?: boolean;
     }) {
@@ -646,7 +654,7 @@ export class TableOperationsBuilder<T extends Table> {
         identifiers,
         returnColumns,
     }: {
-        identifiers: Array<TBooleanFilter<T>>;
+        identifiers: Array<DrizzleBooleanFilter<T>>;
         returnColumns?: Cols;
     }) {
         const filterConditions = this.buildIdentifierFilters(identifiers);
@@ -677,7 +685,7 @@ export class TableOperationsBuilder<T extends Table> {
         identifiers,
         returnColumns,
     }: {
-        identifiers: Array<TBooleanFilter<T>>;
+        identifiers: Array<DrizzleBooleanFilter<T>>;
         returnColumns?: Cols;
     }) {
         const filterConditions = this.buildIdentifierFilters(identifiers);
@@ -708,7 +716,7 @@ export class TableOperationsBuilder<T extends Table> {
         identifiers,
         returnColumns,
     }: {
-        identifiers: Array<TBooleanFilter<T>>;
+        identifiers: Array<DrizzleBooleanFilter<T>>;
         returnColumns?: Cols;
     }) {
         const filterConditions = this.buildIdentifierFilters(identifiers);
@@ -716,12 +724,16 @@ export class TableOperationsBuilder<T extends Table> {
 
         return withDbQuery({
             queryFn: async () => {
-                const deletedRecord = await db
+                const [deletedRecord] = await db
                     .delete(this.table)
                     .where(and(...filterConditions))
                     .returning(columns);
 
-                return deletedRecord[0] ?? null;
+                if (!deletedRecord) {
+                    return null;
+                }
+
+                return deletedRecord;
             },
             operation: this.getOperationDescription('deleteRecord'),
             table: this.tableName,

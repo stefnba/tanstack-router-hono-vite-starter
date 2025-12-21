@@ -104,7 +104,7 @@ The handler automatically detects and formats these database errors:
 ### Example 1: Table Operations (Direct Execution)
 
 ```typescript
-// Inside TableOperationsBuilder
+// Inside TableOperationBuilder
 async createRecord({ data }) {
     return withDbQuery({
         queryFn: async () => {
@@ -177,7 +177,7 @@ const results = await searchUsers({ search: 'john', limit: 20 });
 FeatureQueryBuilder
     ↓ Uses dbQueryFnHandler() to wrap queries
     ↓
-TableOperationsBuilder
+TableOperationBuilder
     ↓ Uses withDbQuery() for direct execution
     ↓
 Query Handler (this module)

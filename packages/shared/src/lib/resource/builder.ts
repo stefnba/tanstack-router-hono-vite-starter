@@ -440,6 +440,7 @@ class DrizzleResourceBuilder<T extends Table, C extends ResourceBuilderConfig<T>
                     [SCHEMA_KEYS.input]: z.object({ ...allIdentifiersForInput }),
                     [SCHEMA_KEYS.identifiers]: z.object({
                         ...this.config.id,
+                        ...this.config.userId,
                     }),
                 },
                 // remove

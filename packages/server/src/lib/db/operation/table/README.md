@@ -25,9 +25,9 @@ However, you may choose to use Table Operations directly in scenarios such as:
 
 ```typescript
 import { tagTable } from '@/features/tag/server/db/tables';
-import { TableOperationsBuilder } from '@/server/lib/db/query/table-operations/core';
+import { TableOperationBuilder } from '@/server/lib/db/query/table-operations/core';
 
-const tableOps = new TableOperationsBuilder(tagTable);
+const tableOps = new TableOperationBuilder(tagTable);
 
 // Create a record
 const newTag = await tableOps.createRecord({
@@ -177,7 +177,7 @@ INSERT INTO tag (name, user_id) VALUES ('Work', 'user-123')
 
 ## Architecture Classes
 
-- **`TableOperationsBuilder`**: Main class for table CRUD operations
+- **`TableOperationBuilder`**: Main class for table CRUD operations
 
 ## See Also
 

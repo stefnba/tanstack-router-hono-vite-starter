@@ -4,7 +4,7 @@ import { TableLikeHasEmptySelection } from 'drizzle-orm/pg-core';
 import { GetTableColumnKeys } from '@app/shared/lib/db/drizzle';
 
 /**
- * The standard table operation types the TableOperationsBuilder supports
+ * The standard table operation types the TableOperationBuilder supports
  */
 export type TStandardTableOperation =
     | 'createRecord'
@@ -19,16 +19,19 @@ export type TStandardTableOperation =
     | 'deleteRecord';
 
 /**
- * Filter type for the CrudQueryBuilder.
+ * Boolean filter type for the TableOperationBuilder.
  * Ensures that the field is a valid column in the table and the value is a valid type for the column.
  */
-export type TBooleanFilter<T extends Table> = {
+export type DrizzleBooleanFilter<T extends Table> = {
     [K in keyof T['_']['columns']]: {
         field: K;
         value: GetColumnData<T['_']['columns'][K], 'raw'>;
     };
 }[keyof T['_']['columns']];
 
+/**
+ * Ensure the table is a valid table for from and not a subquery.
+ */
 export type TValidTableForFrom<T extends Table> =
     TableLikeHasEmptySelection<T> extends true
         ? DrizzleTypeError<"Cannot reference a data-modifying statement subquery if it doesn't contain a `returning` clause">
@@ -40,27 +43,6 @@ export type TValidTableForFrom<T extends Table> =
 export type RequiredOnly<T> = {
     [K in keyof T as undefined extends T[K] ? never : K]: T[K];
 };
-
-/**
- * The input for the getById query
- */
-export type TByIdInput<
-    T extends Table,
-    TIdFields extends Array<GetTableColumnKeys<T>>,
-    TUserIdField extends GetTableColumnKeys<T> | undefined = undefined,
-> =
-    TUserIdField extends GetTableColumnKeys<T>
-        ? {
-              ids: {
-                  [K in TIdFields[number]]: GetColumnData<T['_']['columns'][K]>;
-              };
-              userId: GetColumnData<T['_']['columns'][TUserIdField]>;
-          }
-        : {
-              ids: {
-                  [K in TIdFields[number]]: GetColumnData<T['_']['columns'][K]>;
-              };
-          };
 
 /**
  * The on conflict type for the create and update record query
@@ -84,7 +66,7 @@ export type TOnConflict<T extends Table> =
           type: 'update';
           target: Array<GetTableColumnKeys<T>> | GetTableColumnKeys<T>;
           setExcluded?: Array<GetTableColumnKeys<T>>; // Use excluded.column values
-          where?: Array<TBooleanFilter<T>>; // Optional conditions for the update
+          where?: Array<DrizzleBooleanFilter<T>>; // Optional conditions for the update
       }
     // Update on conflicts with custom set values
     | {
@@ -93,7 +75,7 @@ export type TOnConflict<T extends Table> =
           set: Partial<{
               [K in keyof T['_']['columns']]: GetColumnData<T['_']['columns'][K], 'raw'>;
           }>;
-          where?: Array<TBooleanFilter<T>>; // Optional conditions for the update
+          where?: Array<DrizzleBooleanFilter<T>>; // Optional conditions for the update
       }
     // Mixed update: some excluded values, some custom values
     | {
@@ -103,7 +85,7 @@ export type TOnConflict<T extends Table> =
           set?: Partial<{
               [K in keyof T['_']['columns']]: GetColumnData<T['_']['columns'][K], 'raw'>;
           }>;
-          where?: Array<TBooleanFilter<T>>; // Optional conditions for the update
+          where?: Array<DrizzleBooleanFilter<T>>; // Optional conditions for the update
       };
 
 /**

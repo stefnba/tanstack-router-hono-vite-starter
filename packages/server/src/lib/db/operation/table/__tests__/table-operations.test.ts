@@ -5,15 +5,15 @@
 // import { fail } from 'assert';
 // import { beforeAll, describe, expect, it } from 'vitest';
 
-// import { TableOperationsBuilder } from '@app/server/lib/db/query/table-operations';
+// import { TableOperationBuilder } from '@app/server/lib/db/query/table-operations';
 
-// describe('TableOperationsBuilder', () => {
+// describe('TableOperationBuilder', () => {
 //     let testUser: Awaited<ReturnType<typeof createTestUser>>;
-//     let tableOps: TableOperationsBuilder<typeof tag>;
+//     let tableOps: TableOperationBuilder<typeof tag>;
 
 //     beforeAll(async () => {
 //         testUser = await createTestUser();
-//         tableOps = new TableOperationsBuilder(tag);
+//         tableOps = new TableOperationBuilder(tag);
 //     });
 
 //     describe('Create Operations', () => {

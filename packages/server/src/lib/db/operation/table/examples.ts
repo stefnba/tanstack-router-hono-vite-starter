@@ -3,11 +3,11 @@ import { createId } from '@paralleldrive/cuid2';
 import { user } from '@app/shared/features/auth/table';
 import { post } from '@app/shared/features/post/table';
 
-import { TableOperationsBuilder } from './core';
+import { TableOperationBuilder } from './core';
 
 async function runExamples() {
-    const postOps = new TableOperationsBuilder(post);
-    const userOps = new TableOperationsBuilder(user);
+    const postOps = new TableOperationBuilder(post);
+    const userOps = new TableOperationBuilder(user);
 
     const [users] = await userOps.getManyRecords();
 
