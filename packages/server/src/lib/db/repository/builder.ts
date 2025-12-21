@@ -8,6 +8,7 @@ import { StripIndexSignature } from '@app/shared/types/utils';
 import { QueryFn } from '@app/server/lib/db/operation';
 import { dbQueryFnHandler } from '@app/server/lib/db/operation/handler';
 import { TableOperationBuilder } from '@app/server/lib/db/operation/table';
+import { RepositoryStandardOperationsBuilder } from '@app/server/lib/db/repository/standard';
 import { appError } from '@app/server/lib/error';
 
 export class RepositoryBuilder<
@@ -44,6 +45,24 @@ export class RepositoryBuilder<
             resource: this.resource,
             contract,
             repositoryOperations: this.repositoryOperations,
+        });
+    }
+
+    /**
+     * Registers all standard operations for the resource.
+     */
+    registerStandardOperations() {
+        const builder = RepositoryStandardOperationsBuilder.init<R>(this.resource);
+
+        const ops = builder.all().done();
+
+        return new RepositoryBuilder<R, C, Omit<Q, keyof typeof ops> & typeof ops>({
+            resource: this.resource,
+            contract: this.contract,
+            repositoryOperations: {
+                ...this.repositoryOperations,
+                ...ops,
+            },
         });
     }
 
