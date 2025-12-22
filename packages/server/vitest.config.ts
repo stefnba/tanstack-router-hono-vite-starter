@@ -1,5 +1,9 @@
+import { config } from 'dotenv';
 import { resolve } from 'path';
 import { defineConfig } from 'vitest/config';
+
+// Load .env file from server package
+config({ path: './.env' });
 
 export default defineConfig({
     test: {
@@ -16,6 +20,7 @@ export default defineConfig({
             '@app/server/testing': resolve(__dirname, './test'),
             '@app/server': resolve(__dirname, './src'),
             '@app/shared': resolve(__dirname, '../shared/src'),
+            'hono/bun': resolve(__dirname, './test/mocks/hono-bun.ts'),
         },
     },
 });
