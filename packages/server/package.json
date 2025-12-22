@@ -17,6 +17,8 @@
     },
     "dependencies": {
         "@app/shared": "workspace:*",
+        "@aws-sdk/client-s3": "^3.956.0",
+        "@aws-sdk/s3-request-presigner": "^3.956.0",
         "@hono/zod-validator": "^0.7.5",
         "@paralleldrive/cuid2": "^3.0.4",
         "better-auth": "^1.4.5",
@@ -24,11 +26,11 @@
         "drizzle-orm": "*",
         "drizzle-zod": "*",
         "hono": "*",
-        "zod": "*",
         "i": "^0.3.7",
         "npm": "^11.7.0",
         "pg": "^8.16.3",
-        "postgres": "^3.4.7"
+        "postgres": "^3.4.7",
+        "zod": "*"
     },
     "devDependencies": {
         "@types/pg": "^8.15.6",
