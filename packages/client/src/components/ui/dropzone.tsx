@@ -140,7 +140,13 @@ DropzoneDescription.displayName = 'DropzoneDescription';
  */
 const DropzoneButton = React.forwardRef<HTMLButtonElement, React.ComponentProps<typeof Button>>(
     ({ children, className, ...props }, ref) => (
-        <Button ref={ref} variant="outline" className={cn('mt-4', className)} {...props}>
+        <Button
+            ref={ref}
+            variant="outline"
+            className={cn('mt-4', className)}
+            type="button"
+            {...props}
+        >
             {children}
         </Button>
     )

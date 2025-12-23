@@ -22,10 +22,7 @@ import { buildFormFieldId } from './utils';
 // Re-export specific components for convenience
 export { FileUploadDropzone, FileUploadPreview } from '@app/client/components/ui/dropzone';
 
-interface FormFileUploadProps<TFormData, TName extends DeepKeys<TFormData>> extends Omit<
-    DropzoneOptions,
-    'onDrop'
-> {
+interface FormFileUploadProps<TFormData, TName extends DeepKeys<TFormData>> {
     /**
      * The form instance.
      */
@@ -47,6 +44,10 @@ interface FormFileUploadProps<TFormData, TName extends DeepKeys<TFormData>> exte
      */
     placeholder?: string;
     /**
+     * The config of the field.
+     */
+    config: DropzoneOptions;
+    /**
      * The children of the field.
      */
     children?: React.ReactNode;
@@ -58,7 +59,7 @@ const FileUploadInner = <TFormData, TName extends DeepKeys<TFormData>>({
     label,
     description,
     placeholder,
-    dropzoneOptions,
+    config,
     children,
 }: {
     field: TAppFormField<TFormData, TName>;
@@ -66,9 +67,12 @@ const FileUploadInner = <TFormData, TName extends DeepKeys<TFormData>>({
     label?: string;
     description?: string;
     placeholder: string;
-    dropzoneOptions: DropzoneOptions;
+    config: DropzoneOptions;
     children?: React.ReactNode;
 }) => {
+    // Ensure config is always defined
+    const safeConfig = config || {};
+
     const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
     const rawValue = field.state.value;
 
@@ -120,7 +124,7 @@ const FileUploadInner = <TFormData, TName extends DeepKeys<TFormData>>({
      */
     const onDrop = React.useCallback(
         (acceptedFiles: FileWithPath[], rejectedFiles: FileRejection[]) => {
-            const currentFiles = dropzoneOptions.multiple ? value : [];
+            const currentFiles = safeConfig.multiple ? value : [];
             const newFiles = [...currentFiles, ...acceptedFiles];
 
             handleChange(newFiles);
@@ -130,7 +134,7 @@ const FileUploadInner = <TFormData, TName extends DeepKeys<TFormData>>({
                 console.warn('Files rejected:', rejectedFiles);
             }
         },
-        [field, value, dropzoneOptions.multiple, handleChange]
+        [field, value, safeConfig.multiple, handleChange]
     );
 
     /**
@@ -142,7 +146,7 @@ const FileUploadInner = <TFormData, TName extends DeepKeys<TFormData>>({
     };
 
     const dropzoneState = useDropzone({
-        ...dropzoneOptions,
+        ...safeConfig,
         onDrop,
     });
 
@@ -184,7 +188,7 @@ export const FormFileUpload = <TFormData, TName extends DeepKeys<TFormData>>({
     placeholder = 'Drag & drop files here, or click to select',
     description,
     children,
-    ...dropzoneOptions
+    config,
 }: FormFileUploadProps<TFormData, TName>) => {
     return (
         <form.Field
@@ -198,7 +202,7 @@ export const FormFileUpload = <TFormData, TName extends DeepKeys<TFormData>>({
                         label={label}
                         description={description}
                         placeholder={placeholder}
-                        dropzoneOptions={dropzoneOptions}
+                        config={config}
                     >
                         {children}
                     </FileUploadInner>
