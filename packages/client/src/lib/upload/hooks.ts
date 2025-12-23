@@ -6,7 +6,6 @@ import z from 'zod';
 import { UploadFileTypes, s3Contract } from '@app/shared/lib/cloud/s3';
 import { SharedS3UploadConfig } from '@app/shared/lib/cloud/s3/config';
 
-import '@app/client/api';
 import { computeChecksum, uploadFileToS3 } from '@app/client/lib/upload/utils';
 
 interface UseS3UploadOptions {
