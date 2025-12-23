@@ -47,9 +47,9 @@ COPY --from=prerelease /app/packages/client/dist ./packages/server/public
 
 # 5. Set Environment
 ENV NODE_ENV=production
-ENV PORT=3000
+ENV SERVER_PORT=8080
 
 # 6. Run the Server
 WORKDIR /app/packages/server
-EXPOSE 3000
+EXPOSE 8080
 CMD ["bun", "run", "start"]

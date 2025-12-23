@@ -23,9 +23,9 @@ docker build -t starter-app .
 ```
 
 ```bash
-docker run -p 3000:3000 \
+docker run -p 8080:8080 \
   --env DATABASE_URL="postgresql://postgres:password@host.docker.internal:5445/db" \
-  --env CLIENT_URL="http://localhost:3000" \
+  --env CLIENT_URL="http://localhost:8080" \
   starter-app
 ```
 
@@ -43,7 +43,7 @@ This project is pre-configured for fast deployment on [Coolify](https://coolify.
 
 - **Build Pack:** `Dockerfile`
 - **Docker File Location:** `/Dockerfile` (default)
-- **Port:** `3000`
+- **Port:** `8080`
 
 #### 3. Environment Variables
 
