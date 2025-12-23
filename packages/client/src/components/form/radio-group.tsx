@@ -47,8 +47,10 @@ export const FormRadioGroup = <TFormData, TName extends DeepKeys<TFormData>>({
 
                 return (
                     <FieldSet>
-                        {label && <FieldLegend>{label}</FieldLegend>}
-                        {description && <FieldDescription>{description}</FieldDescription>}
+                        <FieldContent>
+                            {label && <FieldLegend variant="label">{label}</FieldLegend>}
+                            {description && <FieldDescription>{description}</FieldDescription>}
+                        </FieldContent>
                         <RadioGroup
                             name={field.name}
                             value={value}

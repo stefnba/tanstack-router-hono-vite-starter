@@ -52,8 +52,10 @@ export const FormCheckbox = <TFormData, TName extends DeepKeys<TFormData>>({
 
                 return (
                     <FieldSet>
-                        {label && <FieldLegend variant="label">{label}</FieldLegend>}
-                        {description && <FieldDescription>{description}</FieldDescription>}
+                        <FieldContent>
+                            {label && <FieldLegend variant="label">{label}</FieldLegend>}
+                            {description && <FieldDescription>{description}</FieldDescription>}
+                        </FieldContent>
                         <FieldGroup data-slot="checkbox-group">
                             {options.map((option) => {
                                 const optionValue = option.id;
