@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import z from 'zod';
 
 import { useAppForm } from '@app/client/components/form';
+import { ImageUpload } from '@app/client/components/upload-avatar/image-upload';
 import { sessionQueryOptions, useAuth } from '@app/client/lib/auth';
 import { authClient } from '@app/client/lib/auth/client';
 
@@ -55,6 +56,8 @@ function RouteComponent() {
                     {JSON.stringify(user, null, 2)}
                 </pre>
             </div>
+
+            <ImageUpload />
         </div>
     );
 }

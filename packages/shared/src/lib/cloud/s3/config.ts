@@ -1,4 +1,8 @@
+import { FileWithPath } from 'react-dropzone';
+import z from 'zod';
+
 import { TS3UploadConfig } from '@app/shared/lib/cloud/s3/schemas';
+import { UploadFileTypes } from '@app/shared/lib/cloud/s3/schemas';
 
 export type SharedS3UploadConfig = Omit<TS3UploadConfig, 'bucket' | 'generateKey'> & {
     maxFiles?: number;
@@ -13,6 +17,7 @@ export type SharedS3UploadReturn = SharedS3UploadConfig & {
         maxSize: number;
         accept: Record<string, string[]>;
     };
+    formSchema: ReturnType<typeof createFileUploadFormSchema>;
 };
 
 /**
@@ -25,6 +30,7 @@ export type SharedS3UploadReturn = SharedS3UploadConfig & {
  * 1. Calculates the `multiple` boolean based on `maxFiles`.
  * 2. Generates the `accept` object for `react-dropzone` from `allowedFileTypes` (MIME types).
  * 3. Creates a nested `dropzoneConfig` object to be spread directly onto the `<FileUpload />` component.
+ * 4. Generates a Zod `formSchema` for validating the uploaded files.
  *
  * @example
  * ```ts
@@ -41,6 +47,11 @@ export type SharedS3UploadReturn = SharedS3UploadConfig & {
  *     config={avatarUploadConfig.dropzoneConfig}
  *     // ... other props
  * />
+ *
+ * // Usage in Zod schema:
+ * const schema = z.object({
+ *    files: avatarUploadConfig.formSchema,
+ * });
  * ```
  */
 export const defineSharedS3UploadConfig = <const T extends SharedS3UploadConfig>(
@@ -68,5 +79,30 @@ export const defineSharedS3UploadConfig = <const T extends SharedS3UploadConfig>
             maxSize: config.maxFileSize,
             accept,
         },
+        formSchema: createFileUploadFormSchema(config),
     };
+};
+
+/**
+ * Create a file upload form schema.
+ * @param params - The parameters for the file upload form schema.
+ * @returns The file upload form schema.
+ */
+export const createFileUploadFormSchema = (params: SharedS3UploadConfig) => {
+    const { maxFileSize, allowedFileTypes, maxFiles = 1, minFiles = 1 } = params;
+
+    return z
+        .array(z.custom<FileWithPath>())
+        .min(minFiles, { message: `You must upload at least ${minFiles} files` })
+        .max(maxFiles, { message: `You can only upload up to ${maxFiles} files` })
+        .refine((files) => files.every((file) => file.size <= maxFileSize), {
+            message: `File size must be less than ${maxFileSize / 1024 / 1024} MB`,
+        })
+        .refine(
+            (files) =>
+                files.every((file) => allowedFileTypes.includes(file.type as UploadFileTypes)),
+            {
+                message: `File type must be one of the following: ${allowedFileTypes.join(', ')}`,
+            }
+        );
 };

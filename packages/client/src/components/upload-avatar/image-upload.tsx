@@ -4,8 +4,7 @@ import { avatarUploadConfig } from '@app/shared/features/user/config';
 
 import { apiEndpoints } from '@app/client/api';
 import { useAppForm } from '@app/client/components/form';
-import { useS3Upload } from '@app/client/hooks/use-s3-upload';
-import { createFileUploadFormSchema } from '@app/client/lib/upload/schema';
+import { useS3Upload } from '@app/client/lib/upload';
 
 export const ImageUpload = () => {
     const { upload } = useS3Upload({
@@ -20,7 +19,7 @@ export const ImageUpload = () => {
 
     const { Form, SubmitButton, FileUpload } = useAppForm({
         schema: z.object({
-            files: createFileUploadFormSchema(avatarUploadConfig),
+            files: avatarUploadConfig.formSchema,
         }),
         onSubmit: async ({ value: { files } }) => {
             if (files.length > 0) {

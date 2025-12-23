@@ -29,8 +29,17 @@ type UploadEndpoint = UseMutationOptions<
  * Hook to upload a file to S3.
  */
 export const useS3Upload = (params: {
+    /**
+     * Shared configuration for the S3 upload.
+     */
     config: SharedS3UploadConfig;
+    /**
+     * Endpoint for signed URL.
+     */
     endpoint: UploadEndpoint;
+    /**
+     * Options for the hook.
+     */
     options: UseS3UploadOptions;
 }) => {
     const { config } = params;
