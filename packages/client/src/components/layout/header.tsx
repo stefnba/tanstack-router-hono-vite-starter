@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router';
 
 import { Logout } from '@app/client/components/auth/logout';
+import { ModeToggle } from '@app/client/lib/theme/toggle';
 
 interface HeaderProps {
     isAuthenticated: boolean;
@@ -45,6 +46,7 @@ export const Header = ({ isAuthenticated }: HeaderProps) => {
                         </Link>
                     </>
                 )}
+                <ModeToggle />
             </div>
         </header>
     );

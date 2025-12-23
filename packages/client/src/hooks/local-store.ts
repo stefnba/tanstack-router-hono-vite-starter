@@ -1,7 +1,5 @@
-'use client';
-
 import { useCallback, useEffect, useSyncExternalStore } from 'react';
-import { type z } from 'zod';
+import { z } from 'zod';
 
 type SetValue<T> = (value: T | ((prev: T) => T)) => void;
 
@@ -40,10 +38,6 @@ export function useLocalStorage<T>(
 
     const subscribe = useCallback(
         (onStoreChange: () => void) => {
-            if (typeof window === 'undefined') {
-                return () => {}; // No-op for server-side rendering
-            }
-
             if (!listeners.has(key)) {
                 listeners.set(key, new Set());
             }
@@ -64,13 +58,6 @@ export function useLocalStorage<T>(
 
     const setValue: SetValue<T> = useCallback(
         (value) => {
-            if (typeof window === 'undefined') {
-                console.warn(
-                    `Tried to set localStorage key “${key}” even though no window was found`
-                );
-                return;
-            }
-
             try {
                 const currentValue = getSnapshot();
                 const newValue = value instanceof Function ? value(currentValue) : value;
@@ -98,10 +85,6 @@ export function useLocalStorage<T>(
 
     // Effect to initialize value from localStorage and subscribe to cross-tab changes.
     useEffect(() => {
-        if (typeof window === 'undefined') {
-            return;
-        }
-
         const readAndCache = () => {
             try {
                 const item = window.localStorage.getItem(key);
