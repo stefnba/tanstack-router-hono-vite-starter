@@ -11,9 +11,9 @@ export const endpoints = router.route(
     createUploadToS3Endpoints({
         sharedConfig: avatarUploadConfig,
         bucket: env.AWS_BUCKET_NAME_PUBLIC_UPLOAD,
-        generateKey: ({ user, input }) => {
-            // e.g. avatars/userId/timestamp-filename
-            return `avatars/${user?.id}/${Date.now()}-${input.key || 'avatar'}`;
+        generateKey: ({ user, helpers }) => {
+            // e.g. avatars/userId/timestamp-randomString
+            return ['avatars', user?.id, Date.now(), helpers.generateRandomString()];
         },
     })
 );

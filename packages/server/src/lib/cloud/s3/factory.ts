@@ -3,6 +3,7 @@ import { Context, Hono } from 'hono';
 import { z } from 'zod';
 
 import { SharedS3UploadConfig, s3Contract } from '@app/shared/lib/cloud/s3';
+import { generateUniqueId, generateUuid } from '@app/shared/lib/utils/misc';
 
 import { TAuthUser, getUser } from '@app/server/lib/auth';
 import { s3Service } from '@app/server/lib/cloud/s3/service';
@@ -26,7 +27,10 @@ type UploadToS3EndpointFactoryConfigParams = {
         c: Context;
         user: TAuthUser;
         input: SignedUrlInput;
-    }) => string | Promise<string>;
+        helpers: {
+            generateRandomString: () => string;
+        };
+    }) => string | Promise<string> | Array<string | number> | Promise<Array<string | number>>;
 };
 
 export const createUploadToS3Endpoints = (config: UploadToS3EndpointFactoryConfigParams) => {
@@ -52,7 +56,20 @@ export const createUploadToS3Endpoints = (config: UploadToS3EndpointFactoryConfi
 
             let key = input.key;
             if (generateKey) {
-                key = await generateKey({ c, user, input });
+                const generatedKey = await generateKey({
+                    c,
+                    user,
+                    input,
+                    helpers: { generateRandomString: () => generateUuid() },
+                });
+                if (Array.isArray(generatedKey)) {
+                    // remove all leading and trailing slashes
+                    key = generatedKey.map((k) => String(k).replace(/^\/+|\/+$/g, '')).join('/');
+                } else {
+                    key = generatedKey;
+                }
+                // remove all whitespace
+                key = key.replace(/\s+/g, '');
             }
 
             if (!key) {

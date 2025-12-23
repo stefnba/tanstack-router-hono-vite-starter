@@ -1,3 +1,4 @@
+import { createId } from '@paralleldrive/cuid2';
 import { nanoid } from 'nanoid';
 
 /**
@@ -24,4 +25,13 @@ export async function sleep(ms: number) {
  */
 export function generateUniqueId(length: number = 10): string {
     return nanoid(length);
+}
+
+/**
+ * Generates a UUID
+ *
+ * Uses createId for collision-resistant IDs suitable for production use.
+ */
+export function generateUuid(): string {
+    return createId();
 }
