@@ -5,6 +5,8 @@ import { serveStatic } from 'hono/bun';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 
+import { SERVER } from '@app/shared/config/app';
+
 import { post } from '@app/server/db/tables';
 import {
     authEndopints,
@@ -17,7 +19,7 @@ import { TAuthContext } from '@app/server/lib/auth';
 import { env } from '@app/server/lib/env';
 import { handleGlobalError } from '@app/server/lib/error/handlers';
 
-const { CLIENT_URL, NODE_ENV } = env;
+const { CLIENT_URL, NODE_ENV, SERVER_PORT } = env;
 
 // Extend Hono's Context type to include our user
 declare module 'hono' {
@@ -60,7 +62,7 @@ app.onError(handleGlobalError);
 // ================================
 const testSchema = createInsertSchema(post);
 const apiRoutes = app
-    .basePath('/api')
+    .basePath(SERVER.API_BASE_PATH)
     .get('/test', zValidator('json', testSchema), async (c) => {
         return c.json({
             message: 'Hello',
@@ -112,7 +114,7 @@ if (env.NODE_ENV === 'production') {
 // Start the server
 // Bun serves this automatically when you run `bun run src/index.ts`
 export default {
-    port: 3000,
+    port: SERVER_PORT,
     fetch: app.fetch,
 };
 
