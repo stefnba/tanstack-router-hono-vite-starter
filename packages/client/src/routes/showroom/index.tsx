@@ -10,6 +10,9 @@ function RouteComponent() {
             <Link className="text-blue-500 hover:underline" to="/showroom/form">
                 Form
             </Link>
+            <Link className="text-blue-500 hover:underline" to="/showroom/file-upload">
+                File Upload
+            </Link>
             <Link className="text-blue-500 hover:underline" to="/showroom/modal">
                 Modal
             </Link>

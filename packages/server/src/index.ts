@@ -11,6 +11,7 @@ import {
     postEndpoints,
     protectedEndpoints,
     statusEndpoints,
+    userEndpoints,
 } from '@app/server/endpoints';
 import { TAuthContext } from '@app/server/lib/auth';
 import { env } from '@app/server/lib/env';
@@ -69,6 +70,7 @@ const apiRoutes = app
     .route('/auth', authEndopints)
     .route('/status', statusEndpoints)
     .route('/posts', postEndpoints)
+    .route('/users', userEndpoints)
     .get('/', (c) => {
         return c.json({
             message: 'Hello',

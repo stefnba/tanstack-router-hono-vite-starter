@@ -4,6 +4,7 @@ export { FormTextarea } from './textarea';
 export { FormSwitch } from './switch';
 export { FormCheckbox } from './checkbox';
 export { FormRadioGroup } from './radio-group';
+export { FormFileUpload } from './file-upload';
 // Hooks
 export { useAppForm } from './hooks';
 // Utils

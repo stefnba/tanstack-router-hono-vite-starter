@@ -1,5 +1,6 @@
 import z from 'zod';
 
+import { SignedS3UrlInputSchema } from '@app/shared/lib/cloud/s3';
 import { defineContract } from '@app/shared/lib/contract/builder';
 import { defineResource } from '@app/shared/lib/resource/builder';
 
@@ -16,7 +17,14 @@ export const userResource = defineResource(user)
     })
     .done();
 
-export const userContract = defineContract(userResource).registerAllStandard().done();
+export const userContract = defineContract(userResource)
+    .registerAllStandard()
+    .addOperation('getAvatarUploadUrl', () => ({
+        endpoint: {
+            json: SignedS3UrlInputSchema,
+        },
+    }))
+    .done();
 
 // ========================================
 // Auth Session

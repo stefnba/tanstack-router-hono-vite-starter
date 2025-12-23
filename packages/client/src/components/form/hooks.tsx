@@ -8,6 +8,11 @@ import {
 import { useEffect, useId, useMemo, useState } from 'react';
 import z from 'zod';
 
+import {
+    FileUploadDropzone,
+    FileUploadPreview,
+    FormFileUpload,
+} from '@app/client/components/form/file-upload';
 import { cn } from '@app/client/lib/utils';
 
 import { FormCheckbox } from './checkbox';
@@ -166,6 +171,7 @@ export const useAppForm = <TSchema extends z.ZodSchema>(
     const FormComponent = useMemo(
         () => (props: Omit<React.ComponentProps<'form'>, 'onSubmit' | 'id'>) => (
             <form
+                className={cn('space-y-4', props.className)}
                 id={formApi.formId}
                 onSubmit={(e) => {
                     e.preventDefault();
@@ -264,6 +270,20 @@ export const useAppForm = <TSchema extends z.ZodSchema>(
         [formApi]
     );
 
+    const FormFileUploadComponent = useMemo(() => {
+        const Component = (
+            props: Omit<React.ComponentProps<typeof FormFileUpload>, 'form'> & {
+                name: DeepKeys<z.infer<TSchema>>;
+            }
+        ) => <FormFileUpload form={formApi} {...props} />;
+
+        // Attach sub-components for composition
+        return Object.assign(Component, {
+            Dropzone: FileUploadDropzone,
+            Preview: FileUploadPreview,
+        });
+    }, [formApi]);
+
     return {
         form: formApi,
         Input: FormInputComponent,
@@ -275,5 +295,6 @@ export const useAppForm = <TSchema extends z.ZodSchema>(
         Checkbox: FormCheckboxComponent,
         RadioGroup: FormRadioGroupComponent,
         ServerError: ServerErrorComponent,
+        FileUpload: FormFileUploadComponent,
     };
 };

@@ -7,3 +7,4 @@ export { endopints as protectedEndpoints } from '@app/server/endpoints/protected
 
 // Feature endpoints
 export { endpoints as postEndpoints } from '@app/server/features/post';
+export { endpoints as userEndpoints } from '@app/server/features/user';
