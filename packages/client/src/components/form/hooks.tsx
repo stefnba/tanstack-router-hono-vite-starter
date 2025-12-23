@@ -25,16 +25,16 @@ import { FormTextarea } from './textarea';
 type UseFormProps<TFormData> = Omit<
     FormOptions<
         TFormData,
-        FormValidateOrFn<TFormData>,
-        FormValidateOrFn<TFormData>,
-        FormAsyncValidateOrFn<TFormData>,
-        FormValidateOrFn<TFormData>,
-        FormAsyncValidateOrFn<TFormData>,
-        FormValidateOrFn<TFormData>,
-        FormAsyncValidateOrFn<TFormData>,
-        FormValidateOrFn<TFormData>,
-        FormAsyncValidateOrFn<TFormData>,
-        FormAsyncValidateOrFn<TFormData>,
+        FormValidateOrFn<TFormData> | undefined,
+        FormValidateOrFn<TFormData> | undefined,
+        FormAsyncValidateOrFn<TFormData> | undefined,
+        FormValidateOrFn<TFormData> | undefined,
+        FormAsyncValidateOrFn<TFormData> | undefined,
+        FormValidateOrFn<TFormData> | undefined,
+        FormAsyncValidateOrFn<TFormData> | undefined,
+        FormValidateOrFn<TFormData> | undefined,
+        FormAsyncValidateOrFn<TFormData> | undefined,
+        FormAsyncValidateOrFn<TFormData> | undefined,
         never
     >,
     'defaultValues'
