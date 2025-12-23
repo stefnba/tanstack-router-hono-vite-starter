@@ -7,6 +7,8 @@ We generally use two types of buckets:
 1. **Public Bucket**: For public assets like user avatars, blog post images, etc.
 2. **Private Bucket**: For sensitive user files like invoices, contracts, etc.
 
+These buckets must be in the same region.
+
 ---
 
 ## 1. Public Bucket Setup (e.g., Avatars)
@@ -39,21 +41,37 @@ This bucket allows anyone on the internet to **view** (GET) files directly via U
 Required for client-side uploads (presigned URLs) and client-side rendering.
 
 1. Go to **Permissions** > **Cross-origin resource sharing (CORS)**.
-2. Paste:
+2. Paste the appropriate configuration for your environment:
+
+**Development:**
 
 ```json
 [
     {
         "AllowedHeaders": ["*"],
         "AllowedMethods": ["PUT", "GET", "HEAD"],
-        "AllowedOrigins": ["*"],
+        "AllowedOrigins": ["http://localhost:3000", "http://localhost:3080"],
         "ExposeHeaders": ["ETag"],
         "MaxAgeSeconds": 3000
     }
 ]
 ```
 
-Note: In production, replace `AllowedOrigins: ["_"]`with your actual domain, e.g.,`["https://myapp.com"]`.\*
+**Production:**
+
+```json
+[
+    {
+        "AllowedHeaders": ["*"],
+        "AllowedMethods": ["PUT", "GET", "HEAD"],
+        "AllowedOrigins": ["https://yourdomain.com", "https://www.yourdomain.com"],
+        "ExposeHeaders": ["ETag"],
+        "MaxAgeSeconds": 3000
+    }
+]
+```
+
+**Security Note:** Never use `["*"]` for `AllowedOrigins` in production. Always specify your exact domain(s) to prevent unauthorized origins from uploading to your bucket.
 
 ---
 
@@ -69,22 +87,40 @@ This bucket blocks all public access. Files can only be accessed via the applica
 
 ### B. CORS Configuration (Private)
 
-Still required for the client to Upload (PUT) directly to S3 using a presigned URL.
+Still required for the client to upload (PUT) directly to S3 using a presigned URL.
 
 1. Go to **Permissions** > **Cross-origin resource sharing (CORS)**.
-2. Paste:
+2. Paste the appropriate configuration for your environment:
+
+**Development:**
 
 ```json
 [
     {
         "AllowedHeaders": ["*"],
         "AllowedMethods": ["PUT"],
-        "AllowedOrigins": ["*"],
+        "AllowedOrigins": ["http://localhost:3000", "http://localhost:3080"],
         "ExposeHeaders": ["ETag"],
         "MaxAgeSeconds": 3000
     }
 ]
 ```
+
+**Production:**
+
+```json
+[
+    {
+        "AllowedHeaders": ["*"],
+        "AllowedMethods": ["PUT"],
+        "AllowedOrigins": ["https://yourdomain.com", "https://www.yourdomain.com"],
+        "ExposeHeaders": ["ETag"],
+        "MaxAgeSeconds": 3000
+    }
+]
+```
+
+**Security Note:** Only `PUT` is allowed for private buckets. Files should be read through your application server, not directly by the client.
 
 ---
 
@@ -116,7 +152,7 @@ The application needs an IAM user with permissions to manage files in these buck
 }
 ```
 
-Note: `s3:GetObject` is strictly required for the **Private** bucket if the server needs to read/proxy files. It's optional for the Public bucket (since it's already public).\_
+**Note:** `s3:GetObject` is strictly required for the **Private** bucket if the server needs to read/proxy files. It's optional for the Public bucket (since it's already public).
 
 ---
 

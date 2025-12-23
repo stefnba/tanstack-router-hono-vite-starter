@@ -1,4 +1,5 @@
 import { avatarUploadConfig } from '@app/shared/features/user/config';
+import { formatDate } from '@app/shared/lib/utils/formatter/date';
 
 import { createUploadToS3Endpoints } from '@app/server/lib/cloud/s3/factory';
 import { env } from '@app/server/lib/env';
@@ -12,8 +13,14 @@ export const endpoints = router.route(
         sharedConfig: avatarUploadConfig,
         bucket: env.AWS_BUCKET_NAME_PUBLIC_UPLOAD,
         generateKey: ({ user, helpers }) => {
-            // e.g. avatars/userId/timestamp-randomString
-            return ['avatars', user?.id, Date.now(), helpers.generateRandomString()];
+            // e.g. avatars/userId/2025-01-01T00:00:00.000Z_randomString
+            return [
+                'avatars',
+                user?.id,
+                formatDate(Date.now()).toFilenameSafeTimestamp() +
+                    '_' +
+                    helpers.generateRandomString(),
+            ];
         },
     })
 );

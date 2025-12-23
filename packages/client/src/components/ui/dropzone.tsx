@@ -9,6 +9,7 @@ import {
     FileSpreadsheet,
     FileText,
     FileVideo,
+    Pencil,
     UploadCloud,
     X,
 } from 'lucide-react';
@@ -216,6 +217,7 @@ const FilePreview = React.forwardRef<
     React.HTMLAttributes<HTMLDivElement> & {
         file: FileWithPath;
         onRemove?: (file: FileWithPath) => void;
+        onEdit?: (file: FileWithPath) => void;
         previewUrl?: string;
         /**
          * Whether to show the actual image preview if available.
@@ -223,7 +225,7 @@ const FilePreview = React.forwardRef<
          */
         showImagePreview?: boolean;
     }
->(({ className, file, onRemove, previewUrl, showImagePreview = true, ...props }, ref) => {
+>(({ className, file, onRemove, onEdit, previewUrl, showImagePreview = true, ...props }, ref) => {
     const isImage = file.type.startsWith('image/');
     const fileIcon = getFileIcon(file.type);
     const Icon = fileIcon?.Icon ?? FileIcon;
@@ -248,6 +250,20 @@ const FilePreview = React.forwardRef<
             </ItemContent>
 
             <ItemActions>
+                {onEdit && isImage && (
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit(file);
+                        }}
+                        type="button"
+                    >
+                        <Pencil className="size-4" />
+                        <span className="sr-only">Edit file</span>
+                    </Button>
+                )}
                 {onRemove && (
                     <Button
                         variant="ghost"
@@ -256,6 +272,7 @@ const FilePreview = React.forwardRef<
                             e.stopPropagation();
                             onRemove(file);
                         }}
+                        type="button"
                     >
                         <X className="size-4" />
                         <span className="sr-only">Remove file</span>
@@ -323,8 +340,11 @@ FileUploadDropzone.displayName = 'FileUploadDropzone';
  */
 const FileUploadPreview = React.forwardRef<
     HTMLDivElement,
-    React.HTMLAttributes<HTMLDivElement> & { showImagePreview?: boolean }
->(({ className, showImagePreview = true, ...props }, ref) => {
+    React.HTMLAttributes<HTMLDivElement> & {
+        showImagePreview?: boolean;
+        onEdit?: (file: FileWithPath) => void;
+    }
+>(({ className, showImagePreview = true, onEdit, ...props }, ref) => {
     const { files, previews, removeFile } = useFileUpload();
 
     if (files.length === 0) return null;
@@ -336,6 +356,7 @@ const FileUploadPreview = React.forwardRef<
                     key={`${file.name}-${i}`}
                     file={file}
                     onRemove={removeFile}
+                    onEdit={onEdit}
                     previewUrl={previews.get(file.name)}
                     showImagePreview={showImagePreview}
                 />

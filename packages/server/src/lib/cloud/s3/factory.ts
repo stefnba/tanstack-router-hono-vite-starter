@@ -68,8 +68,8 @@ export const createUploadToS3Endpoints = (config: UploadToS3EndpointFactoryConfi
                 } else {
                     key = generatedKey;
                 }
-                // remove all whitespace
-                key = key.replace(/\s+/g, '');
+                // replace all whitespace with hyphens
+                key = key.replace(/\s+/g, '-');
             }
 
             if (!key) {

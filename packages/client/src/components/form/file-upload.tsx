@@ -1,6 +1,7 @@
 import { DeepKeys, DeepValue, Updater } from '@tanstack/react-form';
 import * as React from 'react';
 import {
+    DropEvent,
     type DropzoneOptions,
     type FileRejection,
     FileWithPath,
@@ -22,36 +23,19 @@ import { buildFormFieldId } from './utils';
 // Re-export specific components for convenience
 export { FileUploadDropzone, FileUploadPreview } from '@app/client/components/ui/dropzone';
 
-interface FormFileUploadProps<TFormData, TName extends DeepKeys<TFormData>> {
-    /**
-     * The form instance.
-     */
-    form: TAppForm<TFormData>;
-    /**
-     * The name of the field.
-     */
-    name: TName;
-    /**
-     * The label of the field.
-     */
+type FileUploadInnerProps<TFormData, TName extends DeepKeys<TFormData>> = {
+    field: TAppFormField<TFormData, TName>;
+    fieldId: string;
     label?: string;
-    /**
-     * The description of the field.
-     */
     description?: string;
-    /**
-     * The placeholder of the field, usually the t.
-     */
-    placeholder?: string;
-    /**
-     * The config of the field.
-     */
+    placeholder: string;
+    children?: React.ReactNode;
     config: DropzoneOptions;
     /**
-     * The children of the field.
+     * The on drop event handler. Allows external interception of the drop event (e.g., for cropping).
      */
-    children?: React.ReactNode;
-}
+    onDrop?: DropzoneOptions['onDrop'];
+};
 
 const FileUploadInner = <TFormData, TName extends DeepKeys<TFormData>>({
     field,
@@ -61,17 +45,10 @@ const FileUploadInner = <TFormData, TName extends DeepKeys<TFormData>>({
     placeholder,
     config,
     children,
-}: {
-    field: TAppFormField<TFormData, TName>;
-    fieldId: string;
-    label?: string;
-    description?: string;
-    placeholder: string;
-    config: DropzoneOptions;
-    children?: React.ReactNode;
-}) => {
+    onDrop,
+}: FileUploadInnerProps<TFormData, TName>) => {
     // Ensure config is always defined
-    const safeConfig = config || {};
+    const safeConfig = React.useMemo(() => config || {}, [config]);
 
     const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
     const rawValue = field.state.value;
@@ -122,8 +99,14 @@ const FileUploadInner = <TFormData, TName extends DeepKeys<TFormData>>({
     /**
      * Handle the drop event.
      */
-    const onDrop = React.useCallback(
-        (acceptedFiles: FileWithPath[], rejectedFiles: FileRejection[]) => {
+    const handleDrop = React.useCallback(
+        (acceptedFiles: FileWithPath[], rejectedFiles: FileRejection[], event: DropEvent) => {
+            // Allow external interception of the drop event (e.g., for cropping)
+            if (onDrop) {
+                onDrop(acceptedFiles, rejectedFiles, event);
+                return;
+            }
+
             const currentFiles = safeConfig.multiple ? value : [];
             const newFiles = [...currentFiles, ...acceptedFiles];
 
@@ -134,7 +117,7 @@ const FileUploadInner = <TFormData, TName extends DeepKeys<TFormData>>({
                 console.warn('Files rejected:', rejectedFiles);
             }
         },
-        [field, value, safeConfig.multiple, handleChange]
+        [field, value, safeConfig, handleChange, onDrop]
     );
 
     /**
@@ -147,7 +130,7 @@ const FileUploadInner = <TFormData, TName extends DeepKeys<TFormData>>({
 
     const dropzoneState = useDropzone({
         ...safeConfig,
-        onDrop,
+        onDrop: handleDrop,
     });
 
     const contextValue: FileUploadContextValue = {
@@ -178,6 +161,41 @@ const FileUploadInner = <TFormData, TName extends DeepKeys<TFormData>>({
     );
 };
 
+interface FormFileUploadProps<TFormData, TName extends DeepKeys<TFormData>> {
+    /**
+     * The form instance.
+     */
+    form: TAppForm<TFormData>;
+    /**
+     * The name of the field.
+     */
+    name: TName;
+    /**
+     * The label of the field.
+     */
+    label?: string;
+    /**
+     * The description of the field.
+     */
+    description?: string;
+    /**
+     * The placeholder of the field, usually the t.
+     */
+    placeholder?: string;
+    /**
+     * The config of the field.
+     */
+    config: DropzoneOptions;
+    /**
+     * The children of the field.
+     */
+    children?: React.ReactNode;
+    /**
+     * The on drop event handler. Allows external interception of the drop event (e.g., for cropping).
+     */
+    onDrop?: DropzoneOptions['onDrop'];
+}
+
 /**
  * Form field wrapper for file upload component using Tanstack Form.
  */
@@ -189,6 +207,7 @@ export const FormFileUpload = <TFormData, TName extends DeepKeys<TFormData>>({
     description,
     children,
     config,
+    onDrop,
 }: FormFileUploadProps<TFormData, TName>) => {
     return (
         <form.Field
@@ -203,6 +222,7 @@ export const FormFileUpload = <TFormData, TName extends DeepKeys<TFormData>>({
                         description={description}
                         placeholder={placeholder}
                         config={config}
+                        onDrop={onDrop}
                     >
                         {children}
                     </FileUploadInner>
