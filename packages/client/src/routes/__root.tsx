@@ -6,6 +6,7 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { Header } from '@app/client/components/layout/header';
 import { Toaster } from '@app/client/components/ui/sonner';
 import { checkProtectedRoute } from '@app/client/lib/auth/protected';
+import { ThemeProvider } from '@app/client/lib/theme';
 
 export interface RouterContext {
     queryClient: QueryClient;
@@ -14,14 +15,14 @@ export interface RouterContext {
 const RootLayout = () => {
     const { isAuthenticated } = Route.useRouteContext();
     return (
-        <>
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
             <Header isAuthenticated={isAuthenticated} />
             <hr />
             <Outlet />
             <Toaster />
             <ReactQueryDevtools />
             <TanStackRouterDevtools />
-        </>
+        </ThemeProvider>
     );
 };
 

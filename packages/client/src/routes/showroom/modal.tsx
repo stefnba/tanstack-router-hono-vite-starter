@@ -1,7 +1,7 @@
 import { createFileRoute, stripSearchParams } from '@tanstack/react-router';
 import z from 'zod';
 
-import { createModal } from '@app/client/components/responsive-modal/factory';
+import { createModal } from '@app/client/components/responsive-modal';
 import { Button } from '@app/client/components/ui/button';
 import { Separator } from '@app/client/components/ui/separator';
 
