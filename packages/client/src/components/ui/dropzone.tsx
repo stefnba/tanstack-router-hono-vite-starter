@@ -216,7 +216,7 @@ const FileUploadDropzone = React.forwardRef<
     React.HTMLAttributes<HTMLDivElement> & { placeholder?: string; description?: string }
 >(({ className, children, placeholder: propPlaceholder, ...props }, ref) => {
     const { dropzoneState, fieldId, placeholder: contextPlaceholder } = useFileUpload();
-    const { getRootProps, getInputProps, isDragActive, isDragReject, isDragAccept } = dropzoneState;
+    const { getRootProps, getInputProps, isDragActive } = dropzoneState;
     const placeholder = propPlaceholder || contextPlaceholder;
 
     const description = props.description;
@@ -226,8 +226,6 @@ const FileUploadDropzone = React.forwardRef<
             {...getRootProps()}
             ref={ref}
             isDragActive={isDragActive}
-            isDragAccept={isDragAccept}
-            isDragReject={isDragReject}
             className={className}
             id={fieldId}
             {...props}
