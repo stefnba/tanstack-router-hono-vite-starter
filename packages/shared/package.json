@@ -9,7 +9,8 @@
     "dependencies": {
         "zod": "*",
         "drizzle-orm": "*",
-        "drizzle-zod": "*"
+        "drizzle-zod": "*",
+        "dayjs": "*"
     },
     "devDependencies": {
         "bun-types": "latest",
