@@ -6,7 +6,6 @@ import { z } from 'zod';
 
 import { postContract } from '@app/shared/features/post';
 
-import { apiEndpoints } from '@app/client/api';
 import { AsyncBoundary } from '@app/client/components/async-boundary';
 import { useAppForm } from '@app/client/components/form';
 import { Button } from '@app/client/components/ui/button';
@@ -17,6 +16,7 @@ import {
     ItemDescription,
     ItemTitle,
 } from '@app/client/components/ui/item';
+import { postApiEndpoints } from '@app/client/features/post/api';
 import { notification } from '@app/client/lib/notification';
 
 export const Route = createFileRoute('/_protected/posts/')({
@@ -30,7 +30,7 @@ export const Route = createFileRoute('/_protected/posts/')({
         };
 
         queryClient.prefetchQuery(
-            apiEndpoints.posts.getMany({
+            postApiEndpoints.getMany({
                 query: options,
             })
         );
@@ -42,9 +42,9 @@ export const Route = createFileRoute('/_protected/posts/')({
 
 const PostList = () => {
     const { options } = Route.useLoaderData();
-    const postsQuery = useSuspenseQuery(apiEndpoints.posts.getMany({ query: options }));
+    const postsQuery = useSuspenseQuery(postApiEndpoints.getMany({ query: options }));
     const deletePostMutation = useMutation(
-        apiEndpoints.posts.deleteById({
+        postApiEndpoints.deleteById({
             errorHandlers: {
                 default: (error) => {
                     notification.error(error.error.message);
@@ -90,7 +90,7 @@ function RouteComponent() {
     const navigate = Route.useNavigate();
 
     const createPostMutation = useMutation(
-        apiEndpoints.posts.create({
+        postApiEndpoints.create({
             errorHandlers: {
                 default: (error) => {
                     notification.error(error.error.message);

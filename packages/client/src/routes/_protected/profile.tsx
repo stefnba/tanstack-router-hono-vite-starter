@@ -4,7 +4,6 @@ import z from 'zod';
 
 import { avatarUploadConfig } from '@app/shared/features/user/config';
 
-import { apiEndpoints } from '@app/client/api';
 import { useAppForm } from '@app/client/components/form';
 import { useImageCropper } from '@app/client/components/image-edit';
 import { createModal } from '@app/client/components/responsive-modal';
@@ -12,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@app/client/components/ui/a
 import { Button } from '@app/client/components/ui/button';
 import { Label } from '@app/client/components/ui/label';
 import { Progress } from '@app/client/components/ui/progress';
+import { userApiEndpoints } from '@app/client/features/user/user';
 import { sessionQueryOptions, useAuth } from '@app/client/lib/auth';
 import { authClient } from '@app/client/lib/auth/client';
 import { notification } from '@app/client/lib/notification';
@@ -92,7 +92,7 @@ const UpdateAvatar = () => {
 
     const { upload, progress } = useS3Upload({
         config: avatarUploadConfig,
-        endpoint: apiEndpoints.user.getAvatarUploadUrl({}),
+        endpoint: userApiEndpoints.getAvatarUploadUrl({}),
         options: {
             onSuccess: (data) => {
                 // queryClient.invalidateQueries({ queryKey: sessionQueryOptions.queryKey });

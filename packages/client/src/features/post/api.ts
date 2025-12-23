@@ -7,7 +7,7 @@ const KEYS = {
     POST: 'post',
 } as const;
 
-export const posts = {
+export const postApiEndpoints = {
     getMany: createQueryOptions(apiClient.posts.$get, KEYS.POSTS, {
         staleTime: 1000 * 60 * 1,
     }),

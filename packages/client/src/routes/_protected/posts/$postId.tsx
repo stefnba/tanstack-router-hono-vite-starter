@@ -1,12 +1,12 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 
-import { apiEndpoints } from '@app/client/api';
+import { postApiEndpoints } from '@app/client/features/post/api';
 
 export const Route = createFileRoute('/_protected/posts/$postId')({
     component: RouteComponent,
     loader: async ({ context: { queryClient }, params: { postId } }) => {
-        await queryClient.ensureQueryData(apiEndpoints.posts.getById({ param: { id: postId } }));
+        await queryClient.ensureQueryData(postApiEndpoints.getById({ param: { id: postId } }));
 
         return { postId };
     },
@@ -16,7 +16,7 @@ export const Route = createFileRoute('/_protected/posts/$postId')({
 
 function RouteComponent() {
     const { postId } = Route.useParams();
-    const { data: post } = useSuspenseQuery(apiEndpoints.posts.getById({ param: { id: postId } }));
+    const { data: post } = useSuspenseQuery(postApiEndpoints.getById({ param: { id: postId } }));
 
     return (
         <div className="p-4">
