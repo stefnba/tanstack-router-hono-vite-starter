@@ -1,7 +1,17 @@
 /**
  * Custom dropzone components for file uploads.
  */
-import { FileText, UploadCloud, X } from 'lucide-react';
+import {
+    FileArchive,
+    FileAudio,
+    FileIcon,
+    FileImage,
+    FileSpreadsheet,
+    FileText,
+    FileVideo,
+    UploadCloud,
+    X,
+} from 'lucide-react';
 import * as React from 'react';
 import { type DropzoneState, FileWithPath } from 'react-dropzone';
 
@@ -154,6 +164,51 @@ const DropzoneButton = React.forwardRef<HTMLButtonElement, React.ComponentProps<
 DropzoneButton.displayName = 'DropzoneButton';
 
 /**
+ * Get the icon and color for a specific file type.
+ */
+function getFileIcon(fileType: string) {
+    if (fileType.startsWith('image/')) {
+        return { Icon: FileImage, color: 'text-indigo-500' };
+    }
+
+    if (fileType === 'application/pdf') {
+        return { Icon: FileText, color: 'text-rose-500' };
+    }
+
+    if (
+        fileType === 'text/csv' ||
+        fileType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    ) {
+        return { Icon: FileSpreadsheet, color: 'text-emerald-500' };
+    }
+
+    if (
+        fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+        fileType === 'application/msword'
+    ) {
+        return { Icon: FileText, color: 'text-blue-500' };
+    }
+
+    if (fileType.startsWith('video/')) {
+        return { Icon: FileVideo, color: 'text-violet-500' };
+    }
+
+    if (fileType.startsWith('audio/')) {
+        return { Icon: FileAudio, color: 'text-amber-500' };
+    }
+
+    if (
+        fileType === 'application/zip' ||
+        fileType === 'application/x-zip-compressed' ||
+        fileType === 'application/x-rar-compressed'
+    ) {
+        return { Icon: FileArchive, color: 'text-orange-500' };
+    }
+
+    return { Icon: FileIcon, color: 'text-muted-foreground' };
+}
+
+/**
  * Preview component for a file.
  */
 const FilePreview = React.forwardRef<
@@ -162,21 +217,29 @@ const FilePreview = React.forwardRef<
         file: FileWithPath;
         onRemove?: (file: FileWithPath) => void;
         previewUrl?: string;
+        /**
+         * Whether to show the actual image preview if available.
+         * Defaults to true.
+         */
+        showImagePreview?: boolean;
     }
->(({ className, file, onRemove, previewUrl, ...props }, ref) => {
+>(({ className, file, onRemove, previewUrl, showImagePreview = true, ...props }, ref) => {
     const isImage = file.type.startsWith('image/');
+    const fileIcon = getFileIcon(file.type);
+    const Icon = fileIcon?.Icon ?? FileIcon;
+    const iconColor = fileIcon?.color ?? 'text-muted-foreground';
 
     return (
         <Item ref={ref} className={className} variant="outline" {...props}>
-            <ItemMedia variant={isImage ? 'image' : 'default'}>
-                {isImage && previewUrl ? (
+            <ItemMedia variant={isImage && showImagePreview ? 'image' : 'default'}>
+                {isImage && previewUrl && showImagePreview ? (
                     <img
                         src={previewUrl}
                         alt={file.name}
                         className="h-full w-full rounded object-cover"
                     />
                 ) : (
-                    <FileText className="h-5 w-5 text-muted-foreground" />
+                    <Icon className={cn('', iconColor)} />
                 )}
             </ItemMedia>
             <ItemContent>
@@ -258,26 +321,28 @@ FileUploadDropzone.displayName = 'FileUploadDropzone';
 /**
  * Preview component for file uploads. Must be used within a FileUploadProvider.
  */
-const FileUploadPreview = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-    ({ className, ...props }, ref) => {
-        const { files, previews, removeFile } = useFileUpload();
+const FileUploadPreview = React.forwardRef<
+    HTMLDivElement,
+    React.HTMLAttributes<HTMLDivElement> & { showImagePreview?: boolean }
+>(({ className, showImagePreview = true, ...props }, ref) => {
+    const { files, previews, removeFile } = useFileUpload();
 
-        if (files.length === 0) return null;
+    if (files.length === 0) return null;
 
-        return (
-            <div ref={ref} className={className || 'grid gap-2'} {...props}>
-                {files.map((file, i) => (
-                    <FilePreview
-                        key={`${file.name}-${i}`}
-                        file={file}
-                        onRemove={removeFile}
-                        previewUrl={previews.get(file.name)}
-                    />
-                ))}
-            </div>
-        );
-    }
-);
+    return (
+        <div ref={ref} className={className || 'grid gap-2'} {...props}>
+            {files.map((file, i) => (
+                <FilePreview
+                    key={`${file.name}-${i}`}
+                    file={file}
+                    onRemove={removeFile}
+                    previewUrl={previews.get(file.name)}
+                    showImagePreview={showImagePreview}
+                />
+            ))}
+        </div>
+    );
+});
 FileUploadPreview.displayName = 'FileUploadPreview';
 
 export {
